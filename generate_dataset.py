@@ -54,6 +54,37 @@ SYNTHETIC_CLADE_LABELS = (
     "LineageS", "BranchT", "NodeU", "TaxonCladeV", "SubcladeW", "StemX",
 )
 
+V3_CLADE_LABELS = (
+    "Aeridae", "Boreoidea", "Caeliformes", "Dravinae", "Elysini",
+    "Ferroclada", "Galenozoa", "Heliomorpha", "Iridopsida", "Jovianae",
+    "Kaelimorpha", "Luminacea", "Mireoidae", "Nivaliformes", "Orinthini",
+    "Pellididae", "Quorimorpha", "Ravenopsida", "Sorellinae", "Tauroclada",
+    "Ulvanozoa", "Vesperidae", "Wrennoidea", "Xanthiformes", "Yalarinae",
+    "Zephyroclada", "Asteriozoa", "Briviaceae", "Corvinopsida",
+    "Dianthomorpha", "Eburonidae", "Fenaroidea",
+)
+
+BIOLOGICAL_NAMES = frozenset((
+    # Leaves from stress_test_phylogeny.py / demo_unseen_primates.py
+    "Homo", "Pan", "Gorilla", "Pongo", "Hylobates", "Canis", "Vulpes",
+    "Ursus", "Ailuropoda", "Felis", "Panthera", "Gallus", "Alligator",
+    "Anolis", "Mus", "Ornithorhynchus", "Marchantia", "Physcomitrium",
+    "Selaginella", "Pinus", "Ginkgo", "Zephyria", "Lunaris", "Terrax",
+    "Marina", "Aurorix", "Borealis", "Cryonix", "Delphis", "Emberix",
+    "Flamara", "Glacius", "Helionix", "Nimbus", "Opalix", "Quasaris",
+    "Radianta", "Sylvara", "Terranox", "Umbrax", "Vulcanis",
+    # Clade labels from stress_test_phylogeny.py
+    "Hominini", "Homininae", "Pongidae", "Hominoidea", "Canidae",
+    "Ursidae", "Caniformia", "Felidae", "Carnivora", "Archosauria",
+    "Sauropsida", "Mammalia", "Amniota", "Bryophyta", "Tracheophyta",
+    "Gymnospermae", "LandPlants", "MixA", "MixB", "MixC", "MixRoot",
+    "MixD", "MixE", "MixF", "MixG", "MixRoot2", "MixH", "MixI", "MixJ",
+    "MixK", "MixL", "MixRoot3", "Novaclade", "Oceanidae", "Gaiaformes",
+    "Skycladidae", "Polaridae", "Atmosphaeria", "Ignidae", "Cryonidae",
+    "Pyrotheria", "Megalocladia", "Nebulidae", "Stellaridae",
+    "Galaxiformes", "Silvidae", "Igniformia", "Terraformia", "Cosmoclada",
+))
+
 NAME_PATTERN = r"[A-Za-z][A-Za-z0-9_]*"
 MRCA_RE = re.compile(
     r"What is the most recent common ancestor of (" + NAME_PATTERN + r") and ("
@@ -261,7 +292,13 @@ def build_random_tree(names, rng):
     return Node(children=(left, right))
 
 
-def assign_clade_labels(root, mixed=False, rng=None):
+def clade_label_pool(v3_clades=False):
+    if v3_clades:
+        return SYNTHETIC_CLADE_LABELS + V3_CLADE_LABELS
+    return SYNTHETIC_CLADE_LABELS
+
+
+def assign_clade_labels(root, mixed=False, rng=None, label_pool=None):
     internal_nodes = []
 
     def visit(node):
@@ -276,7 +313,13 @@ def assign_clade_labels(root, mixed=False, rng=None):
     if mixed:
         if rng is None:
             raise ValueError("rng is required for mixed clade labels")
-        labels = rng.sample(SYNTHETIC_CLADE_LABELS, len(internal_nodes))
+        pool = SYNTHETIC_CLADE_LABELS if label_pool is None else label_pool
+        if len(internal_nodes) > len(pool):
+            raise ValueError(
+                "Not enough clade labels (%d) for %d internal nodes"
+                % (len(pool), len(internal_nodes))
+            )
+        labels = rng.sample(pool, len(internal_nodes))
         for node, label in zip(internal_nodes, labels):
             node.label = label
     else:
@@ -286,14 +329,35 @@ def assign_clade_labels(root, mixed=False, rng=None):
     return root
 
 
-def make_question_and_answer(rng, root, task, force_positive=None):
+def make_question_and_answer(rng, root, task, force_positive=None, hard_paraphyly=False):
     leaves = leaf_index(root)
     names = sorted(leaves)
     internal = all_internal_nodes(root)
     clade_sets = {clade_names(node) for node in internal}
 
     if task == "mrca":
-        a_name, b_name = rng.sample(names, 2)
+        if hard_paraphyly:
+            hard_candidates = []
+            non_hard_candidates = []
+            for a_name, b_name in itertools.combinations(names, 2):
+                a_leaf = leaves[a_name]
+                b_leaf = leaves[b_name]
+                ancestor = lca(a_leaf, b_leaf)
+                depth_gap = max(
+                    node_depth(a_leaf), node_depth(b_leaf)
+                ) - node_depth(ancestor)
+                if depth_gap >= 2:
+                    hard_candidates.append((a_name, b_name))
+                else:
+                    non_hard_candidates.append((a_name, b_name))
+            if hard_candidates and rng.random() < 0.5:
+                a_name, b_name = rng.choice(hard_candidates)
+            elif non_hard_candidates:
+                a_name, b_name = rng.choice(non_hard_candidates)
+            else:
+                a_name, b_name = rng.sample(names, 2)
+        else:
+            a_name, b_name = rng.sample(names, 2)
         ancestor = lca(leaves[a_name], leaves[b_name])
         if ancestor.is_leaf:
             raise RuntimeError("MRCA of distinct leaves cannot be a leaf")
@@ -328,14 +392,38 @@ def make_question_and_answer(rng, root, task, force_positive=None):
                 raise RuntimeError("Tree has no 2- or 3-leaf internal clade")
             chosen = rng.choice(candidates)
         else:
-            candidates = []
-            for size in (2, 3):
-                for combo in itertools.combinations(names, size):
-                    if frozenset(combo) not in clade_sets:
-                        candidates.append(list(combo))
-            if not candidates:
-                raise RuntimeError("Tree has no non-monophyletic 2- or 3-leaf set")
-            chosen = rng.choice(candidates)
+            hard_candidates = []
+            hard_pairs = set()
+            if hard_paraphyly:
+                for node in internal:
+                    members = clade_names(node)
+                    if len(members) not in (3, 4):
+                        continue
+                    for combo in itertools.combinations(sorted(members), 2):
+                        pair = frozenset(combo)
+                        if pair in clade_sets or pair in hard_pairs:
+                            continue
+                        hard_pairs.add(pair)
+                        hard_candidates.append(list(combo))
+            if hard_candidates and rng.random() < 0.6:
+                chosen = rng.choice(hard_candidates)
+            else:
+                candidates = []
+                for size in (2, 3):
+                    for combo in itertools.combinations(names, size):
+                        if frozenset(combo) not in clade_sets:
+                            candidates.append(list(combo))
+                if hard_pairs:
+                    non_hard = [
+                        combo
+                        for combo in candidates
+                        if frozenset(combo) not in hard_pairs
+                    ]
+                    if non_hard:
+                        candidates = non_hard
+                if not candidates:
+                    raise RuntimeError("Tree has no non-monophyletic 2- or 3-leaf set")
+                chosen = rng.choice(candidates)
 
         chosen = sorted(chosen)
         answer = "Yes" if frozenset(chosen) in clade_sets else "No"
@@ -370,15 +458,25 @@ def generate_record(
     record_id,
     force_positive=None,
     mixed_clade_labels=False,
+    min_leaves=5,
+    max_leaves=7,
+    hard_paraphyly=False,
+    label_pool=None,
 ):
-    leaf_count = rng.randint(5, 7)
+    leaf_count = rng.randint(min_leaves, max_leaves)
     taxon_names = rng.sample(list(pool), leaf_count)
     root = build_random_tree(taxon_names, rng)
-    assign_clade_labels(root, mixed=mixed_clade_labels, rng=rng)
+    assign_clade_labels(
+        root, mixed=mixed_clade_labels, rng=rng, label_pool=label_pool
+    )
     tree = render_newick(root) + ";"
 
     question, answer = make_question_and_answer(
-        rng, root, task, force_positive=force_positive
+        rng,
+        root,
+        task,
+        force_positive=force_positive,
+        hard_paraphyly=hard_paraphyly,
     )
     return {
         "id": record_id,
@@ -395,7 +493,17 @@ def balanced_task_counts(total):
     return [base + (1 if i < remainder else 0) for i in range(len(TASKS))]
 
 
-def generate_split(split, total, rng, mixed_clade_labels=False):
+def generate_split(
+    split,
+    total,
+    rng,
+    mixed_clade_labels=False,
+    mixed_clade_ratio=0.3,
+    min_leaves=5,
+    max_leaves=7,
+    hard_paraphyly=False,
+    label_pool=None,
+):
     counts = balanced_task_counts(total)
     tasks = []
     for task, count in zip(TASKS, counts):
@@ -404,7 +512,7 @@ def generate_split(split, total, rng, mixed_clade_labels=False):
 
     mixed_flags = [False] * total
     if mixed_clade_labels and total:
-        mixed_count = int(round(total * 0.3))
+        mixed_count = int(round(total * mixed_clade_ratio))
         mixed_flags = [True] * mixed_count + [False] * (total - mixed_count)
         rng.shuffle(mixed_flags)
 
@@ -425,6 +533,10 @@ def generate_split(split, total, rng, mixed_clade_labels=False):
                 record_id,
                 force_positive=force_positive,
                 mixed_clade_labels=mixed_flags[index - 1],
+                min_leaves=min_leaves,
+                max_leaves=max_leaves,
+                hard_paraphyly=hard_paraphyly,
+                label_pool=label_pool,
             )
         )
     return records
@@ -541,6 +653,10 @@ def verify_records(
     mixed_clade_labels=False,
     allowed_taxa=None,
     seen_ids=None,
+    mixed_clade_ratio=0.3,
+    min_leaves=5,
+    max_leaves=7,
+    v3_clades=False,
 ):
     if len(records) != expected_size:
         raise AssertionError(
@@ -557,6 +673,8 @@ def verify_records(
     standard_label_trees = 0
     mixed_label_trees = 0
     synthetic_labels = set(SYNTHETIC_CLADE_LABELS)
+    if v3_clades:
+        synthetic_labels |= set(V3_CLADE_LABELS)
 
     for record in records:
         if not isinstance(record, dict):
@@ -585,7 +703,7 @@ def verify_records(
                 mixed_label_trees += 1
             else:
                 raise AssertionError(
-                    "%s: clade labels %r are neither C1..C%d nor synthetic labels"
+                    "%s: clade labels %r are neither C1..C%d nor allowed synthetic labels"
                     % (record["id"], labels, len(internal))
                 )
         elif labels != expected_labels:
@@ -595,12 +713,21 @@ def verify_records(
             )
 
         leaf_names = {leaf.name for leaf in all_leaves(root)}
-        if not 5 <= len(leaf_names) <= 7:
-            raise AssertionError("%s: tree does not have 5 to 7 leaves" % record["id"])
+        if not min_leaves <= len(leaf_names) <= max_leaves:
+            raise AssertionError(
+                "%s: tree has %d leaves, expected %d to %d"
+                % (record["id"], len(leaf_names), min_leaves, max_leaves)
+            )
         if allowed_taxa is not None and not leaf_names.issubset(allowed_taxa):
             raise AssertionError(
                 "%s: tree uses taxa outside the allowed pool: %r"
                 % (record["id"], sorted(leaf_names - allowed_taxa))
+            )
+        biological_overlap = (leaf_names | labels) & BIOLOGICAL_NAMES
+        if biological_overlap:
+            raise AssertionError(
+                "%s: tree uses biological names reserved for stress/demo: %r"
+                % (record["id"], sorted(biological_overlap))
             )
 
         question = extract_question(record)
@@ -623,11 +750,17 @@ def verify_records(
         raise AssertionError("%s: task counts are not balanced: %r" % (split, task_counts))
 
     if mixed_clade_labels and expected_size >= 20:
-        mixed_fraction = mixed_label_trees / float(expected_size)
-        if not 0.2 <= mixed_fraction <= 0.4:
+        expected_mixed = int(round(expected_size * mixed_clade_ratio))
+        if mixed_label_trees != expected_mixed:
             raise AssertionError(
-                "%s: mixed-label fraction %.3f is not near 30%%"
-                % (split, mixed_fraction)
+                "%s: mixed-label trees %d != expected %d for ratio %.3f"
+                % (split, mixed_label_trees, expected_mixed, mixed_clade_ratio)
+            )
+        mixed_fraction = mixed_label_trees / float(expected_size)
+        if abs(mixed_fraction - mixed_clade_ratio) > 0.05:
+            raise AssertionError(
+                "%s: mixed-label fraction %.3f is not near %.3f"
+                % (split, mixed_fraction, mixed_clade_ratio)
             )
 
     message = (
@@ -651,7 +784,15 @@ def verify_records(
     }
 
 
-def verify_dataset(out_dir, expected_sizes, mixed_clade_labels=False):
+def verify_dataset(
+    out_dir,
+    expected_sizes,
+    mixed_clade_labels=False,
+    mixed_clade_ratio=0.3,
+    min_leaves=5,
+    max_leaves=7,
+    v3_clades=False,
+):
     split_data = {}
     seen_ids = set()
 
@@ -665,6 +806,10 @@ def verify_dataset(out_dir, expected_sizes, mixed_clade_labels=False):
             split,
             expected_sizes[split],
             mixed_clade_labels=mixed_clade_labels,
+            mixed_clade_ratio=mixed_clade_ratio,
+            min_leaves=min_leaves,
+            max_leaves=max_leaves,
+            v3_clades=v3_clades,
             allowed_taxa=set(NAME_POOLS[split]),
             seen_ids=seen_ids,
         )
@@ -697,13 +842,26 @@ def collect_record_sets(records):
     return {"taxa": taxa, "trees": trees, "prompts": prompts}
 
 
-def verify_train_only_file(path, expected_size, mixed_clade_labels, reference_paths):
+def verify_train_only_file(
+    path,
+    expected_size,
+    mixed_clade_labels,
+    reference_paths,
+    mixed_clade_ratio=0.3,
+    min_leaves=5,
+    max_leaves=7,
+    v3_clades=False,
+):
     records = load_jsonl(path)
     data = verify_records(
         records,
         "train",
         expected_size,
         mixed_clade_labels=mixed_clade_labels,
+        mixed_clade_ratio=mixed_clade_ratio,
+        min_leaves=min_leaves,
+        max_leaves=max_leaves,
+        v3_clades=v3_clades,
         allowed_taxa=set(TRAIN_NAMES),
     )
 
@@ -748,7 +906,36 @@ def parse_args(argv=None):
     parser.add_argument(
         "--mixed_clade_labels",
         action="store_true",
-        help="Use synthetic non-C clade labels for about 30%% of generated trees.",
+        help="Use synthetic non-C clade labels for a fraction of generated trees.",
+    )
+    parser.add_argument(
+        "--min_leaves",
+        type=int,
+        default=5,
+        help="Minimum number of leaves per tree (default: 5).",
+    )
+    parser.add_argument(
+        "--max_leaves",
+        type=int,
+        default=7,
+        help="Maximum number of leaves per tree (default: 7).",
+    )
+    parser.add_argument(
+        "--mixed_clade_ratio",
+        type=float,
+        default=None,
+        help="Fraction of mixed-label trees when --mixed_clade_labels is set "
+        "(default: 0.3).",
+    )
+    parser.add_argument(
+        "--hard_paraphyly",
+        action="store_true",
+        help="Prefer hard paraphyletic negative pairs and nested MRCA pairs.",
+    )
+    parser.add_argument(
+        "--v3_clades",
+        action="store_true",
+        help="Add 32 Latinate synthetic clade labels to the mixed-label pool.",
     )
     parser.add_argument("--verify", dest="verify", action="store_true", default=True)
     parser.add_argument("--no-verify", dest="verify", action="store_false")
@@ -756,6 +943,14 @@ def parse_args(argv=None):
 
     if args.train_size < 0 or args.val_size < 0 or args.test_size < 0:
         parser.error("dataset sizes must be non-negative")
+    if args.min_leaves < 2:
+        parser.error("--min_leaves must be at least 2")
+    if args.max_leaves < args.min_leaves:
+        parser.error("--max_leaves must be >= --min_leaves")
+    if args.mixed_clade_ratio is None:
+        args.mixed_clade_ratio = 0.3
+    if not 0.0 <= args.mixed_clade_ratio <= 1.0:
+        parser.error("--mixed_clade_ratio must be between 0 and 1")
     return args
 
 
@@ -773,6 +968,21 @@ def main(argv=None):
     for first, second in itertools.combinations(SPLITS, 2):
         if NAME_POOLS[first] and set(NAME_POOLS[first]) & set(NAME_POOLS[second]):
             raise AssertionError("Taxon name pools for %s and %s overlap" % (first, second))
+
+    if any(len(pool) < args.max_leaves for pool in pools):
+        raise AssertionError("Each split needs at least --max_leaves taxon names")
+    if args.v3_clades:
+        if len(set(V3_CLADE_LABELS)) != len(V3_CLADE_LABELS):
+            raise AssertionError("V3 clade labels contain duplicates")
+        reserved = BIOLOGICAL_NAMES | set().union(*pools)
+        overlap = set(V3_CLADE_LABELS) & reserved
+        if overlap:
+            raise AssertionError(
+                "V3 clade labels overlap biological/taxon names: %r"
+                % sorted(overlap)
+            )
+
+    label_pool = clade_label_pool(args.v3_clades)
 
     if args.train_only_out:
         output_path = os.path.abspath(args.train_only_out)
@@ -792,6 +1002,11 @@ def main(argv=None):
             args.train_size,
             rng,
             mixed_clade_labels=args.mixed_clade_labels,
+            mixed_clade_ratio=args.mixed_clade_ratio,
+            min_leaves=args.min_leaves,
+            max_leaves=args.max_leaves,
+            hard_paraphyly=args.hard_paraphyly,
+            label_pool=label_pool,
         )
         write_jsonl(output_path, records)
         print("Wrote %d records to %s" % (len(records), output_path))
@@ -806,6 +1021,10 @@ def main(argv=None):
                 args.train_size,
                 args.mixed_clade_labels,
                 reference_paths,
+                mixed_clade_ratio=args.mixed_clade_ratio,
+                min_leaves=args.min_leaves,
+                max_leaves=args.max_leaves,
+                v3_clades=args.v3_clades,
             )
         return
 
@@ -818,6 +1037,11 @@ def main(argv=None):
             sizes[split],
             rng,
             mixed_clade_labels=args.mixed_clade_labels,
+            mixed_clade_ratio=args.mixed_clade_ratio,
+            min_leaves=args.min_leaves,
+            max_leaves=args.max_leaves,
+            hard_paraphyly=args.hard_paraphyly,
+            label_pool=label_pool,
         )
         path = os.path.join(args.out_dir, split + ".jsonl")
         write_jsonl(path, records)
@@ -828,6 +1052,10 @@ def main(argv=None):
             args.out_dir,
             sizes,
             mixed_clade_labels=args.mixed_clade_labels,
+            mixed_clade_ratio=args.mixed_clade_ratio,
+            min_leaves=args.min_leaves,
+            max_leaves=args.max_leaves,
+            v3_clades=args.v3_clades,
         )
 
 
