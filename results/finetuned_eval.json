@@ -1,0 +1,137 @@
+{
+  "model_name": "HuggingFaceTB/SmolLM2-135M-Instruct",
+  "adapter_dir": "outputs/phylogeny-lora",
+  "test_file": "data/test.jsonl",
+  "max_new_tokens": 12,
+  "batch_size": 16,
+  "overall": {
+    "correct": 50,
+    "total": 80,
+    "accuracy": 0.625
+  },
+  "per_task": {
+    "mrca": {
+      "correct": 11,
+      "total": 20,
+      "accuracy": 0.55
+    },
+    "sister": {
+      "correct": 18,
+      "total": 20,
+      "accuracy": 0.9
+    },
+    "monophyletic": {
+      "correct": 14,
+      "total": 20,
+      "accuracy": 0.7
+    },
+    "distance": {
+      "correct": 7,
+      "total": 20,
+      "accuracy": 0.35
+    }
+  },
+  "num_failures": 30,
+  "samples": [
+    {
+      "id": "test-000001",
+      "task": "mrca",
+      "tree": "((((Pallus,Quirin)C1,Tethys)C2,(Daphne,Morpheus)C3)C4,(Nyx,Zelena)C5)C6;",
+      "prompt": "Tree: ((((Pallus,Quirin)C1,Tethys)C2,(Daphne,Morpheus)C3)C4,(Nyx,Zelena)C5)C6;\nTask (mrca): What is the most recent common ancestor of Nyx and Zelena?\nAnswer with only the exact value.",
+      "expected": "C5",
+      "completion": "C6",
+      "prediction": "C6",
+      "correct": false
+    },
+    {
+      "id": "test-000003",
+      "task": "distance",
+      "tree": "((Morpheus,(((Kalliope,Naiad)C1,Perses)C2,Rhea)C3)C4,Nyx)C5;",
+      "prompt": "Tree: ((Morpheus,(((Kalliope,Naiad)C1,Perses)C2,Rhea)C3)C4,Nyx)C5;\nTask (distance): What is the topological edge distance between Naiad and Nyx?\nAnswer with only the exact value.",
+      "expected": "6",
+      "completion": "5",
+      "prediction": "5",
+      "correct": false
+    },
+    {
+      "id": "test-000006",
+      "task": "monophyletic",
+      "tree": "((Pallus,((Vespera,Triton)C1,Solon)C2)C3,Grendel)C4;",
+      "prompt": "Tree: ((Pallus,((Vespera,Triton)C1,Solon)C2)C3,Grendel)C4;\nTask (monophyletic): Do Pallus, Solon, Triton form a monophyletic clade?\nAnswer with only the exact value.",
+      "expected": "No",
+      "completion": "Yes",
+      "prediction": "Yes",
+      "correct": false
+    },
+    {
+      "id": "test-000007",
+      "task": "mrca",
+      "tree": "(Cassian,(Uraeus,(((Tethys,(Solon,Lycaon)C1)C2,Icarus)C3,Jasper)C4)C5)C6;",
+      "prompt": "Tree: (Cassian,(Uraeus,(((Tethys,(Solon,Lycaon)C1)C2,Icarus)C3,Jasper)C4)C5)C6;\nTask (mrca): What is the most recent common ancestor of Jasper and Lycaon?\nAnswer with only the exact value.",
+      "expected": "C4",
+      "completion": "C5",
+      "prediction": "C5",
+      "correct": false
+    },
+    {
+      "id": "test-000008",
+      "task": "distance",
+      "tree": "(Bellona,((Kalliope,Vespera)C1,(Icarus,(Cassian,Perses)C2)C3)C4)C5;",
+      "prompt": "Tree: (Bellona,((Kalliope,Vespera)C1,(Icarus,(Cassian,Perses)C2)C3)C4)C5;\nTask (distance): What is the topological edge distance between Cassian and Perses?\nAnswer with only the exact value.",
+      "expected": "2",
+      "completion": "3",
+      "prediction": "3",
+      "correct": false
+    },
+    {
+      "id": "test-000009",
+      "task": "distance",
+      "tree": "(((((Rhea,Hesperia)C1,Xylo)C2,Zelena)C3,(Jasper,Kalliope)C4)C5,Naiad)C6;",
+      "prompt": "Tree: (((((Rhea,Hesperia)C1,Xylo)C2,Zelena)C3,(Jasper,Kalliope)C4)C5,Naiad)C6;\nTask (distance): What is the topological edge distance between Kalliope and Hesperia?\nAnswer with only the exact value.",
+      "expected": "6",
+      "completion": "5",
+      "prediction": "5",
+      "correct": false
+    },
+    {
+      "id": "test-000012",
+      "task": "monophyletic",
+      "tree": "((((Rheia,Xylo)C1,Rhea)C2,Naiad)C3,((Wystan,Perses)C4,Uraeus)C5)C6;",
+      "prompt": "Tree: ((((Rheia,Xylo)C1,Rhea)C2,Naiad)C3,((Wystan,Perses)C4,Uraeus)C5)C6;\nTask (monophyletic): Do Rhea, Rheia, Xylo form a monophyletic clade?\nAnswer with only the exact value.",
+      "expected": "Yes",
+      "completion": "No",
+      "prediction": "No",
+      "correct": false
+    },
+    {
+      "id": "test-000013",
+      "task": "sister",
+      "tree": "((((Hesperia,(Wystan,Daphne)C1)C2,Jasper)C3,Quirin)C4,(Vespera,Perses)C5)C6;",
+      "prompt": "Tree: ((((Hesperia,(Wystan,Daphne)C1)C2,Jasper)C3,Quirin)C4,(Vespera,Perses)C5)C6;\nTask (sister): What is the direct sister taxon of Perses?\nAnswer with only the exact value.",
+      "expected": "Vespera",
+      "completion": "Perses",
+      "prediction": "Perses",
+      "correct": false
+    },
+    {
+      "id": "test-000019",
+      "task": "mrca",
+      "tree": "((Uraeus,Cassian)C1,(Morpheus,(Triton,Grendel)C2)C3)C4;",
+      "prompt": "Tree: ((Uraeus,Cassian)C1,(Morpheus,(Triton,Grendel)C2)C3)C4;\nTask (mrca): What is the most recent common ancestor of Triton and Morpheus?\nAnswer with only the exact value.",
+      "expected": "C3",
+      "completion": "C4",
+      "prediction": "C4",
+      "correct": false
+    },
+    {
+      "id": "test-000023",
+      "task": "distance",
+      "tree": "(Ymir,(Nyx,(Perses,(Hesperia,Uraeus)C1)C2)C3)C4;",
+      "prompt": "Tree: (Ymir,(Nyx,(Perses,(Hesperia,Uraeus)C1)C2)C3)C4;\nTask (distance): What is the topological edge distance between Hesperia and Perses?\nAnswer with only the exact value.",
+      "expected": "3",
+      "completion": "4",
+      "prediction": "4",
+      "correct": false
+    }
+  ]
+}
