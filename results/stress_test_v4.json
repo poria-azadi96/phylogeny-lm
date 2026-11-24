@@ -1,0 +1,1459 @@
+{
+  "model_name": "HuggingFaceTB/SmolLM2-135M-Instruct",
+  "adapter_dir": "outputs/phylogeny-lora-v4",
+  "max_new_tokens": 24,
+  "skip_base": true,
+  "overall": {
+    "lora": {
+      "correct": 46,
+      "total": 48,
+      "accuracy": 0.9583333333333334
+    }
+  },
+  "per_category": {
+    "real_biology_and_paraphyly": {
+      "lora": {
+        "correct": 15,
+        "total": 16,
+        "accuracy": 0.9375
+      }
+    },
+    "adversarial_topology_swap": {
+      "lora": {
+        "correct": 12,
+        "total": 12,
+        "accuracy": 1.0
+      }
+    },
+    "ood_tree_sizes": {
+      "lora": {
+        "correct": 12,
+        "total": 12,
+        "accuracy": 1.0
+      }
+    },
+    "branch_lengths_and_formatting": {
+      "lora": {
+        "correct": 7,
+        "total": 8,
+        "accuracy": 0.875
+      }
+    }
+  },
+  "per_task": {
+    "mrca": {
+      "lora": {
+        "correct": 10,
+        "total": 12,
+        "accuracy": 0.8333333333333334
+      }
+    },
+    "sister": {
+      "lora": {
+        "correct": 12,
+        "total": 12,
+        "accuracy": 1.0
+      }
+    },
+    "monophyletic": {
+      "lora": {
+        "correct": 13,
+        "total": 13,
+        "accuracy": 1.0
+      }
+    },
+    "distance": {
+      "lora": {
+        "correct": 11,
+        "total": 11,
+        "accuracy": 1.0
+      }
+    }
+  },
+  "results": [
+    {
+      "category": "real_biology_and_paraphyly",
+      "tree_name": "Primates",
+      "raw_newick": "(((Homo,Pan)Hominini,Gorilla)Homininae,(Pongo,Hylobates)Pongidae)Hominoidea;",
+      "normalized_newick": "(((Homo,Pan)Hominini,Gorilla)Homininae,(Pongo,Hylobates)Pongidae)Hominoidea;",
+      "tree": "(((Homo,Pan)Hominini,Gorilla)Homininae,(Pongo,Hylobates)Pongidae)Hominoidea;",
+      "metadata": {
+        "branch_lengths_stripped": false,
+        "auto_labeled_nodes": [],
+        "leaf_count": 5,
+        "internal_count": 4
+      },
+      "leaves": [
+        "Gorilla",
+        "Homo",
+        "Hylobates",
+        "Pan",
+        "Pongo"
+      ],
+      "task": "mrca",
+      "question": "What is the most recent common ancestor of Homo and Gorilla?",
+      "expected": "Homininae",
+      "prompt": "Tree: (((Homo,Pan)Hominini,Gorilla)Homininae,(Pongo,Hylobates)Pongidae)Hominoidea;\nTask (mrca): What is the most recent common ancestor of Homo and Gorilla?\nAnswer with only the exact value.",
+      "lora_prediction": "Hominini",
+      "lora_correct": false,
+      "base_prediction": null,
+      "base_correct": null
+    },
+    {
+      "category": "real_biology_and_paraphyly",
+      "tree_name": "Primates",
+      "raw_newick": "(((Homo,Pan)Hominini,Gorilla)Homininae,(Pongo,Hylobates)Pongidae)Hominoidea;",
+      "normalized_newick": "(((Homo,Pan)Hominini,Gorilla)Homininae,(Pongo,Hylobates)Pongidae)Hominoidea;",
+      "tree": "(((Homo,Pan)Hominini,Gorilla)Homininae,(Pongo,Hylobates)Pongidae)Hominoidea;",
+      "metadata": {
+        "branch_lengths_stripped": false,
+        "auto_labeled_nodes": [],
+        "leaf_count": 5,
+        "internal_count": 4
+      },
+      "leaves": [
+        "Gorilla",
+        "Homo",
+        "Hylobates",
+        "Pan",
+        "Pongo"
+      ],
+      "task": "sister",
+      "question": "What is the direct sister taxon of Homo?",
+      "expected": "Pan",
+      "prompt": "Tree: (((Homo,Pan)Hominini,Gorilla)Homininae,(Pongo,Hylobates)Pongidae)Hominoidea;\nTask (sister): What is the direct sister taxon of Homo?\nAnswer with only the exact value.",
+      "lora_prediction": "Pan",
+      "lora_correct": true,
+      "base_prediction": null,
+      "base_correct": null
+    },
+    {
+      "category": "real_biology_and_paraphyly",
+      "tree_name": "Primates",
+      "raw_newick": "(((Homo,Pan)Hominini,Gorilla)Homininae,(Pongo,Hylobates)Pongidae)Hominoidea;",
+      "normalized_newick": "(((Homo,Pan)Hominini,Gorilla)Homininae,(Pongo,Hylobates)Pongidae)Hominoidea;",
+      "tree": "(((Homo,Pan)Hominini,Gorilla)Homininae,(Pongo,Hylobates)Pongidae)Hominoidea;",
+      "metadata": {
+        "branch_lengths_stripped": false,
+        "auto_labeled_nodes": [],
+        "leaf_count": 5,
+        "internal_count": 4
+      },
+      "leaves": [
+        "Gorilla",
+        "Homo",
+        "Hylobates",
+        "Pan",
+        "Pongo"
+      ],
+      "task": "monophyletic",
+      "question": "Do Gorilla, Homo form a monophyletic clade?",
+      "expected": "No",
+      "prompt": "Tree: (((Homo,Pan)Hominini,Gorilla)Homininae,(Pongo,Hylobates)Pongidae)Hominoidea;\nTask (monophyletic): Do Gorilla, Homo form a monophyletic clade?\nAnswer with only the exact value.",
+      "lora_prediction": "No",
+      "lora_correct": true,
+      "base_prediction": null,
+      "base_correct": null
+    },
+    {
+      "category": "real_biology_and_paraphyly",
+      "tree_name": "Primates",
+      "raw_newick": "(((Homo,Pan)Hominini,Gorilla)Homininae,(Pongo,Hylobates)Pongidae)Hominoidea;",
+      "normalized_newick": "(((Homo,Pan)Hominini,Gorilla)Homininae,(Pongo,Hylobates)Pongidae)Hominoidea;",
+      "tree": "(((Homo,Pan)Hominini,Gorilla)Homininae,(Pongo,Hylobates)Pongidae)Hominoidea;",
+      "metadata": {
+        "branch_lengths_stripped": false,
+        "auto_labeled_nodes": [],
+        "leaf_count": 5,
+        "internal_count": 4
+      },
+      "leaves": [
+        "Gorilla",
+        "Homo",
+        "Hylobates",
+        "Pan",
+        "Pongo"
+      ],
+      "task": "distance",
+      "question": "What is the topological edge distance between Homo and Pongo?",
+      "expected": "5",
+      "prompt": "Tree: (((Homo,Pan)Hominini,Gorilla)Homininae,(Pongo,Hylobates)Pongidae)Hominoidea;\nTask (distance): What is the topological edge distance between Homo and Pongo?\nAnswer with only the exact value.",
+      "lora_prediction": "5",
+      "lora_correct": true,
+      "base_prediction": null,
+      "base_correct": null
+    },
+    {
+      "category": "real_biology_and_paraphyly",
+      "tree_name": "Carnivores",
+      "raw_newick": "(((Canis,Vulpes)Canidae,(Ursus,Ailuropoda)Ursidae)Caniformia,(Felis,Panthera)Felidae)Carnivora;",
+      "normalized_newick": "(((Canis,Vulpes)Canidae,(Ursus,Ailuropoda)Ursidae)Caniformia,(Felis,Panthera)Felidae)Carnivora;",
+      "tree": "(((Canis,Vulpes)Canidae,(Ursus,Ailuropoda)Ursidae)Caniformia,(Felis,Panthera)Felidae)Carnivora;",
+      "metadata": {
+        "branch_lengths_stripped": false,
+        "auto_labeled_nodes": [],
+        "leaf_count": 6,
+        "internal_count": 5
+      },
+      "leaves": [
+        "Ailuropoda",
+        "Canis",
+        "Felis",
+        "Panthera",
+        "Ursus",
+        "Vulpes"
+      ],
+      "task": "mrca",
+      "question": "What is the most recent common ancestor of Canis and Ursus?",
+      "expected": "Caniformia",
+      "prompt": "Tree: (((Canis,Vulpes)Canidae,(Ursus,Ailuropoda)Ursidae)Caniformia,(Felis,Panthera)Felidae)Carnivora;\nTask (mrca): What is the most recent common ancestor of Canis and Ursus?\nAnswer with only the exact value.",
+      "lora_prediction": "Caniformia",
+      "lora_correct": true,
+      "base_prediction": null,
+      "base_correct": null
+    },
+    {
+      "category": "real_biology_and_paraphyly",
+      "tree_name": "Carnivores",
+      "raw_newick": "(((Canis,Vulpes)Canidae,(Ursus,Ailuropoda)Ursidae)Caniformia,(Felis,Panthera)Felidae)Carnivora;",
+      "normalized_newick": "(((Canis,Vulpes)Canidae,(Ursus,Ailuropoda)Ursidae)Caniformia,(Felis,Panthera)Felidae)Carnivora;",
+      "tree": "(((Canis,Vulpes)Canidae,(Ursus,Ailuropoda)Ursidae)Caniformia,(Felis,Panthera)Felidae)Carnivora;",
+      "metadata": {
+        "branch_lengths_stripped": false,
+        "auto_labeled_nodes": [],
+        "leaf_count": 6,
+        "internal_count": 5
+      },
+      "leaves": [
+        "Ailuropoda",
+        "Canis",
+        "Felis",
+        "Panthera",
+        "Ursus",
+        "Vulpes"
+      ],
+      "task": "sister",
+      "question": "What is the direct sister taxon of Canis?",
+      "expected": "Vulpes",
+      "prompt": "Tree: (((Canis,Vulpes)Canidae,(Ursus,Ailuropoda)Ursidae)Caniformia,(Felis,Panthera)Felidae)Carnivora;\nTask (sister): What is the direct sister taxon of Canis?\nAnswer with only the exact value.",
+      "lora_prediction": "Vulpes",
+      "lora_correct": true,
+      "base_prediction": null,
+      "base_correct": null
+    },
+    {
+      "category": "real_biology_and_paraphyly",
+      "tree_name": "Carnivores",
+      "raw_newick": "(((Canis,Vulpes)Canidae,(Ursus,Ailuropoda)Ursidae)Caniformia,(Felis,Panthera)Felidae)Carnivora;",
+      "normalized_newick": "(((Canis,Vulpes)Canidae,(Ursus,Ailuropoda)Ursidae)Caniformia,(Felis,Panthera)Felidae)Carnivora;",
+      "tree": "(((Canis,Vulpes)Canidae,(Ursus,Ailuropoda)Ursidae)Caniformia,(Felis,Panthera)Felidae)Carnivora;",
+      "metadata": {
+        "branch_lengths_stripped": false,
+        "auto_labeled_nodes": [],
+        "leaf_count": 6,
+        "internal_count": 5
+      },
+      "leaves": [
+        "Ailuropoda",
+        "Canis",
+        "Felis",
+        "Panthera",
+        "Ursus",
+        "Vulpes"
+      ],
+      "task": "monophyletic",
+      "question": "Do Canis, Ursus form a monophyletic clade?",
+      "expected": "No",
+      "prompt": "Tree: (((Canis,Vulpes)Canidae,(Ursus,Ailuropoda)Ursidae)Caniformia,(Felis,Panthera)Felidae)Carnivora;\nTask (monophyletic): Do Canis, Ursus form a monophyletic clade?\nAnswer with only the exact value.",
+      "lora_prediction": "No",
+      "lora_correct": true,
+      "base_prediction": null,
+      "base_correct": null
+    },
+    {
+      "category": "real_biology_and_paraphyly",
+      "tree_name": "Carnivores",
+      "raw_newick": "(((Canis,Vulpes)Canidae,(Ursus,Ailuropoda)Ursidae)Caniformia,(Felis,Panthera)Felidae)Carnivora;",
+      "normalized_newick": "(((Canis,Vulpes)Canidae,(Ursus,Ailuropoda)Ursidae)Caniformia,(Felis,Panthera)Felidae)Carnivora;",
+      "tree": "(((Canis,Vulpes)Canidae,(Ursus,Ailuropoda)Ursidae)Caniformia,(Felis,Panthera)Felidae)Carnivora;",
+      "metadata": {
+        "branch_lengths_stripped": false,
+        "auto_labeled_nodes": [],
+        "leaf_count": 6,
+        "internal_count": 5
+      },
+      "leaves": [
+        "Ailuropoda",
+        "Canis",
+        "Felis",
+        "Panthera",
+        "Ursus",
+        "Vulpes"
+      ],
+      "task": "distance",
+      "question": "What is the topological edge distance between Canis and Felis?",
+      "expected": "5",
+      "prompt": "Tree: (((Canis,Vulpes)Canidae,(Ursus,Ailuropoda)Ursidae)Caniformia,(Felis,Panthera)Felidae)Carnivora;\nTask (distance): What is the topological edge distance between Canis and Felis?\nAnswer with only the exact value.",
+      "lora_prediction": "5",
+      "lora_correct": true,
+      "base_prediction": null,
+      "base_correct": null
+    },
+    {
+      "category": "real_biology_and_paraphyly",
+      "tree_name": "Vertebrates",
+      "raw_newick": "(((Gallus,Alligator)Archosauria,Anolis)Sauropsida,(Mus,Ornithorhynchus)Mammalia)Amniota;",
+      "normalized_newick": "(((Gallus,Alligator)Archosauria,Anolis)Sauropsida,(Mus,Ornithorhynchus)Mammalia)Amniota;",
+      "tree": "(((Gallus,Alligator)Archosauria,Anolis)Sauropsida,(Mus,Ornithorhynchus)Mammalia)Amniota;",
+      "metadata": {
+        "branch_lengths_stripped": false,
+        "auto_labeled_nodes": [],
+        "leaf_count": 5,
+        "internal_count": 4
+      },
+      "leaves": [
+        "Alligator",
+        "Anolis",
+        "Gallus",
+        "Mus",
+        "Ornithorhynchus"
+      ],
+      "task": "mrca",
+      "question": "What is the most recent common ancestor of Gallus and Anolis?",
+      "expected": "Sauropsida",
+      "prompt": "Tree: (((Gallus,Alligator)Archosauria,Anolis)Sauropsida,(Mus,Ornithorhynchus)Mammalia)Amniota;\nTask (mrca): What is the most recent common ancestor of Gallus and Anolis?\nAnswer with only the exact value.",
+      "lora_prediction": "Sauropsida",
+      "lora_correct": true,
+      "base_prediction": null,
+      "base_correct": null
+    },
+    {
+      "category": "real_biology_and_paraphyly",
+      "tree_name": "Vertebrates",
+      "raw_newick": "(((Gallus,Alligator)Archosauria,Anolis)Sauropsida,(Mus,Ornithorhynchus)Mammalia)Amniota;",
+      "normalized_newick": "(((Gallus,Alligator)Archosauria,Anolis)Sauropsida,(Mus,Ornithorhynchus)Mammalia)Amniota;",
+      "tree": "(((Gallus,Alligator)Archosauria,Anolis)Sauropsida,(Mus,Ornithorhynchus)Mammalia)Amniota;",
+      "metadata": {
+        "branch_lengths_stripped": false,
+        "auto_labeled_nodes": [],
+        "leaf_count": 5,
+        "internal_count": 4
+      },
+      "leaves": [
+        "Alligator",
+        "Anolis",
+        "Gallus",
+        "Mus",
+        "Ornithorhynchus"
+      ],
+      "task": "sister",
+      "question": "What is the direct sister taxon of Mus?",
+      "expected": "Ornithorhynchus",
+      "prompt": "Tree: (((Gallus,Alligator)Archosauria,Anolis)Sauropsida,(Mus,Ornithorhynchus)Mammalia)Amniota;\nTask (sister): What is the direct sister taxon of Mus?\nAnswer with only the exact value.",
+      "lora_prediction": "Ornithorhynchus",
+      "lora_correct": true,
+      "base_prediction": null,
+      "base_correct": null
+    },
+    {
+      "category": "real_biology_and_paraphyly",
+      "tree_name": "Vertebrates",
+      "raw_newick": "(((Gallus,Alligator)Archosauria,Anolis)Sauropsida,(Mus,Ornithorhynchus)Mammalia)Amniota;",
+      "normalized_newick": "(((Gallus,Alligator)Archosauria,Anolis)Sauropsida,(Mus,Ornithorhynchus)Mammalia)Amniota;",
+      "tree": "(((Gallus,Alligator)Archosauria,Anolis)Sauropsida,(Mus,Ornithorhynchus)Mammalia)Amniota;",
+      "metadata": {
+        "branch_lengths_stripped": false,
+        "auto_labeled_nodes": [],
+        "leaf_count": 5,
+        "internal_count": 4
+      },
+      "leaves": [
+        "Alligator",
+        "Anolis",
+        "Gallus",
+        "Mus",
+        "Ornithorhynchus"
+      ],
+      "task": "monophyletic",
+      "question": "Do Alligator, Anolis form a monophyletic clade?",
+      "expected": "No",
+      "prompt": "Tree: (((Gallus,Alligator)Archosauria,Anolis)Sauropsida,(Mus,Ornithorhynchus)Mammalia)Amniota;\nTask (monophyletic): Do Alligator, Anolis form a monophyletic clade?\nAnswer with only the exact value.",
+      "lora_prediction": "No",
+      "lora_correct": true,
+      "base_prediction": null,
+      "base_correct": null
+    },
+    {
+      "category": "real_biology_and_paraphyly",
+      "tree_name": "Vertebrates",
+      "raw_newick": "(((Gallus,Alligator)Archosauria,Anolis)Sauropsida,(Mus,Ornithorhynchus)Mammalia)Amniota;",
+      "normalized_newick": "(((Gallus,Alligator)Archosauria,Anolis)Sauropsida,(Mus,Ornithorhynchus)Mammalia)Amniota;",
+      "tree": "(((Gallus,Alligator)Archosauria,Anolis)Sauropsida,(Mus,Ornithorhynchus)Mammalia)Amniota;",
+      "metadata": {
+        "branch_lengths_stripped": false,
+        "auto_labeled_nodes": [],
+        "leaf_count": 5,
+        "internal_count": 4
+      },
+      "leaves": [
+        "Alligator",
+        "Anolis",
+        "Gallus",
+        "Mus",
+        "Ornithorhynchus"
+      ],
+      "task": "distance",
+      "question": "What is the topological edge distance between Gallus and Mus?",
+      "expected": "5",
+      "prompt": "Tree: (((Gallus,Alligator)Archosauria,Anolis)Sauropsida,(Mus,Ornithorhynchus)Mammalia)Amniota;\nTask (distance): What is the topological edge distance between Gallus and Mus?\nAnswer with only the exact value.",
+      "lora_prediction": "5",
+      "lora_correct": true,
+      "base_prediction": null,
+      "base_correct": null
+    },
+    {
+      "category": "real_biology_and_paraphyly",
+      "tree_name": "LandPlants",
+      "raw_newick": "((Marchantia,Physcomitrium)Bryophyta,(Selaginella,(Pinus,Ginkgo)Gymnospermae)Tracheophyta)LandPlants;",
+      "normalized_newick": "((Marchantia,Physcomitrium)Bryophyta,(Selaginella,(Pinus,Ginkgo)Gymnospermae)Tracheophyta)LandPlants;",
+      "tree": "((Marchantia,Physcomitrium)Bryophyta,(Selaginella,(Pinus,Ginkgo)Gymnospermae)Tracheophyta)LandPlants;",
+      "metadata": {
+        "branch_lengths_stripped": false,
+        "auto_labeled_nodes": [],
+        "leaf_count": 5,
+        "internal_count": 4
+      },
+      "leaves": [
+        "Ginkgo",
+        "Marchantia",
+        "Physcomitrium",
+        "Pinus",
+        "Selaginella"
+      ],
+      "task": "mrca",
+      "question": "What is the most recent common ancestor of Pinus and Ginkgo?",
+      "expected": "Gymnospermae",
+      "prompt": "Tree: ((Marchantia,Physcomitrium)Bryophyta,(Selaginella,(Pinus,Ginkgo)Gymnospermae)Tracheophyta)LandPlants;\nTask (mrca): What is the most recent common ancestor of Pinus and Ginkgo?\nAnswer with only the exact value.",
+      "lora_prediction": "Gymnospermae",
+      "lora_correct": true,
+      "base_prediction": null,
+      "base_correct": null
+    },
+    {
+      "category": "real_biology_and_paraphyly",
+      "tree_name": "LandPlants",
+      "raw_newick": "((Marchantia,Physcomitrium)Bryophyta,(Selaginella,(Pinus,Ginkgo)Gymnospermae)Tracheophyta)LandPlants;",
+      "normalized_newick": "((Marchantia,Physcomitrium)Bryophyta,(Selaginella,(Pinus,Ginkgo)Gymnospermae)Tracheophyta)LandPlants;",
+      "tree": "((Marchantia,Physcomitrium)Bryophyta,(Selaginella,(Pinus,Ginkgo)Gymnospermae)Tracheophyta)LandPlants;",
+      "metadata": {
+        "branch_lengths_stripped": false,
+        "auto_labeled_nodes": [],
+        "leaf_count": 5,
+        "internal_count": 4
+      },
+      "leaves": [
+        "Ginkgo",
+        "Marchantia",
+        "Physcomitrium",
+        "Pinus",
+        "Selaginella"
+      ],
+      "task": "sister",
+      "question": "What is the direct sister taxon of Pinus?",
+      "expected": "Ginkgo",
+      "prompt": "Tree: ((Marchantia,Physcomitrium)Bryophyta,(Selaginella,(Pinus,Ginkgo)Gymnospermae)Tracheophyta)LandPlants;\nTask (sister): What is the direct sister taxon of Pinus?\nAnswer with only the exact value.",
+      "lora_prediction": "Ginkgo",
+      "lora_correct": true,
+      "base_prediction": null,
+      "base_correct": null
+    },
+    {
+      "category": "real_biology_and_paraphyly",
+      "tree_name": "LandPlants",
+      "raw_newick": "((Marchantia,Physcomitrium)Bryophyta,(Selaginella,(Pinus,Ginkgo)Gymnospermae)Tracheophyta)LandPlants;",
+      "normalized_newick": "((Marchantia,Physcomitrium)Bryophyta,(Selaginella,(Pinus,Ginkgo)Gymnospermae)Tracheophyta)LandPlants;",
+      "tree": "((Marchantia,Physcomitrium)Bryophyta,(Selaginella,(Pinus,Ginkgo)Gymnospermae)Tracheophyta)LandPlants;",
+      "metadata": {
+        "branch_lengths_stripped": false,
+        "auto_labeled_nodes": [],
+        "leaf_count": 5,
+        "internal_count": 4
+      },
+      "leaves": [
+        "Ginkgo",
+        "Marchantia",
+        "Physcomitrium",
+        "Pinus",
+        "Selaginella"
+      ],
+      "task": "monophyletic",
+      "question": "Do Pinus, Selaginella form a monophyletic clade?",
+      "expected": "No",
+      "prompt": "Tree: ((Marchantia,Physcomitrium)Bryophyta,(Selaginella,(Pinus,Ginkgo)Gymnospermae)Tracheophyta)LandPlants;\nTask (monophyletic): Do Pinus, Selaginella form a monophyletic clade?\nAnswer with only the exact value.",
+      "lora_prediction": "No",
+      "lora_correct": true,
+      "base_prediction": null,
+      "base_correct": null
+    },
+    {
+      "category": "real_biology_and_paraphyly",
+      "tree_name": "LandPlants",
+      "raw_newick": "((Marchantia,Physcomitrium)Bryophyta,(Selaginella,(Pinus,Ginkgo)Gymnospermae)Tracheophyta)LandPlants;",
+      "normalized_newick": "((Marchantia,Physcomitrium)Bryophyta,(Selaginella,(Pinus,Ginkgo)Gymnospermae)Tracheophyta)LandPlants;",
+      "tree": "((Marchantia,Physcomitrium)Bryophyta,(Selaginella,(Pinus,Ginkgo)Gymnospermae)Tracheophyta)LandPlants;",
+      "metadata": {
+        "branch_lengths_stripped": false,
+        "auto_labeled_nodes": [],
+        "leaf_count": 5,
+        "internal_count": 4
+      },
+      "leaves": [
+        "Ginkgo",
+        "Marchantia",
+        "Physcomitrium",
+        "Pinus",
+        "Selaginella"
+      ],
+      "task": "monophyletic",
+      "question": "Do Pinus, Ginkgo form a monophyletic clade?",
+      "expected": "Yes",
+      "prompt": "Tree: ((Marchantia,Physcomitrium)Bryophyta,(Selaginella,(Pinus,Ginkgo)Gymnospermae)Tracheophyta)LandPlants;\nTask (monophyletic): Do Pinus, Ginkgo form a monophyletic clade?\nAnswer with only the exact value.",
+      "lora_prediction": "Yes",
+      "lora_correct": true,
+      "base_prediction": null,
+      "base_correct": null
+    },
+    {
+      "category": "adversarial_topology_swap",
+      "tree_name": "AdversarialA",
+      "raw_newick": "(((Homo,Hylobates)MixA,(Pan,Gorilla)MixB)MixC,Mus)MixRoot;",
+      "normalized_newick": "(((Homo,Hylobates)MixA,(Pan,Gorilla)MixB)MixC,Mus)MixRoot;",
+      "tree": "(((Homo,Hylobates)MixA,(Pan,Gorilla)MixB)MixC,Mus)MixRoot;",
+      "metadata": {
+        "branch_lengths_stripped": false,
+        "auto_labeled_nodes": [],
+        "leaf_count": 5,
+        "internal_count": 4
+      },
+      "leaves": [
+        "Gorilla",
+        "Homo",
+        "Hylobates",
+        "Mus",
+        "Pan"
+      ],
+      "task": "mrca",
+      "question": "What is the most recent common ancestor of Homo and Pan?",
+      "expected": "MixC",
+      "prompt": "Tree: (((Homo,Hylobates)MixA,(Pan,Gorilla)MixB)MixC,Mus)MixRoot;\nTask (mrca): What is the most recent common ancestor of Homo and Pan?\nAnswer with only the exact value.",
+      "lora_prediction": "MixC",
+      "lora_correct": true,
+      "base_prediction": null,
+      "base_correct": null
+    },
+    {
+      "category": "adversarial_topology_swap",
+      "tree_name": "AdversarialA",
+      "raw_newick": "(((Homo,Hylobates)MixA,(Pan,Gorilla)MixB)MixC,Mus)MixRoot;",
+      "normalized_newick": "(((Homo,Hylobates)MixA,(Pan,Gorilla)MixB)MixC,Mus)MixRoot;",
+      "tree": "(((Homo,Hylobates)MixA,(Pan,Gorilla)MixB)MixC,Mus)MixRoot;",
+      "metadata": {
+        "branch_lengths_stripped": false,
+        "auto_labeled_nodes": [],
+        "leaf_count": 5,
+        "internal_count": 4
+      },
+      "leaves": [
+        "Gorilla",
+        "Homo",
+        "Hylobates",
+        "Mus",
+        "Pan"
+      ],
+      "task": "sister",
+      "question": "What is the direct sister taxon of Homo?",
+      "expected": "Hylobates",
+      "prompt": "Tree: (((Homo,Hylobates)MixA,(Pan,Gorilla)MixB)MixC,Mus)MixRoot;\nTask (sister): What is the direct sister taxon of Homo?\nAnswer with only the exact value.",
+      "lora_prediction": "Hylobates",
+      "lora_correct": true,
+      "base_prediction": null,
+      "base_correct": null
+    },
+    {
+      "category": "adversarial_topology_swap",
+      "tree_name": "AdversarialA",
+      "raw_newick": "(((Homo,Hylobates)MixA,(Pan,Gorilla)MixB)MixC,Mus)MixRoot;",
+      "normalized_newick": "(((Homo,Hylobates)MixA,(Pan,Gorilla)MixB)MixC,Mus)MixRoot;",
+      "tree": "(((Homo,Hylobates)MixA,(Pan,Gorilla)MixB)MixC,Mus)MixRoot;",
+      "metadata": {
+        "branch_lengths_stripped": false,
+        "auto_labeled_nodes": [],
+        "leaf_count": 5,
+        "internal_count": 4
+      },
+      "leaves": [
+        "Gorilla",
+        "Homo",
+        "Hylobates",
+        "Mus",
+        "Pan"
+      ],
+      "task": "monophyletic",
+      "question": "Do Homo, Hylobates form a monophyletic clade?",
+      "expected": "Yes",
+      "prompt": "Tree: (((Homo,Hylobates)MixA,(Pan,Gorilla)MixB)MixC,Mus)MixRoot;\nTask (monophyletic): Do Homo, Hylobates form a monophyletic clade?\nAnswer with only the exact value.",
+      "lora_prediction": "Yes",
+      "lora_correct": true,
+      "base_prediction": null,
+      "base_correct": null
+    },
+    {
+      "category": "adversarial_topology_swap",
+      "tree_name": "AdversarialA",
+      "raw_newick": "(((Homo,Hylobates)MixA,(Pan,Gorilla)MixB)MixC,Mus)MixRoot;",
+      "normalized_newick": "(((Homo,Hylobates)MixA,(Pan,Gorilla)MixB)MixC,Mus)MixRoot;",
+      "tree": "(((Homo,Hylobates)MixA,(Pan,Gorilla)MixB)MixC,Mus)MixRoot;",
+      "metadata": {
+        "branch_lengths_stripped": false,
+        "auto_labeled_nodes": [],
+        "leaf_count": 5,
+        "internal_count": 4
+      },
+      "leaves": [
+        "Gorilla",
+        "Homo",
+        "Hylobates",
+        "Mus",
+        "Pan"
+      ],
+      "task": "distance",
+      "question": "What is the topological edge distance between Homo and Mus?",
+      "expected": "4",
+      "prompt": "Tree: (((Homo,Hylobates)MixA,(Pan,Gorilla)MixB)MixC,Mus)MixRoot;\nTask (distance): What is the topological edge distance between Homo and Mus?\nAnswer with only the exact value.",
+      "lora_prediction": "4",
+      "lora_correct": true,
+      "base_prediction": null,
+      "base_correct": null
+    },
+    {
+      "category": "adversarial_topology_swap",
+      "tree_name": "AdversarialB",
+      "raw_newick": "(((Mus,Gallus)MixD,(Alligator,Anolis)MixE)MixF,(Ornithorhynchus,Pongo)MixG)MixRoot2;",
+      "normalized_newick": "(((Mus,Gallus)MixD,(Alligator,Anolis)MixE)MixF,(Ornithorhynchus,Pongo)MixG)MixRoot2;",
+      "tree": "(((Mus,Gallus)MixD,(Alligator,Anolis)MixE)MixF,(Ornithorhynchus,Pongo)MixG)MixRoot2;",
+      "metadata": {
+        "branch_lengths_stripped": false,
+        "auto_labeled_nodes": [],
+        "leaf_count": 6,
+        "internal_count": 5
+      },
+      "leaves": [
+        "Alligator",
+        "Anolis",
+        "Gallus",
+        "Mus",
+        "Ornithorhynchus",
+        "Pongo"
+      ],
+      "task": "mrca",
+      "question": "What is the most recent common ancestor of Mus and Anolis?",
+      "expected": "MixF",
+      "prompt": "Tree: (((Mus,Gallus)MixD,(Alligator,Anolis)MixE)MixF,(Ornithorhynchus,Pongo)MixG)MixRoot2;\nTask (mrca): What is the most recent common ancestor of Mus and Anolis?\nAnswer with only the exact value.",
+      "lora_prediction": "MixF",
+      "lora_correct": true,
+      "base_prediction": null,
+      "base_correct": null
+    },
+    {
+      "category": "adversarial_topology_swap",
+      "tree_name": "AdversarialB",
+      "raw_newick": "(((Mus,Gallus)MixD,(Alligator,Anolis)MixE)MixF,(Ornithorhynchus,Pongo)MixG)MixRoot2;",
+      "normalized_newick": "(((Mus,Gallus)MixD,(Alligator,Anolis)MixE)MixF,(Ornithorhynchus,Pongo)MixG)MixRoot2;",
+      "tree": "(((Mus,Gallus)MixD,(Alligator,Anolis)MixE)MixF,(Ornithorhynchus,Pongo)MixG)MixRoot2;",
+      "metadata": {
+        "branch_lengths_stripped": false,
+        "auto_labeled_nodes": [],
+        "leaf_count": 6,
+        "internal_count": 5
+      },
+      "leaves": [
+        "Alligator",
+        "Anolis",
+        "Gallus",
+        "Mus",
+        "Ornithorhynchus",
+        "Pongo"
+      ],
+      "task": "sister",
+      "question": "What is the direct sister taxon of Mus?",
+      "expected": "Gallus",
+      "prompt": "Tree: (((Mus,Gallus)MixD,(Alligator,Anolis)MixE)MixF,(Ornithorhynchus,Pongo)MixG)MixRoot2;\nTask (sister): What is the direct sister taxon of Mus?\nAnswer with only the exact value.",
+      "lora_prediction": "Gallus",
+      "lora_correct": true,
+      "base_prediction": null,
+      "base_correct": null
+    },
+    {
+      "category": "adversarial_topology_swap",
+      "tree_name": "AdversarialB",
+      "raw_newick": "(((Mus,Gallus)MixD,(Alligator,Anolis)MixE)MixF,(Ornithorhynchus,Pongo)MixG)MixRoot2;",
+      "normalized_newick": "(((Mus,Gallus)MixD,(Alligator,Anolis)MixE)MixF,(Ornithorhynchus,Pongo)MixG)MixRoot2;",
+      "tree": "(((Mus,Gallus)MixD,(Alligator,Anolis)MixE)MixF,(Ornithorhynchus,Pongo)MixG)MixRoot2;",
+      "metadata": {
+        "branch_lengths_stripped": false,
+        "auto_labeled_nodes": [],
+        "leaf_count": 6,
+        "internal_count": 5
+      },
+      "leaves": [
+        "Alligator",
+        "Anolis",
+        "Gallus",
+        "Mus",
+        "Ornithorhynchus",
+        "Pongo"
+      ],
+      "task": "monophyletic",
+      "question": "Do Mus, Alligator form a monophyletic clade?",
+      "expected": "No",
+      "prompt": "Tree: (((Mus,Gallus)MixD,(Alligator,Anolis)MixE)MixF,(Ornithorhynchus,Pongo)MixG)MixRoot2;\nTask (monophyletic): Do Mus, Alligator form a monophyletic clade?\nAnswer with only the exact value.",
+      "lora_prediction": "No",
+      "lora_correct": true,
+      "base_prediction": null,
+      "base_correct": null
+    },
+    {
+      "category": "adversarial_topology_swap",
+      "tree_name": "AdversarialB",
+      "raw_newick": "(((Mus,Gallus)MixD,(Alligator,Anolis)MixE)MixF,(Ornithorhynchus,Pongo)MixG)MixRoot2;",
+      "normalized_newick": "(((Mus,Gallus)MixD,(Alligator,Anolis)MixE)MixF,(Ornithorhynchus,Pongo)MixG)MixRoot2;",
+      "tree": "(((Mus,Gallus)MixD,(Alligator,Anolis)MixE)MixF,(Ornithorhynchus,Pongo)MixG)MixRoot2;",
+      "metadata": {
+        "branch_lengths_stripped": false,
+        "auto_labeled_nodes": [],
+        "leaf_count": 6,
+        "internal_count": 5
+      },
+      "leaves": [
+        "Alligator",
+        "Anolis",
+        "Gallus",
+        "Mus",
+        "Ornithorhynchus",
+        "Pongo"
+      ],
+      "task": "distance",
+      "question": "What is the topological edge distance between Mus and Pongo?",
+      "expected": "5",
+      "prompt": "Tree: (((Mus,Gallus)MixD,(Alligator,Anolis)MixE)MixF,(Ornithorhynchus,Pongo)MixG)MixRoot2;\nTask (distance): What is the topological edge distance between Mus and Pongo?\nAnswer with only the exact value.",
+      "lora_prediction": "5",
+      "lora_correct": true,
+      "base_prediction": null,
+      "base_correct": null
+    },
+    {
+      "category": "adversarial_topology_swap",
+      "tree_name": "AdversarialC",
+      "raw_newick": "(((Homo,Pan)MixH,(Gorilla,Pongo)MixI)MixJ,(Hylobates,(Alligator,Anolis)MixK)MixL)MixRoot3;",
+      "normalized_newick": "(((Homo,Pan)MixH,(Gorilla,Pongo)MixI)MixJ,(Hylobates,(Alligator,Anolis)MixK)MixL)MixRoot3;",
+      "tree": "(((Homo,Pan)MixH,(Gorilla,Pongo)MixI)MixJ,(Hylobates,(Alligator,Anolis)MixK)MixL)MixRoot3;",
+      "metadata": {
+        "branch_lengths_stripped": false,
+        "auto_labeled_nodes": [],
+        "leaf_count": 7,
+        "internal_count": 6
+      },
+      "leaves": [
+        "Alligator",
+        "Anolis",
+        "Gorilla",
+        "Homo",
+        "Hylobates",
+        "Pan",
+        "Pongo"
+      ],
+      "task": "mrca",
+      "question": "What is the most recent common ancestor of Homo and Gorilla?",
+      "expected": "MixJ",
+      "prompt": "Tree: (((Homo,Pan)MixH,(Gorilla,Pongo)MixI)MixJ,(Hylobates,(Alligator,Anolis)MixK)MixL)MixRoot3;\nTask (mrca): What is the most recent common ancestor of Homo and Gorilla?\nAnswer with only the exact value.",
+      "lora_prediction": "MixJ",
+      "lora_correct": true,
+      "base_prediction": null,
+      "base_correct": null
+    },
+    {
+      "category": "adversarial_topology_swap",
+      "tree_name": "AdversarialC",
+      "raw_newick": "(((Homo,Pan)MixH,(Gorilla,Pongo)MixI)MixJ,(Hylobates,(Alligator,Anolis)MixK)MixL)MixRoot3;",
+      "normalized_newick": "(((Homo,Pan)MixH,(Gorilla,Pongo)MixI)MixJ,(Hylobates,(Alligator,Anolis)MixK)MixL)MixRoot3;",
+      "tree": "(((Homo,Pan)MixH,(Gorilla,Pongo)MixI)MixJ,(Hylobates,(Alligator,Anolis)MixK)MixL)MixRoot3;",
+      "metadata": {
+        "branch_lengths_stripped": false,
+        "auto_labeled_nodes": [],
+        "leaf_count": 7,
+        "internal_count": 6
+      },
+      "leaves": [
+        "Alligator",
+        "Anolis",
+        "Gorilla",
+        "Homo",
+        "Hylobates",
+        "Pan",
+        "Pongo"
+      ],
+      "task": "sister",
+      "question": "What is the direct sister taxon of Homo?",
+      "expected": "Pan",
+      "prompt": "Tree: (((Homo,Pan)MixH,(Gorilla,Pongo)MixI)MixJ,(Hylobates,(Alligator,Anolis)MixK)MixL)MixRoot3;\nTask (sister): What is the direct sister taxon of Homo?\nAnswer with only the exact value.",
+      "lora_prediction": "Pan",
+      "lora_correct": true,
+      "base_prediction": null,
+      "base_correct": null
+    },
+    {
+      "category": "adversarial_topology_swap",
+      "tree_name": "AdversarialC",
+      "raw_newick": "(((Homo,Pan)MixH,(Gorilla,Pongo)MixI)MixJ,(Hylobates,(Alligator,Anolis)MixK)MixL)MixRoot3;",
+      "normalized_newick": "(((Homo,Pan)MixH,(Gorilla,Pongo)MixI)MixJ,(Hylobates,(Alligator,Anolis)MixK)MixL)MixRoot3;",
+      "tree": "(((Homo,Pan)MixH,(Gorilla,Pongo)MixI)MixJ,(Hylobates,(Alligator,Anolis)MixK)MixL)MixRoot3;",
+      "metadata": {
+        "branch_lengths_stripped": false,
+        "auto_labeled_nodes": [],
+        "leaf_count": 7,
+        "internal_count": 6
+      },
+      "leaves": [
+        "Alligator",
+        "Anolis",
+        "Gorilla",
+        "Homo",
+        "Hylobates",
+        "Pan",
+        "Pongo"
+      ],
+      "task": "monophyletic",
+      "question": "Do Homo, Gorilla form a monophyletic clade?",
+      "expected": "No",
+      "prompt": "Tree: (((Homo,Pan)MixH,(Gorilla,Pongo)MixI)MixJ,(Hylobates,(Alligator,Anolis)MixK)MixL)MixRoot3;\nTask (monophyletic): Do Homo, Gorilla form a monophyletic clade?\nAnswer with only the exact value.",
+      "lora_prediction": "No",
+      "lora_correct": true,
+      "base_prediction": null,
+      "base_correct": null
+    },
+    {
+      "category": "adversarial_topology_swap",
+      "tree_name": "AdversarialC",
+      "raw_newick": "(((Homo,Pan)MixH,(Gorilla,Pongo)MixI)MixJ,(Hylobates,(Alligator,Anolis)MixK)MixL)MixRoot3;",
+      "normalized_newick": "(((Homo,Pan)MixH,(Gorilla,Pongo)MixI)MixJ,(Hylobates,(Alligator,Anolis)MixK)MixL)MixRoot3;",
+      "tree": "(((Homo,Pan)MixH,(Gorilla,Pongo)MixI)MixJ,(Hylobates,(Alligator,Anolis)MixK)MixL)MixRoot3;",
+      "metadata": {
+        "branch_lengths_stripped": false,
+        "auto_labeled_nodes": [],
+        "leaf_count": 7,
+        "internal_count": 6
+      },
+      "leaves": [
+        "Alligator",
+        "Anolis",
+        "Gorilla",
+        "Homo",
+        "Hylobates",
+        "Pan",
+        "Pongo"
+      ],
+      "task": "distance",
+      "question": "What is the topological edge distance between Homo and Hylobates?",
+      "expected": "5",
+      "prompt": "Tree: (((Homo,Pan)MixH,(Gorilla,Pongo)MixI)MixJ,(Hylobates,(Alligator,Anolis)MixK)MixL)MixRoot3;\nTask (distance): What is the topological edge distance between Homo and Hylobates?\nAnswer with only the exact value.",
+      "lora_prediction": "5",
+      "lora_correct": true,
+      "base_prediction": null,
+      "base_correct": null
+    },
+    {
+      "category": "ood_tree_sizes",
+      "tree_name": "OOD4",
+      "raw_newick": "((Zephyria,Lunaris)Novaclade,(Terrax,Marina)Oceanidae)Gaiaformes;",
+      "normalized_newick": "((Zephyria,Lunaris)Novaclade,(Terrax,Marina)Oceanidae)Gaiaformes;",
+      "tree": "((Zephyria,Lunaris)Novaclade,(Terrax,Marina)Oceanidae)Gaiaformes;",
+      "metadata": {
+        "branch_lengths_stripped": false,
+        "auto_labeled_nodes": [],
+        "leaf_count": 4,
+        "internal_count": 3
+      },
+      "leaves": [
+        "Lunaris",
+        "Marina",
+        "Terrax",
+        "Zephyria"
+      ],
+      "task": "mrca",
+      "question": "What is the most recent common ancestor of Zephyria and Lunaris?",
+      "expected": "Novaclade",
+      "prompt": "Tree: ((Zephyria,Lunaris)Novaclade,(Terrax,Marina)Oceanidae)Gaiaformes;\nTask (mrca): What is the most recent common ancestor of Zephyria and Lunaris?\nAnswer with only the exact value.",
+      "lora_prediction": "Novaclade",
+      "lora_correct": true,
+      "base_prediction": null,
+      "base_correct": null
+    },
+    {
+      "category": "ood_tree_sizes",
+      "tree_name": "OOD4",
+      "raw_newick": "((Zephyria,Lunaris)Novaclade,(Terrax,Marina)Oceanidae)Gaiaformes;",
+      "normalized_newick": "((Zephyria,Lunaris)Novaclade,(Terrax,Marina)Oceanidae)Gaiaformes;",
+      "tree": "((Zephyria,Lunaris)Novaclade,(Terrax,Marina)Oceanidae)Gaiaformes;",
+      "metadata": {
+        "branch_lengths_stripped": false,
+        "auto_labeled_nodes": [],
+        "leaf_count": 4,
+        "internal_count": 3
+      },
+      "leaves": [
+        "Lunaris",
+        "Marina",
+        "Terrax",
+        "Zephyria"
+      ],
+      "task": "sister",
+      "question": "What is the direct sister taxon of Zephyria?",
+      "expected": "Lunaris",
+      "prompt": "Tree: ((Zephyria,Lunaris)Novaclade,(Terrax,Marina)Oceanidae)Gaiaformes;\nTask (sister): What is the direct sister taxon of Zephyria?\nAnswer with only the exact value.",
+      "lora_prediction": "Lunaris",
+      "lora_correct": true,
+      "base_prediction": null,
+      "base_correct": null
+    },
+    {
+      "category": "ood_tree_sizes",
+      "tree_name": "OOD4",
+      "raw_newick": "((Zephyria,Lunaris)Novaclade,(Terrax,Marina)Oceanidae)Gaiaformes;",
+      "normalized_newick": "((Zephyria,Lunaris)Novaclade,(Terrax,Marina)Oceanidae)Gaiaformes;",
+      "tree": "((Zephyria,Lunaris)Novaclade,(Terrax,Marina)Oceanidae)Gaiaformes;",
+      "metadata": {
+        "branch_lengths_stripped": false,
+        "auto_labeled_nodes": [],
+        "leaf_count": 4,
+        "internal_count": 3
+      },
+      "leaves": [
+        "Lunaris",
+        "Marina",
+        "Terrax",
+        "Zephyria"
+      ],
+      "task": "monophyletic",
+      "question": "Do Zephyria, Lunaris form a monophyletic clade?",
+      "expected": "Yes",
+      "prompt": "Tree: ((Zephyria,Lunaris)Novaclade,(Terrax,Marina)Oceanidae)Gaiaformes;\nTask (monophyletic): Do Zephyria, Lunaris form a monophyletic clade?\nAnswer with only the exact value.",
+      "lora_prediction": "Yes",
+      "lora_correct": true,
+      "base_prediction": null,
+      "base_correct": null
+    },
+    {
+      "category": "ood_tree_sizes",
+      "tree_name": "OOD4",
+      "raw_newick": "((Zephyria,Lunaris)Novaclade,(Terrax,Marina)Oceanidae)Gaiaformes;",
+      "normalized_newick": "((Zephyria,Lunaris)Novaclade,(Terrax,Marina)Oceanidae)Gaiaformes;",
+      "tree": "((Zephyria,Lunaris)Novaclade,(Terrax,Marina)Oceanidae)Gaiaformes;",
+      "metadata": {
+        "branch_lengths_stripped": false,
+        "auto_labeled_nodes": [],
+        "leaf_count": 4,
+        "internal_count": 3
+      },
+      "leaves": [
+        "Lunaris",
+        "Marina",
+        "Terrax",
+        "Zephyria"
+      ],
+      "task": "distance",
+      "question": "What is the topological edge distance between Zephyria and Terrax?",
+      "expected": "4",
+      "prompt": "Tree: ((Zephyria,Lunaris)Novaclade,(Terrax,Marina)Oceanidae)Gaiaformes;\nTask (distance): What is the topological edge distance between Zephyria and Terrax?\nAnswer with only the exact value.",
+      "lora_prediction": "4",
+      "lora_correct": true,
+      "base_prediction": null,
+      "base_correct": null
+    },
+    {
+      "category": "ood_tree_sizes",
+      "tree_name": "OOD8A",
+      "raw_newick": "(((Aurorix,Borealis)Skycladidae,(Cryonix,Delphis)Polaridae)Atmosphaeria,((Emberix,Flamara)Ignidae,(Glacius,Helionix)Cryonidae)Pyrotheria)Megalocladia;",
+      "normalized_newick": "(((Aurorix,Borealis)Skycladidae,(Cryonix,Delphis)Polaridae)Atmosphaeria,((Emberix,Flamara)Ignidae,(Glacius,Helionix)Cryonidae)Pyrotheria)Megalocladia;",
+      "tree": "(((Aurorix,Borealis)Skycladidae,(Cryonix,Delphis)Polaridae)Atmosphaeria,((Emberix,Flamara)Ignidae,(Glacius,Helionix)Cryonidae)Pyrotheria)Megalocladia;",
+      "metadata": {
+        "branch_lengths_stripped": false,
+        "auto_labeled_nodes": [],
+        "leaf_count": 8,
+        "internal_count": 7
+      },
+      "leaves": [
+        "Aurorix",
+        "Borealis",
+        "Cryonix",
+        "Delphis",
+        "Emberix",
+        "Flamara",
+        "Glacius",
+        "Helionix"
+      ],
+      "task": "mrca",
+      "question": "What is the most recent common ancestor of Aurorix and Borealis?",
+      "expected": "Skycladidae",
+      "prompt": "Tree: (((Aurorix,Borealis)Skycladidae,(Cryonix,Delphis)Polaridae)Atmosphaeria,((Emberix,Flamara)Ignidae,(Glacius,Helionix)Cryonidae)Pyrotheria)Megalocladia;\nTask (mrca): What is the most recent common ancestor of Aurorix and Borealis?\nAnswer with only the exact value.",
+      "lora_prediction": "Skycladidae",
+      "lora_correct": true,
+      "base_prediction": null,
+      "base_correct": null
+    },
+    {
+      "category": "ood_tree_sizes",
+      "tree_name": "OOD8A",
+      "raw_newick": "(((Aurorix,Borealis)Skycladidae,(Cryonix,Delphis)Polaridae)Atmosphaeria,((Emberix,Flamara)Ignidae,(Glacius,Helionix)Cryonidae)Pyrotheria)Megalocladia;",
+      "normalized_newick": "(((Aurorix,Borealis)Skycladidae,(Cryonix,Delphis)Polaridae)Atmosphaeria,((Emberix,Flamara)Ignidae,(Glacius,Helionix)Cryonidae)Pyrotheria)Megalocladia;",
+      "tree": "(((Aurorix,Borealis)Skycladidae,(Cryonix,Delphis)Polaridae)Atmosphaeria,((Emberix,Flamara)Ignidae,(Glacius,Helionix)Cryonidae)Pyrotheria)Megalocladia;",
+      "metadata": {
+        "branch_lengths_stripped": false,
+        "auto_labeled_nodes": [],
+        "leaf_count": 8,
+        "internal_count": 7
+      },
+      "leaves": [
+        "Aurorix",
+        "Borealis",
+        "Cryonix",
+        "Delphis",
+        "Emberix",
+        "Flamara",
+        "Glacius",
+        "Helionix"
+      ],
+      "task": "sister",
+      "question": "What is the direct sister taxon of Aurorix?",
+      "expected": "Borealis",
+      "prompt": "Tree: (((Aurorix,Borealis)Skycladidae,(Cryonix,Delphis)Polaridae)Atmosphaeria,((Emberix,Flamara)Ignidae,(Glacius,Helionix)Cryonidae)Pyrotheria)Megalocladia;\nTask (sister): What is the direct sister taxon of Aurorix?\nAnswer with only the exact value.",
+      "lora_prediction": "Borealis",
+      "lora_correct": true,
+      "base_prediction": null,
+      "base_correct": null
+    },
+    {
+      "category": "ood_tree_sizes",
+      "tree_name": "OOD8A",
+      "raw_newick": "(((Aurorix,Borealis)Skycladidae,(Cryonix,Delphis)Polaridae)Atmosphaeria,((Emberix,Flamara)Ignidae,(Glacius,Helionix)Cryonidae)Pyrotheria)Megalocladia;",
+      "normalized_newick": "(((Aurorix,Borealis)Skycladidae,(Cryonix,Delphis)Polaridae)Atmosphaeria,((Emberix,Flamara)Ignidae,(Glacius,Helionix)Cryonidae)Pyrotheria)Megalocladia;",
+      "tree": "(((Aurorix,Borealis)Skycladidae,(Cryonix,Delphis)Polaridae)Atmosphaeria,((Emberix,Flamara)Ignidae,(Glacius,Helionix)Cryonidae)Pyrotheria)Megalocladia;",
+      "metadata": {
+        "branch_lengths_stripped": false,
+        "auto_labeled_nodes": [],
+        "leaf_count": 8,
+        "internal_count": 7
+      },
+      "leaves": [
+        "Aurorix",
+        "Borealis",
+        "Cryonix",
+        "Delphis",
+        "Emberix",
+        "Flamara",
+        "Glacius",
+        "Helionix"
+      ],
+      "task": "monophyletic",
+      "question": "Do Aurorix, Borealis form a monophyletic clade?",
+      "expected": "Yes",
+      "prompt": "Tree: (((Aurorix,Borealis)Skycladidae,(Cryonix,Delphis)Polaridae)Atmosphaeria,((Emberix,Flamara)Ignidae,(Glacius,Helionix)Cryonidae)Pyrotheria)Megalocladia;\nTask (monophyletic): Do Aurorix, Borealis form a monophyletic clade?\nAnswer with only the exact value.",
+      "lora_prediction": "Yes",
+      "lora_correct": true,
+      "base_prediction": null,
+      "base_correct": null
+    },
+    {
+      "category": "ood_tree_sizes",
+      "tree_name": "OOD8A",
+      "raw_newick": "(((Aurorix,Borealis)Skycladidae,(Cryonix,Delphis)Polaridae)Atmosphaeria,((Emberix,Flamara)Ignidae,(Glacius,Helionix)Cryonidae)Pyrotheria)Megalocladia;",
+      "normalized_newick": "(((Aurorix,Borealis)Skycladidae,(Cryonix,Delphis)Polaridae)Atmosphaeria,((Emberix,Flamara)Ignidae,(Glacius,Helionix)Cryonidae)Pyrotheria)Megalocladia;",
+      "tree": "(((Aurorix,Borealis)Skycladidae,(Cryonix,Delphis)Polaridae)Atmosphaeria,((Emberix,Flamara)Ignidae,(Glacius,Helionix)Cryonidae)Pyrotheria)Megalocladia;",
+      "metadata": {
+        "branch_lengths_stripped": false,
+        "auto_labeled_nodes": [],
+        "leaf_count": 8,
+        "internal_count": 7
+      },
+      "leaves": [
+        "Aurorix",
+        "Borealis",
+        "Cryonix",
+        "Delphis",
+        "Emberix",
+        "Flamara",
+        "Glacius",
+        "Helionix"
+      ],
+      "task": "distance",
+      "question": "What is the topological edge distance between Aurorix and Delphis?",
+      "expected": "4",
+      "prompt": "Tree: (((Aurorix,Borealis)Skycladidae,(Cryonix,Delphis)Polaridae)Atmosphaeria,((Emberix,Flamara)Ignidae,(Glacius,Helionix)Cryonidae)Pyrotheria)Megalocladia;\nTask (distance): What is the topological edge distance between Aurorix and Delphis?\nAnswer with only the exact value.",
+      "lora_prediction": "4",
+      "lora_correct": true,
+      "base_prediction": null,
+      "base_correct": null
+    },
+    {
+      "category": "ood_tree_sizes",
+      "tree_name": "OOD8B",
+      "raw_newick": "(((Nimbus,Opalix)Nebulidae,(Quasaris,Radianta)Stellaridae)Galaxiformes,((Sylvara,Terranox)Silvidae,(Umbrax,Vulcanis)Igniformia)Terraformia)Cosmoclada;",
+      "normalized_newick": "(((Nimbus,Opalix)Nebulidae,(Quasaris,Radianta)Stellaridae)Galaxiformes,((Sylvara,Terranox)Silvidae,(Umbrax,Vulcanis)Igniformia)Terraformia)Cosmoclada;",
+      "tree": "(((Nimbus,Opalix)Nebulidae,(Quasaris,Radianta)Stellaridae)Galaxiformes,((Sylvara,Terranox)Silvidae,(Umbrax,Vulcanis)Igniformia)Terraformia)Cosmoclada;",
+      "metadata": {
+        "branch_lengths_stripped": false,
+        "auto_labeled_nodes": [],
+        "leaf_count": 8,
+        "internal_count": 7
+      },
+      "leaves": [
+        "Nimbus",
+        "Opalix",
+        "Quasaris",
+        "Radianta",
+        "Sylvara",
+        "Terranox",
+        "Umbrax",
+        "Vulcanis"
+      ],
+      "task": "mrca",
+      "question": "What is the most recent common ancestor of Nimbus and Opalix?",
+      "expected": "Nebulidae",
+      "prompt": "Tree: (((Nimbus,Opalix)Nebulidae,(Quasaris,Radianta)Stellaridae)Galaxiformes,((Sylvara,Terranox)Silvidae,(Umbrax,Vulcanis)Igniformia)Terraformia)Cosmoclada;\nTask (mrca): What is the most recent common ancestor of Nimbus and Opalix?\nAnswer with only the exact value.",
+      "lora_prediction": "Nebulidae",
+      "lora_correct": true,
+      "base_prediction": null,
+      "base_correct": null
+    },
+    {
+      "category": "ood_tree_sizes",
+      "tree_name": "OOD8B",
+      "raw_newick": "(((Nimbus,Opalix)Nebulidae,(Quasaris,Radianta)Stellaridae)Galaxiformes,((Sylvara,Terranox)Silvidae,(Umbrax,Vulcanis)Igniformia)Terraformia)Cosmoclada;",
+      "normalized_newick": "(((Nimbus,Opalix)Nebulidae,(Quasaris,Radianta)Stellaridae)Galaxiformes,((Sylvara,Terranox)Silvidae,(Umbrax,Vulcanis)Igniformia)Terraformia)Cosmoclada;",
+      "tree": "(((Nimbus,Opalix)Nebulidae,(Quasaris,Radianta)Stellaridae)Galaxiformes,((Sylvara,Terranox)Silvidae,(Umbrax,Vulcanis)Igniformia)Terraformia)Cosmoclada;",
+      "metadata": {
+        "branch_lengths_stripped": false,
+        "auto_labeled_nodes": [],
+        "leaf_count": 8,
+        "internal_count": 7
+      },
+      "leaves": [
+        "Nimbus",
+        "Opalix",
+        "Quasaris",
+        "Radianta",
+        "Sylvara",
+        "Terranox",
+        "Umbrax",
+        "Vulcanis"
+      ],
+      "task": "sister",
+      "question": "What is the direct sister taxon of Nimbus?",
+      "expected": "Opalix",
+      "prompt": "Tree: (((Nimbus,Opalix)Nebulidae,(Quasaris,Radianta)Stellaridae)Galaxiformes,((Sylvara,Terranox)Silvidae,(Umbrax,Vulcanis)Igniformia)Terraformia)Cosmoclada;\nTask (sister): What is the direct sister taxon of Nimbus?\nAnswer with only the exact value.",
+      "lora_prediction": "Opalix",
+      "lora_correct": true,
+      "base_prediction": null,
+      "base_correct": null
+    },
+    {
+      "category": "ood_tree_sizes",
+      "tree_name": "OOD8B",
+      "raw_newick": "(((Nimbus,Opalix)Nebulidae,(Quasaris,Radianta)Stellaridae)Galaxiformes,((Sylvara,Terranox)Silvidae,(Umbrax,Vulcanis)Igniformia)Terraformia)Cosmoclada;",
+      "normalized_newick": "(((Nimbus,Opalix)Nebulidae,(Quasaris,Radianta)Stellaridae)Galaxiformes,((Sylvara,Terranox)Silvidae,(Umbrax,Vulcanis)Igniformia)Terraformia)Cosmoclada;",
+      "tree": "(((Nimbus,Opalix)Nebulidae,(Quasaris,Radianta)Stellaridae)Galaxiformes,((Sylvara,Terranox)Silvidae,(Umbrax,Vulcanis)Igniformia)Terraformia)Cosmoclada;",
+      "metadata": {
+        "branch_lengths_stripped": false,
+        "auto_labeled_nodes": [],
+        "leaf_count": 8,
+        "internal_count": 7
+      },
+      "leaves": [
+        "Nimbus",
+        "Opalix",
+        "Quasaris",
+        "Radianta",
+        "Sylvara",
+        "Terranox",
+        "Umbrax",
+        "Vulcanis"
+      ],
+      "task": "monophyletic",
+      "question": "Do Nimbus, Terranox form a monophyletic clade?",
+      "expected": "No",
+      "prompt": "Tree: (((Nimbus,Opalix)Nebulidae,(Quasaris,Radianta)Stellaridae)Galaxiformes,((Sylvara,Terranox)Silvidae,(Umbrax,Vulcanis)Igniformia)Terraformia)Cosmoclada;\nTask (monophyletic): Do Nimbus, Terranox form a monophyletic clade?\nAnswer with only the exact value.",
+      "lora_prediction": "No",
+      "lora_correct": true,
+      "base_prediction": null,
+      "base_correct": null
+    },
+    {
+      "category": "ood_tree_sizes",
+      "tree_name": "OOD8B",
+      "raw_newick": "(((Nimbus,Opalix)Nebulidae,(Quasaris,Radianta)Stellaridae)Galaxiformes,((Sylvara,Terranox)Silvidae,(Umbrax,Vulcanis)Igniformia)Terraformia)Cosmoclada;",
+      "normalized_newick": "(((Nimbus,Opalix)Nebulidae,(Quasaris,Radianta)Stellaridae)Galaxiformes,((Sylvara,Terranox)Silvidae,(Umbrax,Vulcanis)Igniformia)Terraformia)Cosmoclada;",
+      "tree": "(((Nimbus,Opalix)Nebulidae,(Quasaris,Radianta)Stellaridae)Galaxiformes,((Sylvara,Terranox)Silvidae,(Umbrax,Vulcanis)Igniformia)Terraformia)Cosmoclada;",
+      "metadata": {
+        "branch_lengths_stripped": false,
+        "auto_labeled_nodes": [],
+        "leaf_count": 8,
+        "internal_count": 7
+      },
+      "leaves": [
+        "Nimbus",
+        "Opalix",
+        "Quasaris",
+        "Radianta",
+        "Sylvara",
+        "Terranox",
+        "Umbrax",
+        "Vulcanis"
+      ],
+      "task": "distance",
+      "question": "What is the topological edge distance between Nimbus and Opalix?",
+      "expected": "2",
+      "prompt": "Tree: (((Nimbus,Opalix)Nebulidae,(Quasaris,Radianta)Stellaridae)Galaxiformes,((Sylvara,Terranox)Silvidae,(Umbrax,Vulcanis)Igniformia)Terraformia)Cosmoclada;\nTask (distance): What is the topological edge distance between Nimbus and Opalix?\nAnswer with only the exact value.",
+      "lora_prediction": "2",
+      "lora_correct": true,
+      "base_prediction": null,
+      "base_correct": null
+    },
+    {
+      "category": "branch_lengths_and_formatting",
+      "tree_name": "BranchPrimates",
+      "raw_newick": "( ( (Homo:0.006, Pan:1.2e-2) Hominini:0.03, Gorilla:1.5e-3 ) Homininae:0.01, (Pongo:0.004, Hylobates:0.005) Pongidae:0.02 ) Hominoidea:0.1 ;",
+      "normalized_newick": "(((Homo,Pan)Hominini,Gorilla)Homininae,(Pongo,Hylobates)Pongidae)Hominoidea;",
+      "tree": "(((Homo,Pan)Hominini,Gorilla)Homininae,(Pongo,Hylobates)Pongidae)Hominoidea;",
+      "metadata": {
+        "branch_lengths_stripped": true,
+        "auto_labeled_nodes": [],
+        "leaf_count": 5,
+        "internal_count": 4
+      },
+      "leaves": [
+        "Gorilla",
+        "Homo",
+        "Hylobates",
+        "Pan",
+        "Pongo"
+      ],
+      "task": "mrca",
+      "question": "What is the most recent common ancestor of Homo and Gorilla?",
+      "expected": "Homininae",
+      "prompt": "Tree: (((Homo,Pan)Hominini,Gorilla)Homininae,(Pongo,Hylobates)Pongidae)Hominoidea;\nTask (mrca): What is the most recent common ancestor of Homo and Gorilla?\nAnswer with only the exact value.",
+      "lora_prediction": "Hominini",
+      "lora_correct": false,
+      "base_prediction": null,
+      "base_correct": null
+    },
+    {
+      "category": "branch_lengths_and_formatting",
+      "tree_name": "BranchPrimates",
+      "raw_newick": "( ( (Homo:0.006, Pan:1.2e-2) Hominini:0.03, Gorilla:1.5e-3 ) Homininae:0.01, (Pongo:0.004, Hylobates:0.005) Pongidae:0.02 ) Hominoidea:0.1 ;",
+      "normalized_newick": "(((Homo,Pan)Hominini,Gorilla)Homininae,(Pongo,Hylobates)Pongidae)Hominoidea;",
+      "tree": "(((Homo,Pan)Hominini,Gorilla)Homininae,(Pongo,Hylobates)Pongidae)Hominoidea;",
+      "metadata": {
+        "branch_lengths_stripped": true,
+        "auto_labeled_nodes": [],
+        "leaf_count": 5,
+        "internal_count": 4
+      },
+      "leaves": [
+        "Gorilla",
+        "Homo",
+        "Hylobates",
+        "Pan",
+        "Pongo"
+      ],
+      "task": "sister",
+      "question": "What is the direct sister taxon of Homo?",
+      "expected": "Pan",
+      "prompt": "Tree: (((Homo,Pan)Hominini,Gorilla)Homininae,(Pongo,Hylobates)Pongidae)Hominoidea;\nTask (sister): What is the direct sister taxon of Homo?\nAnswer with only the exact value.",
+      "lora_prediction": "Pan",
+      "lora_correct": true,
+      "base_prediction": null,
+      "base_correct": null
+    },
+    {
+      "category": "branch_lengths_and_formatting",
+      "tree_name": "BranchPrimates",
+      "raw_newick": "( ( (Homo:0.006, Pan:1.2e-2) Hominini:0.03, Gorilla:1.5e-3 ) Homininae:0.01, (Pongo:0.004, Hylobates:0.005) Pongidae:0.02 ) Hominoidea:0.1 ;",
+      "normalized_newick": "(((Homo,Pan)Hominini,Gorilla)Homininae,(Pongo,Hylobates)Pongidae)Hominoidea;",
+      "tree": "(((Homo,Pan)Hominini,Gorilla)Homininae,(Pongo,Hylobates)Pongidae)Hominoidea;",
+      "metadata": {
+        "branch_lengths_stripped": true,
+        "auto_labeled_nodes": [],
+        "leaf_count": 5,
+        "internal_count": 4
+      },
+      "leaves": [
+        "Gorilla",
+        "Homo",
+        "Hylobates",
+        "Pan",
+        "Pongo"
+      ],
+      "task": "monophyletic",
+      "question": "Do Homo, Pan form a monophyletic clade?",
+      "expected": "Yes",
+      "prompt": "Tree: (((Homo,Pan)Hominini,Gorilla)Homininae,(Pongo,Hylobates)Pongidae)Hominoidea;\nTask (monophyletic): Do Homo, Pan form a monophyletic clade?\nAnswer with only the exact value.",
+      "lora_prediction": "Yes",
+      "lora_correct": true,
+      "base_prediction": null,
+      "base_correct": null
+    },
+    {
+      "category": "branch_lengths_and_formatting",
+      "tree_name": "BranchPrimates",
+      "raw_newick": "( ( (Homo:0.006, Pan:1.2e-2) Hominini:0.03, Gorilla:1.5e-3 ) Homininae:0.01, (Pongo:0.004, Hylobates:0.005) Pongidae:0.02 ) Hominoidea:0.1 ;",
+      "normalized_newick": "(((Homo,Pan)Hominini,Gorilla)Homininae,(Pongo,Hylobates)Pongidae)Hominoidea;",
+      "tree": "(((Homo,Pan)Hominini,Gorilla)Homininae,(Pongo,Hylobates)Pongidae)Hominoidea;",
+      "metadata": {
+        "branch_lengths_stripped": true,
+        "auto_labeled_nodes": [],
+        "leaf_count": 5,
+        "internal_count": 4
+      },
+      "leaves": [
+        "Gorilla",
+        "Homo",
+        "Hylobates",
+        "Pan",
+        "Pongo"
+      ],
+      "task": "distance",
+      "question": "What is the topological edge distance between Homo and Pongo?",
+      "expected": "5",
+      "prompt": "Tree: (((Homo,Pan)Hominini,Gorilla)Homininae,(Pongo,Hylobates)Pongidae)Hominoidea;\nTask (distance): What is the topological edge distance between Homo and Pongo?\nAnswer with only the exact value.",
+      "lora_prediction": "5",
+      "lora_correct": true,
+      "base_prediction": null,
+      "base_correct": null
+    },
+    {
+      "category": "branch_lengths_and_formatting",
+      "tree_name": "BranchCarnivores",
+      "raw_newick": "( ( (Canis:0.006, Vulpes:1.2e-2) Canidae:0.03, (Ursus:1.5e-3, Ailuropoda:0.004) Ursidae:0.02 ) Caniformia:0.01, (Felis:0.005, Panthera:0.006) Felidae:0.02 ) Carnivora:0.1 ;",
+      "normalized_newick": "(((Canis,Vulpes)Canidae,(Ursus,Ailuropoda)Ursidae)Caniformia,(Felis,Panthera)Felidae)Carnivora;",
+      "tree": "(((Canis,Vulpes)Canidae,(Ursus,Ailuropoda)Ursidae)Caniformia,(Felis,Panthera)Felidae)Carnivora;",
+      "metadata": {
+        "branch_lengths_stripped": true,
+        "auto_labeled_nodes": [],
+        "leaf_count": 6,
+        "internal_count": 5
+      },
+      "leaves": [
+        "Ailuropoda",
+        "Canis",
+        "Felis",
+        "Panthera",
+        "Ursus",
+        "Vulpes"
+      ],
+      "task": "mrca",
+      "question": "What is the most recent common ancestor of Canis and Ursus?",
+      "expected": "Caniformia",
+      "prompt": "Tree: (((Canis,Vulpes)Canidae,(Ursus,Ailuropoda)Ursidae)Caniformia,(Felis,Panthera)Felidae)Carnivora;\nTask (mrca): What is the most recent common ancestor of Canis and Ursus?\nAnswer with only the exact value.",
+      "lora_prediction": "Caniformia",
+      "lora_correct": true,
+      "base_prediction": null,
+      "base_correct": null
+    },
+    {
+      "category": "branch_lengths_and_formatting",
+      "tree_name": "BranchCarnivores",
+      "raw_newick": "( ( (Canis:0.006, Vulpes:1.2e-2) Canidae:0.03, (Ursus:1.5e-3, Ailuropoda:0.004) Ursidae:0.02 ) Caniformia:0.01, (Felis:0.005, Panthera:0.006) Felidae:0.02 ) Carnivora:0.1 ;",
+      "normalized_newick": "(((Canis,Vulpes)Canidae,(Ursus,Ailuropoda)Ursidae)Caniformia,(Felis,Panthera)Felidae)Carnivora;",
+      "tree": "(((Canis,Vulpes)Canidae,(Ursus,Ailuropoda)Ursidae)Caniformia,(Felis,Panthera)Felidae)Carnivora;",
+      "metadata": {
+        "branch_lengths_stripped": true,
+        "auto_labeled_nodes": [],
+        "leaf_count": 6,
+        "internal_count": 5
+      },
+      "leaves": [
+        "Ailuropoda",
+        "Canis",
+        "Felis",
+        "Panthera",
+        "Ursus",
+        "Vulpes"
+      ],
+      "task": "sister",
+      "question": "What is the direct sister taxon of Canis?",
+      "expected": "Vulpes",
+      "prompt": "Tree: (((Canis,Vulpes)Canidae,(Ursus,Ailuropoda)Ursidae)Caniformia,(Felis,Panthera)Felidae)Carnivora;\nTask (sister): What is the direct sister taxon of Canis?\nAnswer with only the exact value.",
+      "lora_prediction": "Vulpes",
+      "lora_correct": true,
+      "base_prediction": null,
+      "base_correct": null
+    },
+    {
+      "category": "branch_lengths_and_formatting",
+      "tree_name": "BranchCarnivores",
+      "raw_newick": "( ( (Canis:0.006, Vulpes:1.2e-2) Canidae:0.03, (Ursus:1.5e-3, Ailuropoda:0.004) Ursidae:0.02 ) Caniformia:0.01, (Felis:0.005, Panthera:0.006) Felidae:0.02 ) Carnivora:0.1 ;",
+      "normalized_newick": "(((Canis,Vulpes)Canidae,(Ursus,Ailuropoda)Ursidae)Caniformia,(Felis,Panthera)Felidae)Carnivora;",
+      "tree": "(((Canis,Vulpes)Canidae,(Ursus,Ailuropoda)Ursidae)Caniformia,(Felis,Panthera)Felidae)Carnivora;",
+      "metadata": {
+        "branch_lengths_stripped": true,
+        "auto_labeled_nodes": [],
+        "leaf_count": 6,
+        "internal_count": 5
+      },
+      "leaves": [
+        "Ailuropoda",
+        "Canis",
+        "Felis",
+        "Panthera",
+        "Ursus",
+        "Vulpes"
+      ],
+      "task": "monophyletic",
+      "question": "Do Canis, Ursus form a monophyletic clade?",
+      "expected": "No",
+      "prompt": "Tree: (((Canis,Vulpes)Canidae,(Ursus,Ailuropoda)Ursidae)Caniformia,(Felis,Panthera)Felidae)Carnivora;\nTask (monophyletic): Do Canis, Ursus form a monophyletic clade?\nAnswer with only the exact value.",
+      "lora_prediction": "No",
+      "lora_correct": true,
+      "base_prediction": null,
+      "base_correct": null
+    },
+    {
+      "category": "branch_lengths_and_formatting",
+      "tree_name": "BranchCarnivores",
+      "raw_newick": "( ( (Canis:0.006, Vulpes:1.2e-2) Canidae:0.03, (Ursus:1.5e-3, Ailuropoda:0.004) Ursidae:0.02 ) Caniformia:0.01, (Felis:0.005, Panthera:0.006) Felidae:0.02 ) Carnivora:0.1 ;",
+      "normalized_newick": "(((Canis,Vulpes)Canidae,(Ursus,Ailuropoda)Ursidae)Caniformia,(Felis,Panthera)Felidae)Carnivora;",
+      "tree": "(((Canis,Vulpes)Canidae,(Ursus,Ailuropoda)Ursidae)Caniformia,(Felis,Panthera)Felidae)Carnivora;",
+      "metadata": {
+        "branch_lengths_stripped": true,
+        "auto_labeled_nodes": [],
+        "leaf_count": 6,
+        "internal_count": 5
+      },
+      "leaves": [
+        "Ailuropoda",
+        "Canis",
+        "Felis",
+        "Panthera",
+        "Ursus",
+        "Vulpes"
+      ],
+      "task": "distance",
+      "question": "What is the topological edge distance between Canis and Felis?",
+      "expected": "5",
+      "prompt": "Tree: (((Canis,Vulpes)Canidae,(Ursus,Ailuropoda)Ursidae)Caniformia,(Felis,Panthera)Felidae)Carnivora;\nTask (distance): What is the topological edge distance between Canis and Felis?\nAnswer with only the exact value.",
+      "lora_prediction": "5",
+      "lora_correct": true,
+      "base_prediction": null,
+      "base_correct": null
+    }
+  ]
+}

@@ -2,18 +2,18 @@
   "model_name": "HuggingFaceTB/SmolLM2-135M-Instruct",
   "adapter_dir": "model/phylogeny-lora",
   "test_file": "data/test.jsonl",
-  "max_new_tokens": 12,
+  "max_new_tokens": 24,
   "batch_size": 16,
   "overall": {
-    "correct": 78,
+    "correct": 76,
     "total": 80,
-    "accuracy": 0.975
+    "accuracy": 0.95
   },
   "per_task": {
     "mrca": {
-      "correct": 20,
+      "correct": 19,
       "total": 20,
-      "accuracy": 1.0
+      "accuracy": 0.95
     },
     "sister": {
       "correct": 20,
@@ -26,12 +26,12 @@
       "accuracy": 1.0
     },
     "distance": {
-      "correct": 18,
+      "correct": 17,
       "total": 20,
-      "accuracy": 0.9
+      "accuracy": 0.85
     }
   },
-  "num_failures": 2,
+  "num_failures": 4,
   "samples": [
     {
       "id": "test-000003",
@@ -44,10 +44,30 @@
       "correct": false
     },
     {
+      "id": "test-000014",
+      "task": "mrca",
+      "tree": "((Icarus,Wystan)C1,((Achilles,Bellona)C2,Quirin)C3)C4;",
+      "prompt": "Tree: ((Icarus,Wystan)C1,((Achilles,Bellona)C2,Quirin)C3)C4;\nTask (mrca): What is the most recent common ancestor of Bellona and Achilles?\nAnswer with only the exact value.",
+      "expected": "C2",
+      "completion": "C3",
+      "prediction": "C3",
+      "correct": false
+    },
+    {
       "id": "test-000036",
       "task": "distance",
       "tree": "(Quirin,(((Pallus,(Kalliope,Wystan)C1)C2,Endymion)C3,(Cassian,Morpheus)C4)C5)C6;",
       "prompt": "Tree: (Quirin,(((Pallus,(Kalliope,Wystan)C1)C2,Endymion)C3,(Cassian,Morpheus)C4)C5)C6;\nTask (distance): What is the topological edge distance between Pallus and Quirin?\nAnswer with only the exact value.",
+      "expected": "5",
+      "completion": "4",
+      "prediction": "4",
+      "correct": false
+    },
+    {
+      "id": "test-000062",
+      "task": "distance",
+      "tree": "(((Jasper,(Hesperia,Grendel)C1)C2,(Ymir,Xylo)C3)C4,(Pallus,Triton)C5)C6;",
+      "prompt": "Tree: (((Jasper,(Hesperia,Grendel)C1)C2,(Ymir,Xylo)C3)C4,(Pallus,Triton)C5)C6;\nTask (distance): What is the topological edge distance between Grendel and Xylo?\nAnswer with only the exact value.",
       "expected": "5",
       "completion": "4",
       "prediction": "4",
@@ -111,26 +131,6 @@
       "expected": "C4",
       "completion": "C4",
       "prediction": "C4",
-      "correct": true
-    },
-    {
-      "id": "test-000008",
-      "task": "distance",
-      "tree": "(Bellona,((Kalliope,Vespera)C1,(Icarus,(Cassian,Perses)C2)C3)C4)C5;",
-      "prompt": "Tree: (Bellona,((Kalliope,Vespera)C1,(Icarus,(Cassian,Perses)C2)C3)C4)C5;\nTask (distance): What is the topological edge distance between Cassian and Perses?\nAnswer with only the exact value.",
-      "expected": "2",
-      "completion": "2",
-      "prediction": "2",
-      "correct": true
-    },
-    {
-      "id": "test-000009",
-      "task": "distance",
-      "tree": "(((((Rhea,Hesperia)C1,Xylo)C2,Zelena)C3,(Jasper,Kalliope)C4)C5,Naiad)C6;",
-      "prompt": "Tree: (((((Rhea,Hesperia)C1,Xylo)C2,Zelena)C3,(Jasper,Kalliope)C4)C5,Naiad)C6;\nTask (distance): What is the topological edge distance between Kalliope and Hesperia?\nAnswer with only the exact value.",
-      "expected": "6",
-      "completion": "6",
-      "prediction": "6",
       "correct": true
     }
   ]

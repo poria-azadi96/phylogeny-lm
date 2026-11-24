@@ -64,6 +64,32 @@ V3_CLADE_LABELS = (
     "Dianthomorpha", "Eburonidae", "Fenaroidea",
 )
 
+BINOMIAL_GENERA = (
+    "Aeribacter", "Boreococcus", "Caelimonas", "Dravibacillus",
+    "Elysiarchaeon", "Ferromonas", "Galenococcus", "Heliobacter",
+    "Iridimonas", "Jovicoccus", "Kaelibacter", "Luminococcus",
+    "Mireomonas", "Nivalibacter", "Orinthococcus", "Pellimonas",
+    "Quoribacter", "Ravencoccus", "Sorellimonas", "Taurobacter",
+    "Ulvanococcus", "Vesperimonas", "Wrennibacter", "Xanthococcus",
+    "Yalarimonas", "Zephyribacter",
+)
+
+BINOMIAL_EPITHETS = (
+    "albus", "brevis", "celeris", "durus", "ferox", "gracilis",
+    "halophilus", "ignis", "luteus", "marinus", "niger", "orientalis",
+    "parvus", "ruber", "silvestris", "thermophilus", "viridis",
+    "vulgaris", "aquaticus", "borealis", "calidus", "profundus",
+    "solaris", "vernalis",
+)
+
+BINOMIAL_NAMES = tuple(
+    genus + "_" + epithet
+    for genus in BINOMIAL_GENERA
+    for epithet in BINOMIAL_EPITHETS
+)
+
+FASTA_PATH = os.path.join("data", "16s_rrna_archaea_bacteria.fasta")
+
 BIOLOGICAL_NAMES = frozenset((
     # Leaves from stress_test_phylogeny.py / demo_unseen_primates.py
     "Homo", "Pan", "Gorilla", "Pongo", "Hylobates", "Canis", "Vulpes",
@@ -298,6 +324,44 @@ def clade_label_pool(v3_clades=False):
     return SYNTHETIC_CLADE_LABELS
 
 
+def internal_nodes_postorder(root):
+    nodes = []
+
+    def visit(node):
+        if node.is_leaf:
+            return
+        for child in node.children:
+            visit(child)
+        nodes.append(node)
+
+    visit(root)
+    return nodes
+
+
+def assign_clade_root_labels(root):
+    internal = internal_nodes_postorder(root)
+    for index, node in enumerate(internal[:-1], start=1):
+        node.label = "Clade%d" % index
+    if internal:
+        internal[-1].label = "Root"
+    return root
+
+
+def is_standard_clade_label(label):
+    return re.fullmatch(r"C\d+", label) is not None
+
+
+def collect_fasta_labels(path=FASTA_PATH):
+    labels = set()
+    if not os.path.exists(path):
+        return labels
+    with open(path, "r", encoding="utf-8") as handle:
+        for line in handle:
+            if line.startswith(">"):
+                labels.update(re.findall(NAME_PATTERN, line))
+    return labels
+
+
 def assign_clade_labels(root, mixed=False, rng=None, label_pool=None):
     internal_nodes = []
 
@@ -462,13 +526,19 @@ def generate_record(
     max_leaves=7,
     hard_paraphyly=False,
     label_pool=None,
+    binomial=False,
+    clade_root=False,
 ):
     leaf_count = rng.randint(min_leaves, max_leaves)
-    taxon_names = rng.sample(list(pool), leaf_count)
+    selected_pool = BINOMIAL_NAMES if binomial else pool
+    taxon_names = rng.sample(list(selected_pool), leaf_count)
     root = build_random_tree(taxon_names, rng)
-    assign_clade_labels(
-        root, mixed=mixed_clade_labels, rng=rng, label_pool=label_pool
-    )
+    if clade_root:
+        assign_clade_root_labels(root)
+    else:
+        assign_clade_labels(
+            root, mixed=mixed_clade_labels, rng=rng, label_pool=label_pool
+        )
     tree = render_newick(root) + ";"
 
     question, answer = make_question_and_answer(
@@ -503,6 +573,8 @@ def generate_split(
     max_leaves=7,
     hard_paraphyly=False,
     label_pool=None,
+    binomial_ratio=0.0,
+    clade_root_ratio=0.0,
 ):
     counts = balanced_task_counts(total)
     tasks = []
@@ -510,11 +582,33 @@ def generate_split(
         tasks.extend([task] * count)
     rng.shuffle(tasks)
 
+    clade_root_flags = [False] * total
+    if clade_root_ratio > 0.0 and total:
+        clade_root_count = int(round(total * clade_root_ratio))
+        clade_root_flags = [True] * clade_root_count + [False] * (
+            total - clade_root_count
+        )
+        rng.shuffle(clade_root_flags)
+
     mixed_flags = [False] * total
     if mixed_clade_labels and total:
-        mixed_count = int(round(total * mixed_clade_ratio))
-        mixed_flags = [True] * mixed_count + [False] * (total - mixed_count)
-        rng.shuffle(mixed_flags)
+        eligible = [
+            index
+            for index, is_clade_root in enumerate(clade_root_flags)
+            if not is_clade_root
+        ]
+        rng.shuffle(eligible)
+        mixed_count = int(round(len(eligible) * mixed_clade_ratio))
+        for index in eligible[:mixed_count]:
+            mixed_flags[index] = True
+
+    binomial_flags = [False] * total
+    if binomial_ratio > 0.0 and total:
+        binomial_count = int(round(total * binomial_ratio))
+        binomial_flags = [True] * binomial_count + [False] * (
+            total - binomial_count
+        )
+        rng.shuffle(binomial_flags)
 
     records = []
     positive_index = 0
@@ -537,6 +631,8 @@ def generate_split(
                 max_leaves=max_leaves,
                 hard_paraphyly=hard_paraphyly,
                 label_pool=label_pool,
+                binomial=binomial_flags[index - 1],
+                clade_root=clade_root_flags[index - 1],
             )
         )
     return records
@@ -657,6 +753,8 @@ def verify_records(
     min_leaves=5,
     max_leaves=7,
     v3_clades=False,
+    binomial_ratio=0.0,
+    clade_root_ratio=0.0,
 ):
     if len(records) != expected_size:
         raise AssertionError(
@@ -670,11 +768,22 @@ def verify_records(
     taxa = set()
     trees = set()
     prompts = set()
+    labels_seen = set()
     standard_label_trees = 0
     mixed_label_trees = 0
+    clade_root_trees = 0
+    binomial_trees = 0
     synthetic_labels = set(SYNTHETIC_CLADE_LABELS)
     if v3_clades:
         synthetic_labels |= set(V3_CLADE_LABELS)
+    reserved_labels = BIOLOGICAL_NAMES | collect_fasta_labels()
+    if binomial_ratio > 0.0:
+        binomial_allowed = set(BINOMIAL_NAMES)
+        allowed_taxa = (
+            binomial_allowed
+            if allowed_taxa is None
+            else set(allowed_taxa) | binomial_allowed
+        )
 
     for record in records:
         if not isinstance(record, dict):
@@ -695,20 +804,45 @@ def verify_records(
         root = parse_newick(record["tree"])
         internal = all_internal_nodes(root)
         labels = {node.label for node in internal}
-        expected_labels = {"C%d" % i for i in range(1, len(internal) + 1)}
-        if mixed_clade_labels:
-            if labels == expected_labels:
-                standard_label_trees += 1
-            elif labels.issubset(synthetic_labels):
-                mixed_label_trees += 1
-            else:
-                raise AssertionError(
-                    "%s: clade labels %r are neither C1..C%d nor allowed synthetic labels"
-                    % (record["id"], labels, len(internal))
+        label_counts = {}
+        for node in internal:
+            label_counts[node.label] = label_counts.get(node.label, 0) + 1
+        if any(count != 1 for count in label_counts.values()):
+            raise AssertionError("%s: duplicate clade labels found" % record["id"])
+
+        standard_labels = {"C%d" % i for i in range(1, len(internal) + 1)}
+        postorder = internal_nodes_postorder(root)
+        clade_root_labels = {"Root"}
+        clade_root_labels.update("Clade%d" % i for i in range(1, len(postorder)))
+        is_clade_root = (
+            root.label == "Root"
+            and labels == clade_root_labels
+            and all(
+                node.label == (
+                    "Root" if index == len(postorder) - 1
+                    else "Clade%d" % (index + 1)
                 )
-        elif labels != expected_labels:
+                for index, node in enumerate(postorder)
+            )
+        )
+        if is_clade_root:
+            if clade_root_ratio <= 0.0:
+                raise AssertionError(
+                    "%s: unexpected Clade/Root labels" % record["id"]
+                )
+            clade_root_trees += 1
+        elif labels == standard_labels:
+            standard_label_trees += 1
+        elif mixed_clade_labels and labels.issubset(synthetic_labels):
+            mixed_label_trees += 1
+        elif mixed_clade_labels:
             raise AssertionError(
-                "%s: clade labels %r are not C1..C%d"
+                "%s: clade labels %r are neither C1..C%d, allowed synthetic labels, "
+                "nor Clade/Root" % (record["id"], labels, len(internal))
+            )
+        else:
+            raise AssertionError(
+                "%s: clade labels %r are not C1..C%d or Clade/Root"
                 % (record["id"], labels, len(internal))
             )
 
@@ -723,11 +857,23 @@ def verify_records(
                 "%s: tree uses taxa outside the allowed pool: %r"
                 % (record["id"], sorted(leaf_names - allowed_taxa))
             )
-        biological_overlap = (leaf_names | labels) & BIOLOGICAL_NAMES
-        if biological_overlap:
+        binomial_leaves = [name for name in leaf_names if "_" in name]
+        if binomial_leaves:
+            if binomial_ratio <= 0.0:
+                raise AssertionError(
+                    "%s: binomial leaf names are not allowed" % record["id"]
+                )
+            if len(binomial_leaves) != len(leaf_names):
+                raise AssertionError(
+                    "%s: binomial trees must use only binomial leaf names"
+                    % record["id"]
+                )
+            binomial_trees += 1
+        reserved_overlap = (leaf_names | labels) & reserved_labels
+        if reserved_overlap:
             raise AssertionError(
-                "%s: tree uses biological names reserved for stress/demo: %r"
-                % (record["id"], sorted(biological_overlap))
+                "%s: tree uses names reserved by stress/demo/fasta: %r"
+                % (record["id"], sorted(reserved_overlap))
             )
 
         question = extract_question(record)
@@ -742,6 +888,7 @@ def verify_records(
 
         task_counts[record["task"]] += 1
         taxa.update(leaf_names)
+        labels_seen.update(labels)
         trees.add(record["tree"])
         prompts.add(record["prompt"])
 
@@ -749,19 +896,54 @@ def verify_records(
     if max(counts) - min(counts) > 1:
         raise AssertionError("%s: task counts are not balanced: %r" % (split, task_counts))
 
-    if mixed_clade_labels and expected_size >= 20:
-        expected_mixed = int(round(expected_size * mixed_clade_ratio))
-        if mixed_label_trees != expected_mixed:
-            raise AssertionError(
-                "%s: mixed-label trees %d != expected %d for ratio %.3f"
-                % (split, mixed_label_trees, expected_mixed, mixed_clade_ratio)
+    expected_binomial = (
+        int(round(expected_size * binomial_ratio)) if binomial_ratio > 0.0 else 0
+    )
+    expected_clade_root = (
+        int(round(expected_size * clade_root_ratio)) if clade_root_ratio > 0.0 else 0
+    )
+    if expected_size >= 20:
+        if binomial_ratio > 0.0:
+            if binomial_trees != expected_binomial:
+                raise AssertionError(
+                    "%s: binomial-leaf trees %d != expected %d for ratio %.3f"
+                    % (split, binomial_trees, expected_binomial, binomial_ratio)
+                )
+            binomial_fraction = binomial_trees / float(expected_size)
+            if abs(binomial_fraction - binomial_ratio) > 0.05:
+                raise AssertionError(
+                    "%s: binomial-leaf fraction %.3f is not near %.3f"
+                    % (split, binomial_fraction, binomial_ratio)
+                )
+        if clade_root_ratio > 0.0:
+            if clade_root_trees != expected_clade_root:
+                raise AssertionError(
+                    "%s: Clade/Root trees %d != expected %d for ratio %.3f"
+                    % (split, clade_root_trees, expected_clade_root, clade_root_ratio)
+                )
+            clade_root_fraction = clade_root_trees / float(expected_size)
+            if abs(clade_root_fraction - clade_root_ratio) > 0.05:
+                raise AssertionError(
+                    "%s: Clade/Root fraction %.3f is not near %.3f"
+                    % (split, clade_root_fraction, clade_root_ratio)
+                )
+        if mixed_clade_labels:
+            mixed_basis = expected_size - expected_clade_root
+            expected_mixed = (
+                int(round(mixed_basis * mixed_clade_ratio)) if mixed_basis else 0
             )
-        mixed_fraction = mixed_label_trees / float(expected_size)
-        if abs(mixed_fraction - mixed_clade_ratio) > 0.05:
-            raise AssertionError(
-                "%s: mixed-label fraction %.3f is not near %.3f"
-                % (split, mixed_fraction, mixed_clade_ratio)
-            )
+            if mixed_label_trees != expected_mixed:
+                raise AssertionError(
+                    "%s: mixed-label trees %d != expected %d for ratio %.3f"
+                    % (split, mixed_label_trees, expected_mixed, mixed_clade_ratio)
+                )
+            if mixed_basis:
+                mixed_fraction = mixed_label_trees / float(mixed_basis)
+                if abs(mixed_fraction - mixed_clade_ratio) > 0.05:
+                    raise AssertionError(
+                        "%s: mixed-label fraction %.3f is not near %.3f"
+                        % (split, mixed_fraction, mixed_clade_ratio)
+                    )
 
     message = (
         "%s: %d records, task counts %s, %d taxa, %d unique trees"
@@ -772,15 +954,22 @@ def verify_records(
             standard_label_trees,
             mixed_label_trees,
         )
+    if clade_root_ratio > 0.0:
+        message += ", %d Clade/Root trees" % clade_root_trees
+    if binomial_ratio > 0.0:
+        message += ", %d binomial-leaf trees" % binomial_trees
     print(message)
 
     return {
         "taxa": taxa,
+        "labels": labels_seen,
         "trees": trees,
         "prompts": prompts,
         "task_counts": task_counts,
         "standard_label_trees": standard_label_trees,
         "mixed_label_trees": mixed_label_trees,
+        "clade_root_trees": clade_root_trees,
+        "binomial_trees": binomial_trees,
     }
 
 
@@ -851,6 +1040,8 @@ def verify_train_only_file(
     min_leaves=5,
     max_leaves=7,
     v3_clades=False,
+    binomial_ratio=0.0,
+    clade_root_ratio=0.0,
 ):
     records = load_jsonl(path)
     data = verify_records(
@@ -863,6 +1054,8 @@ def verify_train_only_file(
         max_leaves=max_leaves,
         v3_clades=v3_clades,
         allowed_taxa=set(TRAIN_NAMES),
+        binomial_ratio=binomial_ratio,
+        clade_root_ratio=clade_root_ratio,
     )
 
     for reference_path in reference_paths:
@@ -937,6 +1130,20 @@ def parse_args(argv=None):
         action="store_true",
         help="Add 32 Latinate synthetic clade labels to the mixed-label pool.",
     )
+    parser.add_argument(
+        "--binomial_ratio",
+        type=float,
+        default=0.0,
+        help="Fraction of trees using synthetic Genus_species binomial leaves "
+        "(only with --train_only_out, default: 0.0).",
+    )
+    parser.add_argument(
+        "--clade_root_ratio",
+        type=float,
+        default=0.0,
+        help="Fraction of trees using Clade1..Clade{k-1} + Root labels "
+        "(default: 0.0).",
+    )
     parser.add_argument("--verify", dest="verify", action="store_true", default=True)
     parser.add_argument("--no-verify", dest="verify", action="store_false")
     args = parser.parse_args(argv)
@@ -951,6 +1158,12 @@ def parse_args(argv=None):
         args.mixed_clade_ratio = 0.3
     if not 0.0 <= args.mixed_clade_ratio <= 1.0:
         parser.error("--mixed_clade_ratio must be between 0 and 1")
+    if not 0.0 <= args.binomial_ratio <= 1.0:
+        parser.error("--binomial_ratio must be between 0 and 1")
+    if not 0.0 <= args.clade_root_ratio <= 1.0:
+        parser.error("--clade_root_ratio must be between 0 and 1")
+    if args.binomial_ratio > 0.0 and not args.train_only_out:
+        parser.error("--binomial_ratio is only allowed with --train_only_out")
     return args
 
 
@@ -1007,6 +1220,8 @@ def main(argv=None):
             max_leaves=args.max_leaves,
             hard_paraphyly=args.hard_paraphyly,
             label_pool=label_pool,
+            binomial_ratio=args.binomial_ratio,
+            clade_root_ratio=args.clade_root_ratio,
         )
         write_jsonl(output_path, records)
         print("Wrote %d records to %s" % (len(records), output_path))
@@ -1025,6 +1240,8 @@ def main(argv=None):
                 min_leaves=args.min_leaves,
                 max_leaves=args.max_leaves,
                 v3_clades=args.v3_clades,
+                binomial_ratio=args.binomial_ratio,
+                clade_root_ratio=args.clade_root_ratio,
             )
         return
 

@@ -1,0 +1,1070 @@
+{
+  "fasta": "data/16s_rrna_archaea_bacteria.fasta",
+  "model_name": "HuggingFaceTB/SmolLM2-135M-Instruct",
+  "adapter_dir": "model/phylogeny-lora",
+  "max_new_tokens": 24,
+  "verify_only": false,
+  "step_a": {
+    "taxa": [
+      "Escherichia_coli",
+      "Pseudomonas_aeruginosa",
+      "Bacillus_subtilis",
+      "Staphylococcus_aureus",
+      "Halobacterium_salinarum",
+      "Methanocaldococcus_jannaschii",
+      "Pyrococcus_furiosus",
+      "Sulfolobus_acidocaldarius"
+    ],
+    "lengths": {
+      "Escherichia_coli": 1467,
+      "Pseudomonas_aeruginosa": 1527,
+      "Bacillus_subtilis": 1550,
+      "Staphylococcus_aureus": 1552,
+      "Halobacterium_salinarum": 1434,
+      "Methanocaldococcus_jannaschii": 1458,
+      "Pyrococcus_furiosus": 1321,
+      "Sulfolobus_acidocaldarius": 1463
+    },
+    "distance_matrix": [
+      [
+        0.0,
+        0.163126,
+        0.246755,
+        0.244332,
+        0.456097,
+        0.430944,
+        0.400444,
+        0.44229
+      ],
+      [
+        0.163126,
+        0.0,
+        0.220875,
+        0.237613,
+        0.411787,
+        0.386147,
+        0.382988,
+        0.43
+      ],
+      [
+        0.246755,
+        0.220875,
+        0.0,
+        0.079781,
+        0.4326,
+        0.36694,
+        0.372662,
+        0.401559
+      ],
+      [
+        0.244332,
+        0.237613,
+        0.079781,
+        0.0,
+        0.441483,
+        0.407014,
+        0.412916,
+        0.450769
+      ],
+      [
+        0.456097,
+        0.411787,
+        0.4326,
+        0.441483,
+        0.0,
+        0.272298,
+        0.277679,
+        0.343433
+      ],
+      [
+        0.430944,
+        0.386147,
+        0.36694,
+        0.407014,
+        0.272298,
+        0.0,
+        0.125694,
+        0.23923
+      ],
+      [
+        0.400444,
+        0.382988,
+        0.372662,
+        0.412916,
+        0.277679,
+        0.125694,
+        0.0,
+        0.235339
+      ],
+      [
+        0.44229,
+        0.43,
+        0.401559,
+        0.450769,
+        0.343433,
+        0.23923,
+        0.235339,
+        0.0
+      ]
+    ],
+    "identity_matrix": [
+      [
+        100.0,
+        85.38,
+        79.03,
+        79.2,
+        65.89,
+        67.24,
+        68.99,
+        66.64
+      ],
+      [
+        85.38,
+        100.0,
+        80.92,
+        79.71,
+        68.38,
+        69.84,
+        70.07,
+        67.31
+      ],
+      [
+        79.03,
+        80.92,
+        100.0,
+        92.5,
+        67.21,
+        70.99,
+        70.67,
+        68.95
+      ],
+      [
+        79.2,
+        79.71,
+        92.5,
+        100.0,
+        66.69,
+        68.62,
+        68.41,
+        66.19
+      ],
+      [
+        65.89,
+        68.38,
+        67.21,
+        66.69,
+        100.0,
+        77.28,
+        76.85,
+        72.66
+      ],
+      [
+        67.24,
+        69.84,
+        70.99,
+        68.62,
+        77.28,
+        100.0,
+        88.43,
+        79.56
+      ],
+      [
+        68.99,
+        70.07,
+        70.67,
+        68.41,
+        76.85,
+        88.43,
+        100.0,
+        79.81
+      ],
+      [
+        66.64,
+        67.31,
+        68.95,
+        66.19,
+        72.66,
+        79.56,
+        79.81,
+        100.0
+      ]
+    ],
+    "aligned_sites_matrix": [
+      [
+        1464,
+        1457,
+        1450,
+        1452,
+        1378,
+        1404,
+        1277,
+        1373
+      ],
+      [
+        1457,
+        1527,
+        1520,
+        1523,
+        1401,
+        1429,
+        1283,
+        1395
+      ],
+      [
+        1450,
+        1520,
+        1550,
+        1547,
+        1412,
+        1434,
+        1299,
+        1404
+      ],
+      [
+        1452,
+        1523,
+        1547,
+        1552,
+        1414,
+        1437,
+        1298,
+        1408
+      ],
+      [
+        1378,
+        1401,
+        1412,
+        1414,
+        1434,
+        1426,
+        1313,
+        1386
+      ],
+      [
+        1404,
+        1429,
+        1434,
+        1437,
+        1426,
+        1457,
+        1305,
+        1409
+      ],
+      [
+        1277,
+        1283,
+        1299,
+        1298,
+        1313,
+        1305,
+        1321,
+        1293
+      ],
+      [
+        1373,
+        1395,
+        1404,
+        1408,
+        1386,
+        1409,
+        1293,
+        1442
+      ]
+    ],
+    "weighted_newick": "((Halobacterium_salinarum:0.165811,((Methanocaldococcus_jannaschii:0.063517,Pyrococcus_furiosus:0.062177)Clade1:0.029647,Sulfolobus_acidocaldarius:0.14479)Clade2:0.024758)Clade3:0.058535,((Bacillus_subtilis:0.027163,Staphylococcus_aureus:0.052618)Clade4:0.075384,(Escherichia_coli:0.095078,Pseudomonas_aeruginosa:0.068048)Clade5:0.040556)Clade6:0.092449)Root;",
+    "normalized_newick": "((Halobacterium_salinarum,((Methanocaldococcus_jannaschii,Pyrococcus_furiosus)Clade1,Sulfolobus_acidocaldarius)Clade2)Clade3,((Bacillus_subtilis,Staphylococcus_aureus)Clade4,(Escherichia_coli,Pseudomonas_aeruginosa)Clade5)Clade6)Root;",
+    "tree_summary": {
+      "normalized_newick": "((Halobacterium_salinarum,((Methanocaldococcus_jannaschii,Pyrococcus_furiosus)Clade1,Sulfolobus_acidocaldarius)Clade2)Clade3,((Bacillus_subtilis,Staphylococcus_aureus)Clade4,(Escherichia_coli,Pseudomonas_aeruginosa)Clade5)Clade6)Root;",
+      "metadata": {
+        "branch_lengths_stripped": false,
+        "auto_labeled_nodes": [],
+        "leaf_count": 8,
+        "internal_count": 7
+      },
+      "leaves": [
+        "Bacillus_subtilis",
+        "Escherichia_coli",
+        "Halobacterium_salinarum",
+        "Methanocaldococcus_jannaschii",
+        "Pseudomonas_aeruginosa",
+        "Pyrococcus_furiosus",
+        "Staphylococcus_aureus",
+        "Sulfolobus_acidocaldarius"
+      ],
+      "internal_clades": [
+        "Clade1",
+        "Clade2",
+        "Clade3",
+        "Clade4",
+        "Clade5",
+        "Clade6",
+        "Root"
+      ],
+      "cherry_leaves": [
+        "Bacillus_subtilis",
+        "Escherichia_coli",
+        "Methanocaldococcus_jannaschii",
+        "Pseudomonas_aeruginosa",
+        "Pyrococcus_furiosus",
+        "Staphylococcus_aureus"
+      ],
+      "tree_dict": {
+        "id": "Root",
+        "name": null,
+        "label": "Root",
+        "is_leaf": false,
+        "children": [
+          {
+            "id": "Clade3",
+            "name": null,
+            "label": "Clade3",
+            "is_leaf": false,
+            "children": [
+              {
+                "id": "Halobacterium_salinarum",
+                "name": "Halobacterium_salinarum",
+                "label": null,
+                "is_leaf": true,
+                "children": []
+              },
+              {
+                "id": "Clade2",
+                "name": null,
+                "label": "Clade2",
+                "is_leaf": false,
+                "children": [
+                  {
+                    "id": "Clade1",
+                    "name": null,
+                    "label": "Clade1",
+                    "is_leaf": false,
+                    "children": [
+                      {
+                        "id": "Methanocaldococcus_jannaschii",
+                        "name": "Methanocaldococcus_jannaschii",
+                        "label": null,
+                        "is_leaf": true,
+                        "children": []
+                      },
+                      {
+                        "id": "Pyrococcus_furiosus",
+                        "name": "Pyrococcus_furiosus",
+                        "label": null,
+                        "is_leaf": true,
+                        "children": []
+                      }
+                    ]
+                  },
+                  {
+                    "id": "Sulfolobus_acidocaldarius",
+                    "name": "Sulfolobus_acidocaldarius",
+                    "label": null,
+                    "is_leaf": true,
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "Clade6",
+            "name": null,
+            "label": "Clade6",
+            "is_leaf": false,
+            "children": [
+              {
+                "id": "Clade4",
+                "name": null,
+                "label": "Clade4",
+                "is_leaf": false,
+                "children": [
+                  {
+                    "id": "Bacillus_subtilis",
+                    "name": "Bacillus_subtilis",
+                    "label": null,
+                    "is_leaf": true,
+                    "children": []
+                  },
+                  {
+                    "id": "Staphylococcus_aureus",
+                    "name": "Staphylococcus_aureus",
+                    "label": null,
+                    "is_leaf": true,
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "id": "Clade5",
+                "name": null,
+                "label": "Clade5",
+                "is_leaf": false,
+                "children": [
+                  {
+                    "id": "Escherichia_coli",
+                    "name": "Escherichia_coli",
+                    "label": null,
+                    "is_leaf": true,
+                    "children": []
+                  },
+                  {
+                    "id": "Pseudomonas_aeruginosa",
+                    "name": "Pseudomonas_aeruginosa",
+                    "label": null,
+                    "is_leaf": true,
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "biological_validation": {
+      "checks": [
+        {
+          "name": "Bacteria (4 taxa)",
+          "taxa": [
+            "Escherichia_coli",
+            "Pseudomonas_aeruginosa",
+            "Bacillus_subtilis",
+            "Staphylococcus_aureus"
+          ],
+          "expected": "Yes",
+          "actual": "Yes",
+          "passed": true
+        },
+        {
+          "name": "Archaea (4 taxa)",
+          "taxa": [
+            "Halobacterium_salinarum",
+            "Methanocaldococcus_jannaschii",
+            "Pyrococcus_furiosus",
+            "Sulfolobus_acidocaldarius"
+          ],
+          "expected": "Yes",
+          "actual": "Yes",
+          "passed": true
+        },
+        {
+          "name": "Gammaproteobacteria (Escherichia_coli, Pseudomonas_aeruginosa)",
+          "taxa": [
+            "Escherichia_coli",
+            "Pseudomonas_aeruginosa"
+          ],
+          "expected": "Yes",
+          "actual": "Yes",
+          "passed": true
+        },
+        {
+          "name": "Bacillota (Bacillus_subtilis, Staphylococcus_aureus)",
+          "taxa": [
+            "Bacillus_subtilis",
+            "Staphylococcus_aureus"
+          ],
+          "expected": "Yes",
+          "actual": "Yes",
+          "passed": true
+        }
+      ],
+      "all_passed": true
+    }
+  },
+  "step_b": {
+    "questions": [
+      {
+        "id": "B01",
+        "task": "mrca",
+        "category": "intra-domain",
+        "question": "What is the most recent common ancestor of Escherichia_coli and Pseudomonas_aeruginosa?",
+        "expected": "Clade5",
+        "normalized_newick": "((Halobacterium_salinarum,((Methanocaldococcus_jannaschii,Pyrococcus_furiosus)Clade1,Sulfolobus_acidocaldarius)Clade2)Clade3,((Bacillus_subtilis,Staphylococcus_aureus)Clade4,(Escherichia_coli,Pseudomonas_aeruginosa)Clade5)Clade6)Root;",
+        "prompt": "Tree: ((Halobacterium_salinarum,((Methanocaldococcus_jannaschii,Pyrococcus_furiosus)Clade1,Sulfolobus_acidocaldarius)Clade2)Clade3,((Bacillus_subtilis,Staphylococcus_aureus)Clade4,(Escherichia_coli,Pseudomonas_aeruginosa)Clade5)Clade6)Root;\nTask (mrca): What is the most recent common ancestor of Escherichia_coli and Pseudomonas_aeruginosa?\nAnswer with only the exact value."
+      },
+      {
+        "id": "B02",
+        "task": "mrca",
+        "category": "intra-domain",
+        "question": "What is the most recent common ancestor of Bacillus_subtilis and Staphylococcus_aureus?",
+        "expected": "Clade4",
+        "normalized_newick": "((Halobacterium_salinarum,((Methanocaldococcus_jannaschii,Pyrococcus_furiosus)Clade1,Sulfolobus_acidocaldarius)Clade2)Clade3,((Bacillus_subtilis,Staphylococcus_aureus)Clade4,(Escherichia_coli,Pseudomonas_aeruginosa)Clade5)Clade6)Root;",
+        "prompt": "Tree: ((Halobacterium_salinarum,((Methanocaldococcus_jannaschii,Pyrococcus_furiosus)Clade1,Sulfolobus_acidocaldarius)Clade2)Clade3,((Bacillus_subtilis,Staphylococcus_aureus)Clade4,(Escherichia_coli,Pseudomonas_aeruginosa)Clade5)Clade6)Root;\nTask (mrca): What is the most recent common ancestor of Bacillus_subtilis and Staphylococcus_aureus?\nAnswer with only the exact value."
+      },
+      {
+        "id": "B03",
+        "task": "mrca",
+        "category": "cross-domain",
+        "question": "What is the most recent common ancestor of Escherichia_coli and Halobacterium_salinarum?",
+        "expected": "Root",
+        "normalized_newick": "((Halobacterium_salinarum,((Methanocaldococcus_jannaschii,Pyrococcus_furiosus)Clade1,Sulfolobus_acidocaldarius)Clade2)Clade3,((Bacillus_subtilis,Staphylococcus_aureus)Clade4,(Escherichia_coli,Pseudomonas_aeruginosa)Clade5)Clade6)Root;",
+        "prompt": "Tree: ((Halobacterium_salinarum,((Methanocaldococcus_jannaschii,Pyrococcus_furiosus)Clade1,Sulfolobus_acidocaldarius)Clade2)Clade3,((Bacillus_subtilis,Staphylococcus_aureus)Clade4,(Escherichia_coli,Pseudomonas_aeruginosa)Clade5)Clade6)Root;\nTask (mrca): What is the most recent common ancestor of Escherichia_coli and Halobacterium_salinarum?\nAnswer with only the exact value."
+      },
+      {
+        "id": "B04",
+        "task": "mrca",
+        "category": "cross-domain",
+        "question": "What is the most recent common ancestor of Bacillus_subtilis and Sulfolobus_acidocaldarius?",
+        "expected": "Root",
+        "normalized_newick": "((Halobacterium_salinarum,((Methanocaldococcus_jannaschii,Pyrococcus_furiosus)Clade1,Sulfolobus_acidocaldarius)Clade2)Clade3,((Bacillus_subtilis,Staphylococcus_aureus)Clade4,(Escherichia_coli,Pseudomonas_aeruginosa)Clade5)Clade6)Root;",
+        "prompt": "Tree: ((Halobacterium_salinarum,((Methanocaldococcus_jannaschii,Pyrococcus_furiosus)Clade1,Sulfolobus_acidocaldarius)Clade2)Clade3,((Bacillus_subtilis,Staphylococcus_aureus)Clade4,(Escherichia_coli,Pseudomonas_aeruginosa)Clade5)Clade6)Root;\nTask (mrca): What is the most recent common ancestor of Bacillus_subtilis and Sulfolobus_acidocaldarius?\nAnswer with only the exact value."
+      },
+      {
+        "id": "B05",
+        "task": "sister",
+        "category": "cherry-leaf",
+        "question": "What is the direct sister taxon of Bacillus_subtilis?",
+        "expected": "Staphylococcus_aureus",
+        "normalized_newick": "((Halobacterium_salinarum,((Methanocaldococcus_jannaschii,Pyrococcus_furiosus)Clade1,Sulfolobus_acidocaldarius)Clade2)Clade3,((Bacillus_subtilis,Staphylococcus_aureus)Clade4,(Escherichia_coli,Pseudomonas_aeruginosa)Clade5)Clade6)Root;",
+        "prompt": "Tree: ((Halobacterium_salinarum,((Methanocaldococcus_jannaschii,Pyrococcus_furiosus)Clade1,Sulfolobus_acidocaldarius)Clade2)Clade3,((Bacillus_subtilis,Staphylococcus_aureus)Clade4,(Escherichia_coli,Pseudomonas_aeruginosa)Clade5)Clade6)Root;\nTask (sister): What is the direct sister taxon of Bacillus_subtilis?\nAnswer with only the exact value."
+      },
+      {
+        "id": "B06",
+        "task": "sister",
+        "category": "cherry-leaf",
+        "question": "What is the direct sister taxon of Escherichia_coli?",
+        "expected": "Pseudomonas_aeruginosa",
+        "normalized_newick": "((Halobacterium_salinarum,((Methanocaldococcus_jannaschii,Pyrococcus_furiosus)Clade1,Sulfolobus_acidocaldarius)Clade2)Clade3,((Bacillus_subtilis,Staphylococcus_aureus)Clade4,(Escherichia_coli,Pseudomonas_aeruginosa)Clade5)Clade6)Root;",
+        "prompt": "Tree: ((Halobacterium_salinarum,((Methanocaldococcus_jannaschii,Pyrococcus_furiosus)Clade1,Sulfolobus_acidocaldarius)Clade2)Clade3,((Bacillus_subtilis,Staphylococcus_aureus)Clade4,(Escherichia_coli,Pseudomonas_aeruginosa)Clade5)Clade6)Root;\nTask (sister): What is the direct sister taxon of Escherichia_coli?\nAnswer with only the exact value."
+      },
+      {
+        "id": "B07",
+        "task": "sister",
+        "category": "cherry-leaf",
+        "question": "What is the direct sister taxon of Methanocaldococcus_jannaschii?",
+        "expected": "Pyrococcus_furiosus",
+        "normalized_newick": "((Halobacterium_salinarum,((Methanocaldococcus_jannaschii,Pyrococcus_furiosus)Clade1,Sulfolobus_acidocaldarius)Clade2)Clade3,((Bacillus_subtilis,Staphylococcus_aureus)Clade4,(Escherichia_coli,Pseudomonas_aeruginosa)Clade5)Clade6)Root;",
+        "prompt": "Tree: ((Halobacterium_salinarum,((Methanocaldococcus_jannaschii,Pyrococcus_furiosus)Clade1,Sulfolobus_acidocaldarius)Clade2)Clade3,((Bacillus_subtilis,Staphylococcus_aureus)Clade4,(Escherichia_coli,Pseudomonas_aeruginosa)Clade5)Clade6)Root;\nTask (sister): What is the direct sister taxon of Methanocaldococcus_jannaschii?\nAnswer with only the exact value."
+      },
+      {
+        "id": "B08",
+        "task": "sister",
+        "category": "cherry-leaf",
+        "question": "What is the direct sister taxon of Pyrococcus_furiosus?",
+        "expected": "Methanocaldococcus_jannaschii",
+        "normalized_newick": "((Halobacterium_salinarum,((Methanocaldococcus_jannaschii,Pyrococcus_furiosus)Clade1,Sulfolobus_acidocaldarius)Clade2)Clade3,((Bacillus_subtilis,Staphylococcus_aureus)Clade4,(Escherichia_coli,Pseudomonas_aeruginosa)Clade5)Clade6)Root;",
+        "prompt": "Tree: ((Halobacterium_salinarum,((Methanocaldococcus_jannaschii,Pyrococcus_furiosus)Clade1,Sulfolobus_acidocaldarius)Clade2)Clade3,((Bacillus_subtilis,Staphylococcus_aureus)Clade4,(Escherichia_coli,Pseudomonas_aeruginosa)Clade5)Clade6)Root;\nTask (sister): What is the direct sister taxon of Pyrococcus_furiosus?\nAnswer with only the exact value."
+      },
+      {
+        "id": "B09",
+        "task": "monophyletic",
+        "category": "cross-domain-paraphyly-trap",
+        "question": "Do Escherichia_coli, Halobacterium_salinarum form a monophyletic clade?",
+        "expected": "No",
+        "normalized_newick": "((Halobacterium_salinarum,((Methanocaldococcus_jannaschii,Pyrococcus_furiosus)Clade1,Sulfolobus_acidocaldarius)Clade2)Clade3,((Bacillus_subtilis,Staphylococcus_aureus)Clade4,(Escherichia_coli,Pseudomonas_aeruginosa)Clade5)Clade6)Root;",
+        "prompt": "Tree: ((Halobacterium_salinarum,((Methanocaldococcus_jannaschii,Pyrococcus_furiosus)Clade1,Sulfolobus_acidocaldarius)Clade2)Clade3,((Bacillus_subtilis,Staphylococcus_aureus)Clade4,(Escherichia_coli,Pseudomonas_aeruginosa)Clade5)Clade6)Root;\nTask (monophyletic): Do Escherichia_coli, Halobacterium_salinarum form a monophyletic clade?\nAnswer with only the exact value."
+      },
+      {
+        "id": "B10",
+        "task": "monophyletic",
+        "category": "cross-domain-paraphyly-trap",
+        "question": "Do Bacillus_subtilis, Sulfolobus_acidocaldarius form a monophyletic clade?",
+        "expected": "No",
+        "normalized_newick": "((Halobacterium_salinarum,((Methanocaldococcus_jannaschii,Pyrococcus_furiosus)Clade1,Sulfolobus_acidocaldarius)Clade2)Clade3,((Bacillus_subtilis,Staphylococcus_aureus)Clade4,(Escherichia_coli,Pseudomonas_aeruginosa)Clade5)Clade6)Root;",
+        "prompt": "Tree: ((Halobacterium_salinarum,((Methanocaldococcus_jannaschii,Pyrococcus_furiosus)Clade1,Sulfolobus_acidocaldarius)Clade2)Clade3,((Bacillus_subtilis,Staphylococcus_aureus)Clade4,(Escherichia_coli,Pseudomonas_aeruginosa)Clade5)Clade6)Root;\nTask (monophyletic): Do Bacillus_subtilis, Sulfolobus_acidocaldarius form a monophyletic clade?\nAnswer with only the exact value."
+      },
+      {
+        "id": "B11",
+        "task": "monophyletic",
+        "category": "intra-domain-positive",
+        "question": "Do Escherichia_coli, Pseudomonas_aeruginosa form a monophyletic clade?",
+        "expected": "Yes",
+        "normalized_newick": "((Halobacterium_salinarum,((Methanocaldococcus_jannaschii,Pyrococcus_furiosus)Clade1,Sulfolobus_acidocaldarius)Clade2)Clade3,((Bacillus_subtilis,Staphylococcus_aureus)Clade4,(Escherichia_coli,Pseudomonas_aeruginosa)Clade5)Clade6)Root;",
+        "prompt": "Tree: ((Halobacterium_salinarum,((Methanocaldococcus_jannaschii,Pyrococcus_furiosus)Clade1,Sulfolobus_acidocaldarius)Clade2)Clade3,((Bacillus_subtilis,Staphylococcus_aureus)Clade4,(Escherichia_coli,Pseudomonas_aeruginosa)Clade5)Clade6)Root;\nTask (monophyletic): Do Escherichia_coli, Pseudomonas_aeruginosa form a monophyletic clade?\nAnswer with only the exact value."
+      },
+      {
+        "id": "B12",
+        "task": "monophyletic",
+        "category": "intra-domain-positive",
+        "question": "Do Bacillus_subtilis, Staphylococcus_aureus form a monophyletic clade?",
+        "expected": "Yes",
+        "normalized_newick": "((Halobacterium_salinarum,((Methanocaldococcus_jannaschii,Pyrococcus_furiosus)Clade1,Sulfolobus_acidocaldarius)Clade2)Clade3,((Bacillus_subtilis,Staphylococcus_aureus)Clade4,(Escherichia_coli,Pseudomonas_aeruginosa)Clade5)Clade6)Root;",
+        "prompt": "Tree: ((Halobacterium_salinarum,((Methanocaldococcus_jannaschii,Pyrococcus_furiosus)Clade1,Sulfolobus_acidocaldarius)Clade2)Clade3,((Bacillus_subtilis,Staphylococcus_aureus)Clade4,(Escherichia_coli,Pseudomonas_aeruginosa)Clade5)Clade6)Root;\nTask (monophyletic): Do Bacillus_subtilis, Staphylococcus_aureus form a monophyletic clade?\nAnswer with only the exact value."
+      },
+      {
+        "id": "B13",
+        "task": "distance",
+        "category": "intra-domain",
+        "question": "What is the topological edge distance between Escherichia_coli and Pseudomonas_aeruginosa?",
+        "expected": "2",
+        "normalized_newick": "((Halobacterium_salinarum,((Methanocaldococcus_jannaschii,Pyrococcus_furiosus)Clade1,Sulfolobus_acidocaldarius)Clade2)Clade3,((Bacillus_subtilis,Staphylococcus_aureus)Clade4,(Escherichia_coli,Pseudomonas_aeruginosa)Clade5)Clade6)Root;",
+        "prompt": "Tree: ((Halobacterium_salinarum,((Methanocaldococcus_jannaschii,Pyrococcus_furiosus)Clade1,Sulfolobus_acidocaldarius)Clade2)Clade3,((Bacillus_subtilis,Staphylococcus_aureus)Clade4,(Escherichia_coli,Pseudomonas_aeruginosa)Clade5)Clade6)Root;\nTask (distance): What is the topological edge distance between Escherichia_coli and Pseudomonas_aeruginosa?\nAnswer with only the exact value."
+      },
+      {
+        "id": "B14",
+        "task": "distance",
+        "category": "intra-domain",
+        "question": "What is the topological edge distance between Bacillus_subtilis and Staphylococcus_aureus?",
+        "expected": "2",
+        "normalized_newick": "((Halobacterium_salinarum,((Methanocaldococcus_jannaschii,Pyrococcus_furiosus)Clade1,Sulfolobus_acidocaldarius)Clade2)Clade3,((Bacillus_subtilis,Staphylococcus_aureus)Clade4,(Escherichia_coli,Pseudomonas_aeruginosa)Clade5)Clade6)Root;",
+        "prompt": "Tree: ((Halobacterium_salinarum,((Methanocaldococcus_jannaschii,Pyrococcus_furiosus)Clade1,Sulfolobus_acidocaldarius)Clade2)Clade3,((Bacillus_subtilis,Staphylococcus_aureus)Clade4,(Escherichia_coli,Pseudomonas_aeruginosa)Clade5)Clade6)Root;\nTask (distance): What is the topological edge distance between Bacillus_subtilis and Staphylococcus_aureus?\nAnswer with only the exact value."
+      },
+      {
+        "id": "B15",
+        "task": "distance",
+        "category": "cross-domain",
+        "question": "What is the topological edge distance between Escherichia_coli and Halobacterium_salinarum?",
+        "expected": "5",
+        "normalized_newick": "((Halobacterium_salinarum,((Methanocaldococcus_jannaschii,Pyrococcus_furiosus)Clade1,Sulfolobus_acidocaldarius)Clade2)Clade3,((Bacillus_subtilis,Staphylococcus_aureus)Clade4,(Escherichia_coli,Pseudomonas_aeruginosa)Clade5)Clade6)Root;",
+        "prompt": "Tree: ((Halobacterium_salinarum,((Methanocaldococcus_jannaschii,Pyrococcus_furiosus)Clade1,Sulfolobus_acidocaldarius)Clade2)Clade3,((Bacillus_subtilis,Staphylococcus_aureus)Clade4,(Escherichia_coli,Pseudomonas_aeruginosa)Clade5)Clade6)Root;\nTask (distance): What is the topological edge distance between Escherichia_coli and Halobacterium_salinarum?\nAnswer with only the exact value."
+      },
+      {
+        "id": "B16",
+        "task": "distance",
+        "category": "cross-domain",
+        "question": "What is the topological edge distance between Bacillus_subtilis and Sulfolobus_acidocaldarius?",
+        "expected": "6",
+        "normalized_newick": "((Halobacterium_salinarum,((Methanocaldococcus_jannaschii,Pyrococcus_furiosus)Clade1,Sulfolobus_acidocaldarius)Clade2)Clade3,((Bacillus_subtilis,Staphylococcus_aureus)Clade4,(Escherichia_coli,Pseudomonas_aeruginosa)Clade5)Clade6)Root;",
+        "prompt": "Tree: ((Halobacterium_salinarum,((Methanocaldococcus_jannaschii,Pyrococcus_furiosus)Clade1,Sulfolobus_acidocaldarius)Clade2)Clade3,((Bacillus_subtilis,Staphylococcus_aureus)Clade4,(Escherichia_coli,Pseudomonas_aeruginosa)Clade5)Clade6)Root;\nTask (distance): What is the topological edge distance between Bacillus_subtilis and Sulfolobus_acidocaldarius?\nAnswer with only the exact value."
+      }
+    ],
+    "evaluation": {
+      "base": {
+        "overall": {
+          "correct": 0,
+          "total": 16,
+          "accuracy": 0.0
+        },
+        "per_task": {
+          "distance": {
+            "correct": 0,
+            "total": 4,
+            "accuracy": 0.0
+          },
+          "monophyletic": {
+            "correct": 0,
+            "total": 4,
+            "accuracy": 0.0
+          },
+          "mrca": {
+            "correct": 0,
+            "total": 4,
+            "accuracy": 0.0
+          },
+          "sister": {
+            "correct": 0,
+            "total": 4,
+            "accuracy": 0.0
+          }
+        },
+        "results": [
+          {
+            "id": "B01",
+            "task": "mrca",
+            "category": "intra-domain",
+            "question": "What is the most recent common ancestor of Escherichia_coli and Pseudomonas_aeruginosa?",
+            "expected": "Clade5",
+            "prediction": "The most recent common ancestor of Escherichia_coli and Pseudomonas_aeruginosa is the bacterium Staphylococcus_aureus",
+            "base_correct": false
+          },
+          {
+            "id": "B02",
+            "task": "mrca",
+            "category": "intra-domain",
+            "question": "What is the most recent common ancestor of Bacillus_subtilis and Staphylococcus_aureus?",
+            "expected": "Clade4",
+            "prediction": "The most recent common ancestor of Bacillus_subtilis and Staphylococcus_aureus is Bacillus_subtilis.",
+            "base_correct": false
+          },
+          {
+            "id": "B03",
+            "task": "mrca",
+            "category": "cross-domain",
+            "question": "What is the most recent common ancestor of Escherichia_coli and Halobacterium_salinarum?",
+            "expected": "Root",
+            "prediction": "The most recent common ancestor of Escherichia_coli and Halobacterium_salinarum is the bacterium Halobacterium_s",
+            "base_correct": false
+          },
+          {
+            "id": "B04",
+            "task": "mrca",
+            "category": "cross-domain",
+            "question": "What is the most recent common ancestor of Bacillus_subtilis and Sulfolobus_acidocaldarius?",
+            "expected": "Root",
+            "prediction": "The most recent common ancestor of Bacillus_subtilis and Sulfolobus_acidocaldarius is the bacterium",
+            "base_correct": false
+          },
+          {
+            "id": "B05",
+            "task": "sister",
+            "category": "cherry-leaf",
+            "question": "What is the direct sister taxon of Bacillus_subtilis?",
+            "expected": "Staphylococcus_aureus",
+            "prediction": "The direct sister taxon of Bacillus_subtilis is Bacillus_subtilis.",
+            "base_correct": false
+          },
+          {
+            "id": "B06",
+            "task": "sister",
+            "category": "cherry-leaf",
+            "question": "What is the direct sister taxon of Escherichia_coli?",
+            "expected": "Pseudomonas_aeruginosa",
+            "prediction": "The direct sister taxon of Escherichia_coli is Bacillus_subtilis.",
+            "base_correct": false
+          },
+          {
+            "id": "B07",
+            "task": "sister",
+            "category": "cherry-leaf",
+            "question": "What is the direct sister taxon of Methanocaldococcus_jannaschii?",
+            "expected": "Pyrococcus_furiosus",
+            "prediction": "The direct sister taxon of Methanocaldococcus_jannaschii is E. coli.",
+            "base_correct": false
+          },
+          {
+            "id": "B08",
+            "task": "sister",
+            "category": "cherry-leaf",
+            "question": "What is the direct sister taxon of Pyrococcus_furiosus?",
+            "expected": "Methanocaldococcus_jannaschii",
+            "prediction": "The direct sister taxon of Pyrococcus_furiosus is E. coli.",
+            "base_correct": false
+          },
+          {
+            "id": "B09",
+            "task": "monophyletic",
+            "category": "cross-domain-paraphyly-trap",
+            "question": "Do Escherichia_coli, Halobacterium_salinarum form a monophyletic clade?",
+            "expected": "No",
+            "prediction": "No, the answer is not \"no\". The correct answer is \"no\". The correct answer is that Escherichia_col",
+            "base_correct": false
+          },
+          {
+            "id": "B10",
+            "task": "monophyletic",
+            "category": "cross-domain-paraphyly-trap",
+            "question": "Do Bacillus_subtilis, Sulfolobus_acidocaldarius form a monophyletic clade?",
+            "expected": "No",
+            "prediction": "No, the answer is not \"Yes.\"",
+            "base_correct": false
+          },
+          {
+            "id": "B11",
+            "task": "monophyletic",
+            "category": "intra-domain-positive",
+            "question": "Do Escherichia_coli, Pseudomonas_aeruginosa form a monophyletic clade?",
+            "expected": "Yes",
+            "prediction": "No, the answer is not \"no.\"",
+            "base_correct": false
+          },
+          {
+            "id": "B12",
+            "task": "monophyletic",
+            "category": "intra-domain-positive",
+            "question": "Do Bacillus_subtilis, Staphylococcus_aureus form a monophyletic clade?",
+            "expected": "Yes",
+            "prediction": "No, the answer is not \"Yes.\"",
+            "base_correct": false
+          },
+          {
+            "id": "B13",
+            "task": "distance",
+            "category": "intra-domain",
+            "question": "What is the topological edge distance between Escherichia_coli and Pseudomonas_aeruginosa?",
+            "expected": "2",
+            "prediction": "The topological edge distance between Escherichia_coli and Pseudomonas_aeruginosa is 1.",
+            "base_correct": false
+          },
+          {
+            "id": "B14",
+            "task": "distance",
+            "category": "intra-domain",
+            "question": "What is the topological edge distance between Bacillus_subtilis and Staphylococcus_aureus?",
+            "expected": "2",
+            "prediction": "The topological edge distance between Bacillus_subtilis and Staphylococcus_aureus is 1.",
+            "base_correct": false
+          },
+          {
+            "id": "B15",
+            "task": "distance",
+            "category": "cross-domain",
+            "question": "What is the topological edge distance between Escherichia_coli and Halobacterium_salinarum?",
+            "expected": "5",
+            "prediction": "The topological edge distance between Escherichia_coli and Halobacterium_salinarum is 1.",
+            "base_correct": false
+          },
+          {
+            "id": "B16",
+            "task": "distance",
+            "category": "cross-domain",
+            "question": "What is the topological edge distance between Bacillus_subtilis and Sulfolobus_acidocaldarius?",
+            "expected": "6",
+            "prediction": "The topological edge distance between Bacillus_subtilis and Sulfolobus_acidocaldarius is 1.",
+            "base_correct": false
+          }
+        ]
+      },
+      "lora": {
+        "overall": {
+          "correct": 12,
+          "total": 16,
+          "accuracy": 0.75
+        },
+        "per_task": {
+          "distance": {
+            "correct": 2,
+            "total": 4,
+            "accuracy": 0.5
+          },
+          "monophyletic": {
+            "correct": 3,
+            "total": 4,
+            "accuracy": 0.75
+          },
+          "mrca": {
+            "correct": 4,
+            "total": 4,
+            "accuracy": 1.0
+          },
+          "sister": {
+            "correct": 3,
+            "total": 4,
+            "accuracy": 0.75
+          }
+        },
+        "results": [
+          {
+            "id": "B01",
+            "task": "mrca",
+            "category": "intra-domain",
+            "question": "What is the most recent common ancestor of Escherichia_coli and Pseudomonas_aeruginosa?",
+            "expected": "Clade5",
+            "prediction": "Clade5",
+            "lora_correct": true
+          },
+          {
+            "id": "B02",
+            "task": "mrca",
+            "category": "intra-domain",
+            "question": "What is the most recent common ancestor of Bacillus_subtilis and Staphylococcus_aureus?",
+            "expected": "Clade4",
+            "prediction": "Clade4",
+            "lora_correct": true
+          },
+          {
+            "id": "B03",
+            "task": "mrca",
+            "category": "cross-domain",
+            "question": "What is the most recent common ancestor of Escherichia_coli and Halobacterium_salinarum?",
+            "expected": "Root",
+            "prediction": "Root",
+            "lora_correct": true
+          },
+          {
+            "id": "B04",
+            "task": "mrca",
+            "category": "cross-domain",
+            "question": "What is the most recent common ancestor of Bacillus_subtilis and Sulfolobus_acidocaldarius?",
+            "expected": "Root",
+            "prediction": "Root",
+            "lora_correct": true
+          },
+          {
+            "id": "B05",
+            "task": "sister",
+            "category": "cherry-leaf",
+            "question": "What is the direct sister taxon of Bacillus_subtilis?",
+            "expected": "Staphylococcus_aureus",
+            "prediction": "Staphylococcus_aureus",
+            "lora_correct": true
+          },
+          {
+            "id": "B06",
+            "task": "sister",
+            "category": "cherry-leaf",
+            "question": "What is the direct sister taxon of Escherichia_coli?",
+            "expected": "Pseudomonas_aeruginosa",
+            "prediction": "Staphylococcus_aureus",
+            "lora_correct": false
+          },
+          {
+            "id": "B07",
+            "task": "sister",
+            "category": "cherry-leaf",
+            "question": "What is the direct sister taxon of Methanocaldococcus_jannaschii?",
+            "expected": "Pyrococcus_furiosus",
+            "prediction": "Pyrococcus_furiosus",
+            "lora_correct": true
+          },
+          {
+            "id": "B08",
+            "task": "sister",
+            "category": "cherry-leaf",
+            "question": "What is the direct sister taxon of Pyrococcus_furiosus?",
+            "expected": "Methanocaldococcus_jannaschii",
+            "prediction": "Methanocaldococcus_jannaschii",
+            "lora_correct": true
+          },
+          {
+            "id": "B09",
+            "task": "monophyletic",
+            "category": "cross-domain-paraphyly-trap",
+            "question": "Do Escherichia_coli, Halobacterium_salinarum form a monophyletic clade?",
+            "expected": "No",
+            "prediction": "No",
+            "lora_correct": true
+          },
+          {
+            "id": "B10",
+            "task": "monophyletic",
+            "category": "cross-domain-paraphyly-trap",
+            "question": "Do Bacillus_subtilis, Sulfolobus_acidocaldarius form a monophyletic clade?",
+            "expected": "No",
+            "prediction": "No",
+            "lora_correct": true
+          },
+          {
+            "id": "B11",
+            "task": "monophyletic",
+            "category": "intra-domain-positive",
+            "question": "Do Escherichia_coli, Pseudomonas_aeruginosa form a monophyletic clade?",
+            "expected": "Yes",
+            "prediction": "No",
+            "lora_correct": false
+          },
+          {
+            "id": "B12",
+            "task": "monophyletic",
+            "category": "intra-domain-positive",
+            "question": "Do Bacillus_subtilis, Staphylococcus_aureus form a monophyletic clade?",
+            "expected": "Yes",
+            "prediction": "Yes",
+            "lora_correct": true
+          },
+          {
+            "id": "B13",
+            "task": "distance",
+            "category": "intra-domain",
+            "question": "What is the topological edge distance between Escherichia_coli and Pseudomonas_aeruginosa?",
+            "expected": "2",
+            "prediction": "3",
+            "lora_correct": false
+          },
+          {
+            "id": "B14",
+            "task": "distance",
+            "category": "intra-domain",
+            "question": "What is the topological edge distance between Bacillus_subtilis and Staphylococcus_aureus?",
+            "expected": "2",
+            "prediction": "2",
+            "lora_correct": true
+          },
+          {
+            "id": "B15",
+            "task": "distance",
+            "category": "cross-domain",
+            "question": "What is the topological edge distance between Escherichia_coli and Halobacterium_salinarum?",
+            "expected": "5",
+            "prediction": "6",
+            "lora_correct": false
+          },
+          {
+            "id": "B16",
+            "task": "distance",
+            "category": "cross-domain",
+            "question": "What is the topological edge distance between Bacillus_subtilis and Sulfolobus_acidocaldarius?",
+            "expected": "6",
+            "prediction": "6",
+            "lora_correct": true
+          }
+        ]
+      }
+    }
+  },
+  "step_c": {
+    "questions": [
+      {
+        "id": "C1",
+        "kind": "closest-pair",
+        "taxa": [
+          "Escherichia_coli",
+          "Pseudomonas_aeruginosa",
+          "Bacillus_subtilis",
+          "Staphylococcus_aureus"
+        ],
+        "question": "Raw 16S rRNA sequence snippets (240 bp each, no phylogenetic tree provided):\n>Escherichia_coli\nATTGAACGCTGGCGGCAGGCCTAACACATGCAAGTCGAACGGTAACAGGAAGCAGCTTGCTGCTTTGCTGACGAGTGGCGGACGGGTGAGTAATGTCTGGGAAACTGCCNGATGGAGGGGGATAACTACTGGAAACGGTAGCTAATACCGCATAACGTCGCAAGACCAAAGAGGGGGACCTTAGGGCCTCTTGCCATCGGATGTGCCCAGATGGGATTAGCTAGTAGGTGGGGTAACGGC\n>Pseudomonas_aeruginosa\nAGTTTGATCCTGGCTCAGATTGAACGCTGGCGGCAGGCCTAACACATGCAAGTCGAGCGGATGAAGGGAGCTTGCTCCTGGATTCAGCGGCGGACGGGTGAGTAATGCCTAGGAATCTGCCTGGTAGTGGGGGATAACGTCCGGAAACGGGCGCTAATACCGCATACGTCCTGAGGGAGAAAGTGGGGGATCTTCGGACCTCACGCTATCAGATGAGCCTAGGTCGGATTAGCTAGTTGG\n>Bacillus_subtilis\nTTATCGGAGAGTTTGATCCTGGCTCAGGACGAACGCTGGCGGCGTGCCTAATACATGCAAGTCGAGCGGACAGATGGGAGCTTGCTCCCTGATGTTAGCGGCGGACGGGTGAGTAACACGTGGGTAACCTGCCTGTAAGACTGGGATAACTCCGGGAAACCGGGGCTAATACCGGATGGTTGTTTGAACCGCATGGTTCAAACATAAAAGGTGGCTTCGGCTACCACTTACAGATGGACC\n>Staphylococcus_aureus\nTTTATGGAGAGTTTGATCCTGGCTCAGGATGAACGCTGGCGGCGTGCCTAATACATGCAAGTCGAGCGAACGGACGAGAAGCTTGCTTCTCTGATGTTAGCGGCGGACGGGTGAGTAACACGTGGATAACCTACCTATAAGACTGGGATAACTTCGGGAAACCGGAGCTAATACCGGATAATATTTTGAACCGCATGGTTCAAAAGTGAAAGACGGTCTTGCTGTCACTTATAGATGGAT\nQuestion: Which two species are most closely related? Answer with exactly one pair in the form 'Species_a and Species_b'.",
+        "expected": "Bacillus_subtilis and Staphylococcus_aureus",
+        "prompt": "Raw 16S rRNA sequence snippets (240 bp each, no phylogenetic tree provided):\n>Escherichia_coli\nATTGAACGCTGGCGGCAGGCCTAACACATGCAAGTCGAACGGTAACAGGAAGCAGCTTGCTGCTTTGCTGACGAGTGGCGGACGGGTGAGTAATGTCTGGGAAACTGCCNGATGGAGGGGGATAACTACTGGAAACGGTAGCTAATACCGCATAACGTCGCAAGACCAAAGAGGGGGACCTTAGGGCCTCTTGCCATCGGATGTGCCCAGATGGGATTAGCTAGTAGGTGGGGTAACGGC\n>Pseudomonas_aeruginosa\nAGTTTGATCCTGGCTCAGATTGAACGCTGGCGGCAGGCCTAACACATGCAAGTCGAGCGGATGAAGGGAGCTTGCTCCTGGATTCAGCGGCGGACGGGTGAGTAATGCCTAGGAATCTGCCTGGTAGTGGGGGATAACGTCCGGAAACGGGCGCTAATACCGCATACGTCCTGAGGGAGAAAGTGGGGGATCTTCGGACCTCACGCTATCAGATGAGCCTAGGTCGGATTAGCTAGTTGG\n>Bacillus_subtilis\nTTATCGGAGAGTTTGATCCTGGCTCAGGACGAACGCTGGCGGCGTGCCTAATACATGCAAGTCGAGCGGACAGATGGGAGCTTGCTCCCTGATGTTAGCGGCGGACGGGTGAGTAACACGTGGGTAACCTGCCTGTAAGACTGGGATAACTCCGGGAAACCGGGGCTAATACCGGATGGTTGTTTGAACCGCATGGTTCAAACATAAAAGGTGGCTTCGGCTACCACTTACAGATGGACC\n>Staphylococcus_aureus\nTTTATGGAGAGTTTGATCCTGGCTCAGGATGAACGCTGGCGGCGTGCCTAATACATGCAAGTCGAGCGAACGGACGAGAAGCTTGCTTCTCTGATGTTAGCGGCGGACGGGTGAGTAACACGTGGATAACCTACCTATAAGACTGGGATAACTTCGGGAAACCGGAGCTAATACCGGATAATATTTTGAACCGCATGGTTCAAAAGTGAAAGACGGTCTTGCTGTCACTTATAGATGGAT\nQuestion: Which two species are most closely related? Answer with exactly one pair in the form 'Species_a and Species_b'."
+      },
+      {
+        "id": "C2",
+        "kind": "raw-monophyly-positive",
+        "taxa": [
+          "Escherichia_coli",
+          "Pseudomonas_aeruginosa"
+        ],
+        "question": "Raw 16S rRNA sequence snippets (240 bp each, no phylogenetic tree provided):\n>Escherichia_coli\nATTGAACGCTGGCGGCAGGCCTAACACATGCAAGTCGAACGGTAACAGGAAGCAGCTTGCTGCTTTGCTGACGAGTGGCGGACGGGTGAGTAATGTCTGGGAAACTGCCNGATGGAGGGGGATAACTACTGGAAACGGTAGCTAATACCGCATAACGTCGCAAGACCAAAGAGGGGGACCTTAGGGCCTCTTGCCATCGGATGTGCCCAGATGGGATTAGCTAGTAGGTGGGGTAACGGC\n>Pseudomonas_aeruginosa\nAGTTTGATCCTGGCTCAGATTGAACGCTGGCGGCAGGCCTAACACATGCAAGTCGAGCGGATGAAGGGAGCTTGCTCCTGGATTCAGCGGCGGACGGGTGAGTAATGCCTAGGAATCTGCCTGGTAGTGGGGGATAACGTCCGGAAACGGGCGCTAATACCGCATACGTCCTGAGGGAGAAAGTGGGGGATCTTCGGACCTCACGCTATCAGATGAGCCTAGGTCGGATTAGCTAGTTGG\nQuestion: Do Escherichia_coli and Pseudomonas_aeruginosa form a monophyletic clade? Answer Yes or No.",
+        "expected": "Yes",
+        "prompt": "Raw 16S rRNA sequence snippets (240 bp each, no phylogenetic tree provided):\n>Escherichia_coli\nATTGAACGCTGGCGGCAGGCCTAACACATGCAAGTCGAACGGTAACAGGAAGCAGCTTGCTGCTTTGCTGACGAGTGGCGGACGGGTGAGTAATGTCTGGGAAACTGCCNGATGGAGGGGGATAACTACTGGAAACGGTAGCTAATACCGCATAACGTCGCAAGACCAAAGAGGGGGACCTTAGGGCCTCTTGCCATCGGATGTGCCCAGATGGGATTAGCTAGTAGGTGGGGTAACGGC\n>Pseudomonas_aeruginosa\nAGTTTGATCCTGGCTCAGATTGAACGCTGGCGGCAGGCCTAACACATGCAAGTCGAGCGGATGAAGGGAGCTTGCTCCTGGATTCAGCGGCGGACGGGTGAGTAATGCCTAGGAATCTGCCTGGTAGTGGGGGATAACGTCCGGAAACGGGCGCTAATACCGCATACGTCCTGAGGGAGAAAGTGGGGGATCTTCGGACCTCACGCTATCAGATGAGCCTAGGTCGGATTAGCTAGTTGG\nQuestion: Do Escherichia_coli and Pseudomonas_aeruginosa form a monophyletic clade? Answer Yes or No."
+      },
+      {
+        "id": "C3",
+        "kind": "raw-monophyly-paraphyly-trap",
+        "taxa": [
+          "Escherichia_coli",
+          "Halobacterium_salinarum"
+        ],
+        "question": "Raw 16S rRNA sequence snippets (240 bp each, no phylogenetic tree provided):\n>Escherichia_coli\nATTGAACGCTGGCGGCAGGCCTAACACATGCAAGTCGAACGGTAACAGGAAGCAGCTTGCTGCTTTGCTGACGAGTGGCGGACGGGTGAGTAATGTCTGGGAAACTGCCNGATGGAGGGGGATAACTACTGGAAACGGTAGCTAATACCGCATAACGTCGCAAGACCAAAGAGGGGGACCTTAGGGCCTCTTGCCATCGGATGTGCCCAGATGGGATTAGCTAGTAGGTGGGGTAACGGC\n>Halobacterium_salinarum\nGGCCATTGCTATCGGAGTCCGATTTAGCCATGCTAGTTGTGCGGGTTTAGACCCGCAGCGGAAAGCTCAGTAACACGTGGCCAAGCTACCCTGTGGACGGGAATACTCTCGGGAAACTGAGGCTAATCCCCGATAACGCTTTGCTCCTGGAAGGGGCAAAGCCGGAAACGCTCCGGCGCCACAGGATGCGGCTGCGGTCGATTAGGTAGACGGTGGGGTAACGGCCCACCGTGCCCATAA\nQuestion: Do Escherichia_coli and Halobacterium_salinarum form a monophyletic clade? Answer Yes or No.",
+        "expected": "No",
+        "prompt": "Raw 16S rRNA sequence snippets (240 bp each, no phylogenetic tree provided):\n>Escherichia_coli\nATTGAACGCTGGCGGCAGGCCTAACACATGCAAGTCGAACGGTAACAGGAAGCAGCTTGCTGCTTTGCTGACGAGTGGCGGACGGGTGAGTAATGTCTGGGAAACTGCCNGATGGAGGGGGATAACTACTGGAAACGGTAGCTAATACCGCATAACGTCGCAAGACCAAAGAGGGGGACCTTAGGGCCTCTTGCCATCGGATGTGCCCAGATGGGATTAGCTAGTAGGTGGGGTAACGGC\n>Halobacterium_salinarum\nGGCCATTGCTATCGGAGTCCGATTTAGCCATGCTAGTTGTGCGGGTTTAGACCCGCAGCGGAAAGCTCAGTAACACGTGGCCAAGCTACCCTGTGGACGGGAATACTCTCGGGAAACTGAGGCTAATCCCCGATAACGCTTTGCTCCTGGAAGGGGCAAAGCCGGAAACGCTCCGGCGCCACAGGATGCGGCTGCGGTCGATTAGGTAGACGGTGGGGTAACGGCCCACCGTGCCCATAA\nQuestion: Do Escherichia_coli and Halobacterium_salinarum form a monophyletic clade? Answer Yes or No."
+      },
+      {
+        "id": "C4",
+        "kind": "closest-relative",
+        "taxa": [
+          "Bacillus_subtilis",
+          "Staphylococcus_aureus",
+          "Escherichia_coli"
+        ],
+        "question": "Raw 16S rRNA sequence snippets (240 bp each, no phylogenetic tree provided):\n>Bacillus_subtilis\nTTATCGGAGAGTTTGATCCTGGCTCAGGACGAACGCTGGCGGCGTGCCTAATACATGCAAGTCGAGCGGACAGATGGGAGCTTGCTCCCTGATGTTAGCGGCGGACGGGTGAGTAACACGTGGGTAACCTGCCTGTAAGACTGGGATAACTCCGGGAAACCGGGGCTAATACCGGATGGTTGTTTGAACCGCATGGTTCAAACATAAAAGGTGGCTTCGGCTACCACTTACAGATGGACC\n>Staphylococcus_aureus\nTTTATGGAGAGTTTGATCCTGGCTCAGGATGAACGCTGGCGGCGTGCCTAATACATGCAAGTCGAGCGAACGGACGAGAAGCTTGCTTCTCTGATGTTAGCGGCGGACGGGTGAGTAACACGTGGATAACCTACCTATAAGACTGGGATAACTTCGGGAAACCGGAGCTAATACCGGATAATATTTTGAACCGCATGGTTCAAAAGTGAAAGACGGTCTTGCTGTCACTTATAGATGGAT\n>Escherichia_coli\nATTGAACGCTGGCGGCAGGCCTAACACATGCAAGTCGAACGGTAACAGGAAGCAGCTTGCTGCTTTGCTGACGAGTGGCGGACGGGTGAGTAATGTCTGGGAAACTGCCNGATGGAGGGGGATAACTACTGGAAACGGTAGCTAATACCGCATAACGTCGCAAGACCAAAGAGGGGGACCTTAGGGCCTCTTGCCATCGGATGTGCCCAGATGGGATTAGCTAGTAGGTGGGGTAACGGC\nQuestion: Which species is the closest relative of Bacillus_subtilis: Staphylococcus_aureus or Escherichia_coli? Answer with exactly one taxon name.",
+        "expected": "Staphylococcus_aureus",
+        "prompt": "Raw 16S rRNA sequence snippets (240 bp each, no phylogenetic tree provided):\n>Bacillus_subtilis\nTTATCGGAGAGTTTGATCCTGGCTCAGGACGAACGCTGGCGGCGTGCCTAATACATGCAAGTCGAGCGGACAGATGGGAGCTTGCTCCCTGATGTTAGCGGCGGACGGGTGAGTAACACGTGGGTAACCTGCCTGTAAGACTGGGATAACTCCGGGAAACCGGGGCTAATACCGGATGGTTGTTTGAACCGCATGGTTCAAACATAAAAGGTGGCTTCGGCTACCACTTACAGATGGACC\n>Staphylococcus_aureus\nTTTATGGAGAGTTTGATCCTGGCTCAGGATGAACGCTGGCGGCGTGCCTAATACATGCAAGTCGAGCGAACGGACGAGAAGCTTGCTTCTCTGATGTTAGCGGCGGACGGGTGAGTAACACGTGGATAACCTACCTATAAGACTGGGATAACTTCGGGAAACCGGAGCTAATACCGGATAATATTTTGAACCGCATGGTTCAAAAGTGAAAGACGGTCTTGCTGTCACTTATAGATGGAT\n>Escherichia_coli\nATTGAACGCTGGCGGCAGGCCTAACACATGCAAGTCGAACGGTAACAGGAAGCAGCTTGCTGCTTTGCTGACGAGTGGCGGACGGGTGAGTAATGTCTGGGAAACTGCCNGATGGAGGGGGATAACTACTGGAAACGGTAGCTAATACCGCATAACGTCGCAAGACCAAAGAGGGGGACCTTAGGGCCTCTTGCCATCGGATGTGCCCAGATGGGATTAGCTAGTAGGTGGGGTAACGGC\nQuestion: Which species is the closest relative of Bacillus_subtilis: Staphylococcus_aureus or Escherichia_coli? Answer with exactly one taxon name."
+      }
+    ],
+    "evaluation": {
+      "overall": {
+        "correct": 2,
+        "total": 4,
+        "accuracy": 0.5
+      },
+      "results": [
+        {
+          "id": "C1",
+          "task": "closest-pair",
+          "category": "closest-pair",
+          "question": "Raw 16S rRNA sequence snippets (240 bp each, no phylogenetic tree provided):\n>Escherichia_coli\nATTGAACGCTGGCGGCAGGCCTAACACATGCAAGTCGAACGGTAACAGGAAGCAGCTTGCTGCTTTGCTGACGAGTGGCGGACGGGTGAGTAATGTCTGGGAAACTGCCNGATGGAGGGGGATAACTACTGGAAACGGTAGCTAATACCGCATAACGTCGCAAGACCAAAGAGGGGGACCTTAGGGCCTCTTGCCATCGGATGTGCCCAGATGGGATTAGCTAGTAGGTGGGGTAACGGC\n>Pseudomonas_aeruginosa\nAGTTTGATCCTGGCTCAGATTGAACGCTGGCGGCAGGCCTAACACATGCAAGTCGAGCGGATGAAGGGAGCTTGCTCCTGGATTCAGCGGCGGACGGGTGAGTAATGCCTAGGAATCTGCCTGGTAGTGGGGGATAACGTCCGGAAACGGGCGCTAATACCGCATACGTCCTGAGGGAGAAAGTGGGGGATCTTCGGACCTCACGCTATCAGATGAGCCTAGGTCGGATTAGCTAGTTGG\n>Bacillus_subtilis\nTTATCGGAGAGTTTGATCCTGGCTCAGGACGAACGCTGGCGGCGTGCCTAATACATGCAAGTCGAGCGGACAGATGGGAGCTTGCTCCCTGATGTTAGCGGCGGACGGGTGAGTAACACGTGGGTAACCTGCCTGTAAGACTGGGATAACTCCGGGAAACCGGGGCTAATACCGGATGGTTGTTTGAACCGCATGGTTCAAACATAAAAGGTGGCTTCGGCTACCACTTACAGATGGACC\n>Staphylococcus_aureus\nTTTATGGAGAGTTTGATCCTGGCTCAGGATGAACGCTGGCGGCGTGCCTAATACATGCAAGTCGAGCGAACGGACGAGAAGCTTGCTTCTCTGATGTTAGCGGCGGACGGGTGAGTAACACGTGGATAACCTACCTATAAGACTGGGATAACTTCGGGAAACCGGAGCTAATACCGGATAATATTTTGAACCGCATGGTTCAAAAGTGAAAGACGGTCTTGCTGTCACTTATAGATGGAT\nQuestion: Which two species are most closely related? Answer with exactly one pair in the form 'Species_a and Species_b'.",
+          "expected": "Bacillus_subtilis and Staphylococcus_aureus",
+          "prediction": "Staphylococcus_aureus",
+          "lora_correct": false
+        },
+        {
+          "id": "C2",
+          "task": "raw-monophyly-positive",
+          "category": "raw-monophyly-positive",
+          "question": "Raw 16S rRNA sequence snippets (240 bp each, no phylogenetic tree provided):\n>Escherichia_coli\nATTGAACGCTGGCGGCAGGCCTAACACATGCAAGTCGAACGGTAACAGGAAGCAGCTTGCTGCTTTGCTGACGAGTGGCGGACGGGTGAGTAATGTCTGGGAAACTGCCNGATGGAGGGGGATAACTACTGGAAACGGTAGCTAATACCGCATAACGTCGCAAGACCAAAGAGGGGGACCTTAGGGCCTCTTGCCATCGGATGTGCCCAGATGGGATTAGCTAGTAGGTGGGGTAACGGC\n>Pseudomonas_aeruginosa\nAGTTTGATCCTGGCTCAGATTGAACGCTGGCGGCAGGCCTAACACATGCAAGTCGAGCGGATGAAGGGAGCTTGCTCCTGGATTCAGCGGCGGACGGGTGAGTAATGCCTAGGAATCTGCCTGGTAGTGGGGGATAACGTCCGGAAACGGGCGCTAATACCGCATACGTCCTGAGGGAGAAAGTGGGGGATCTTCGGACCTCACGCTATCAGATGAGCCTAGGTCGGATTAGCTAGTTGG\nQuestion: Do Escherichia_coli and Pseudomonas_aeruginosa form a monophyletic clade? Answer Yes or No.",
+          "expected": "Yes",
+          "prediction": "No",
+          "lora_correct": false
+        },
+        {
+          "id": "C3",
+          "task": "raw-monophyly-paraphyly-trap",
+          "category": "raw-monophyly-paraphyly-trap",
+          "question": "Raw 16S rRNA sequence snippets (240 bp each, no phylogenetic tree provided):\n>Escherichia_coli\nATTGAACGCTGGCGGCAGGCCTAACACATGCAAGTCGAACGGTAACAGGAAGCAGCTTGCTGCTTTGCTGACGAGTGGCGGACGGGTGAGTAATGTCTGGGAAACTGCCNGATGGAGGGGGATAACTACTGGAAACGGTAGCTAATACCGCATAACGTCGCAAGACCAAAGAGGGGGACCTTAGGGCCTCTTGCCATCGGATGTGCCCAGATGGGATTAGCTAGTAGGTGGGGTAACGGC\n>Halobacterium_salinarum\nGGCCATTGCTATCGGAGTCCGATTTAGCCATGCTAGTTGTGCGGGTTTAGACCCGCAGCGGAAAGCTCAGTAACACGTGGCCAAGCTACCCTGTGGACGGGAATACTCTCGGGAAACTGAGGCTAATCCCCGATAACGCTTTGCTCCTGGAAGGGGCAAAGCCGGAAACGCTCCGGCGCCACAGGATGCGGCTGCGGTCGATTAGGTAGACGGTGGGGTAACGGCCCACCGTGCCCATAA\nQuestion: Do Escherichia_coli and Halobacterium_salinarum form a monophyletic clade? Answer Yes or No.",
+          "expected": "No",
+          "prediction": "No",
+          "lora_correct": true
+        },
+        {
+          "id": "C4",
+          "task": "closest-relative",
+          "category": "closest-relative",
+          "question": "Raw 16S rRNA sequence snippets (240 bp each, no phylogenetic tree provided):\n>Bacillus_subtilis\nTTATCGGAGAGTTTGATCCTGGCTCAGGACGAACGCTGGCGGCGTGCCTAATACATGCAAGTCGAGCGGACAGATGGGAGCTTGCTCCCTGATGTTAGCGGCGGACGGGTGAGTAACACGTGGGTAACCTGCCTGTAAGACTGGGATAACTCCGGGAAACCGGGGCTAATACCGGATGGTTGTTTGAACCGCATGGTTCAAACATAAAAGGTGGCTTCGGCTACCACTTACAGATGGACC\n>Staphylococcus_aureus\nTTTATGGAGAGTTTGATCCTGGCTCAGGATGAACGCTGGCGGCGTGCCTAATACATGCAAGTCGAGCGAACGGACGAGAAGCTTGCTTCTCTGATGTTAGCGGCGGACGGGTGAGTAACACGTGGATAACCTACCTATAAGACTGGGATAACTTCGGGAAACCGGAGCTAATACCGGATAATATTTTGAACCGCATGGTTCAAAAGTGAAAGACGGTCTTGCTGTCACTTATAGATGGAT\n>Escherichia_coli\nATTGAACGCTGGCGGCAGGCCTAACACATGCAAGTCGAACGGTAACAGGAAGCAGCTTGCTGCTTTGCTGACGAGTGGCGGACGGGTGAGTAATGTCTGGGAAACTGCCNGATGGAGGGGGATAACTACTGGAAACGGTAGCTAATACCGCATAACGTCGCAAGACCAAAGAGGGGGACCTTAGGGCCTCTTGCCATCGGATGTGCCCAGATGGGATTAGCTAGTAGGTGGGGTAACGGC\nQuestion: Which species is the closest relative of Bacillus_subtilis: Staphylococcus_aureus or Escherichia_coli? Answer with exactly one taxon name.",
+          "expected": "Staphylococcus_aureus",
+          "prediction": "Staphylococcus_aureus",
+          "lora_correct": true
+        }
+      ]
+    }
+  }
+}

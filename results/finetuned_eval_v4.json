@@ -1,0 +1,137 @@
+{
+  "model_name": "HuggingFaceTB/SmolLM2-135M-Instruct",
+  "adapter_dir": "outputs/phylogeny-lora-v4",
+  "test_file": "data/test.jsonl",
+  "max_new_tokens": 24,
+  "batch_size": 16,
+  "overall": {
+    "correct": 76,
+    "total": 80,
+    "accuracy": 0.95
+  },
+  "per_task": {
+    "mrca": {
+      "correct": 19,
+      "total": 20,
+      "accuracy": 0.95
+    },
+    "sister": {
+      "correct": 20,
+      "total": 20,
+      "accuracy": 1.0
+    },
+    "monophyletic": {
+      "correct": 20,
+      "total": 20,
+      "accuracy": 1.0
+    },
+    "distance": {
+      "correct": 17,
+      "total": 20,
+      "accuracy": 0.85
+    }
+  },
+  "num_failures": 4,
+  "samples": [
+    {
+      "id": "test-000003",
+      "task": "distance",
+      "tree": "((Morpheus,(((Kalliope,Naiad)C1,Perses)C2,Rhea)C3)C4,Nyx)C5;",
+      "prompt": "Tree: ((Morpheus,(((Kalliope,Naiad)C1,Perses)C2,Rhea)C3)C4,Nyx)C5;\nTask (distance): What is the topological edge distance between Naiad and Nyx?\nAnswer with only the exact value.",
+      "expected": "6",
+      "completion": "5",
+      "prediction": "5",
+      "correct": false
+    },
+    {
+      "id": "test-000014",
+      "task": "mrca",
+      "tree": "((Icarus,Wystan)C1,((Achilles,Bellona)C2,Quirin)C3)C4;",
+      "prompt": "Tree: ((Icarus,Wystan)C1,((Achilles,Bellona)C2,Quirin)C3)C4;\nTask (mrca): What is the most recent common ancestor of Bellona and Achilles?\nAnswer with only the exact value.",
+      "expected": "C2",
+      "completion": "C3",
+      "prediction": "C3",
+      "correct": false
+    },
+    {
+      "id": "test-000036",
+      "task": "distance",
+      "tree": "(Quirin,(((Pallus,(Kalliope,Wystan)C1)C2,Endymion)C3,(Cassian,Morpheus)C4)C5)C6;",
+      "prompt": "Tree: (Quirin,(((Pallus,(Kalliope,Wystan)C1)C2,Endymion)C3,(Cassian,Morpheus)C4)C5)C6;\nTask (distance): What is the topological edge distance between Pallus and Quirin?\nAnswer with only the exact value.",
+      "expected": "5",
+      "completion": "4",
+      "prediction": "4",
+      "correct": false
+    },
+    {
+      "id": "test-000062",
+      "task": "distance",
+      "tree": "(((Jasper,(Hesperia,Grendel)C1)C2,(Ymir,Xylo)C3)C4,(Pallus,Triton)C5)C6;",
+      "prompt": "Tree: (((Jasper,(Hesperia,Grendel)C1)C2,(Ymir,Xylo)C3)C4,(Pallus,Triton)C5)C6;\nTask (distance): What is the topological edge distance between Grendel and Xylo?\nAnswer with only the exact value.",
+      "expected": "5",
+      "completion": "4",
+      "prediction": "4",
+      "correct": false
+    },
+    {
+      "id": "test-000001",
+      "task": "mrca",
+      "tree": "((((Pallus,Quirin)C1,Tethys)C2,(Daphne,Morpheus)C3)C4,(Nyx,Zelena)C5)C6;",
+      "prompt": "Tree: ((((Pallus,Quirin)C1,Tethys)C2,(Daphne,Morpheus)C3)C4,(Nyx,Zelena)C5)C6;\nTask (mrca): What is the most recent common ancestor of Nyx and Zelena?\nAnswer with only the exact value.",
+      "expected": "C5",
+      "completion": "C5",
+      "prediction": "C5",
+      "correct": true
+    },
+    {
+      "id": "test-000002",
+      "task": "monophyletic",
+      "tree": "(((Icarus,(Xylo,Naiad)C1)C2,Uraeus)C3,((Ymir,Triton)C4,Zelena)C5)C6;",
+      "prompt": "Tree: (((Icarus,(Xylo,Naiad)C1)C2,Uraeus)C3,((Ymir,Triton)C4,Zelena)C5)C6;\nTask (monophyletic): Do Triton, Ymir, Zelena form a monophyletic clade?\nAnswer with only the exact value.",
+      "expected": "Yes",
+      "completion": "Yes",
+      "prediction": "Yes",
+      "correct": true
+    },
+    {
+      "id": "test-000004",
+      "task": "sister",
+      "tree": "((Silvanus,(Daphne,Achilles)C1)C2,(Icarus,((Tethys,Nyx)C3,Hesperia)C4)C5)C6;",
+      "prompt": "Tree: ((Silvanus,(Daphne,Achilles)C1)C2,(Icarus,((Tethys,Nyx)C3,Hesperia)C4)C5)C6;\nTask (sister): What is the direct sister taxon of Achilles?\nAnswer with only the exact value.",
+      "expected": "Daphne",
+      "completion": "Daphne",
+      "prediction": "Daphne",
+      "correct": true
+    },
+    {
+      "id": "test-000005",
+      "task": "sister",
+      "tree": "(((Triton,Zelena)C1,(Kalliope,Grendel)C2)C3,((Morpheus,Pallus)C4,Ymir)C5)C6;",
+      "prompt": "Tree: (((Triton,Zelena)C1,(Kalliope,Grendel)C2)C3,((Morpheus,Pallus)C4,Ymir)C5)C6;\nTask (sister): What is the direct sister taxon of Pallus?\nAnswer with only the exact value.",
+      "expected": "Morpheus",
+      "completion": "Morpheus",
+      "prediction": "Morpheus",
+      "correct": true
+    },
+    {
+      "id": "test-000006",
+      "task": "monophyletic",
+      "tree": "((Pallus,((Vespera,Triton)C1,Solon)C2)C3,Grendel)C4;",
+      "prompt": "Tree: ((Pallus,((Vespera,Triton)C1,Solon)C2)C3,Grendel)C4;\nTask (monophyletic): Do Pallus, Solon, Triton form a monophyletic clade?\nAnswer with only the exact value.",
+      "expected": "No",
+      "completion": "No",
+      "prediction": "No",
+      "correct": true
+    },
+    {
+      "id": "test-000007",
+      "task": "mrca",
+      "tree": "(Cassian,(Uraeus,(((Tethys,(Solon,Lycaon)C1)C2,Icarus)C3,Jasper)C4)C5)C6;",
+      "prompt": "Tree: (Cassian,(Uraeus,(((Tethys,(Solon,Lycaon)C1)C2,Icarus)C3,Jasper)C4)C5)C6;\nTask (mrca): What is the most recent common ancestor of Jasper and Lycaon?\nAnswer with only the exact value.",
+      "expected": "C4",
+      "completion": "C4",
+      "prediction": "C4",
+      "correct": true
+    }
+  ]
+}

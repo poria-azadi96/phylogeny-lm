@@ -1,0 +1,172 @@
+{
+  "model_name": "HuggingFaceTB/SmolLM2-135M-Instruct",
+  "adapter_dir": "outputs/phylogeny-lora-v4",
+  "max_new_tokens": 24,
+  "trees": [
+    {
+      "name": "Primates",
+      "newick": "(((Homo,Pan)Hominini,Gorilla)Homininae,(Pongo,Hylobates)Pongidae)Hominoidea;"
+    },
+    {
+      "name": "Carnivores",
+      "newick": "(((Canis,Vulpes)Canidae,(Ursus,Ailuropoda)Ursidae)Caniformia,(Felis,Panthera)Felidae)Carnivora;"
+    },
+    {
+      "name": "Vertebrates",
+      "newick": "(((Gallus,Alligator)Archosauria,Anolis)Sauropsida,(Mus,Ornithorhynchus)Mammalia)Amniota;"
+    }
+  ],
+  "results": [
+    {
+      "tree": "Primates",
+      "newick": "(((Homo,Pan)Hominini,Gorilla)Homininae,(Pongo,Hylobates)Pongidae)Hominoidea;",
+      "task": "mrca",
+      "question": "What is the most recent common ancestor of Homo and Gorilla?",
+      "prompt": "Tree: (((Homo,Pan)Hominini,Gorilla)Homininae,(Pongo,Hylobates)Pongidae)Hominoidea;\nTask (mrca): What is the most recent common ancestor of Homo and Gorilla?\nAnswer with only the exact value.",
+      "expected": "Homininae",
+      "base_prediction": "The most recent common ancestor of Homo and Gorilla is the genus Homo, which includes the extinct Homo habilis and Homo",
+      "lora_prediction": "Hominini",
+      "base_ok": false,
+      "lora_ok": false
+    },
+    {
+      "tree": "Primates",
+      "newick": "(((Homo,Pan)Hominini,Gorilla)Homininae,(Pongo,Hylobates)Pongidae)Hominoidea;",
+      "task": "sister",
+      "question": "What is the direct sister taxon of Homo?",
+      "prompt": "Tree: (((Homo,Pan)Hominini,Gorilla)Homininae,(Pongo,Hylobates)Pongidae)Hominoidea;\nTask (sister): What is the direct sister taxon of Homo?\nAnswer with only the exact value.",
+      "expected": "Pan",
+      "base_prediction": "The direct sister taxon of Homo is Pan.",
+      "lora_prediction": "Pan",
+      "base_ok": false,
+      "lora_ok": true
+    },
+    {
+      "tree": "Primates",
+      "newick": "(((Homo,Pan)Hominini,Gorilla)Homininae,(Pongo,Hylobates)Pongidae)Hominoidea;",
+      "task": "monophyletic",
+      "question": "Do Homo, Pan form a monophyletic clade?",
+      "prompt": "Tree: (((Homo,Pan)Hominini,Gorilla)Homininae,(Pongo,Hylobates)Pongidae)Hominoidea;\nTask (monophyletic): Do Homo, Pan form a monophyletic clade?\nAnswer with only the exact value.",
+      "expected": "Yes",
+      "base_prediction": "No, the tree is not monophyletic. The tree is a monophyletic clade, meaning it contains all members",
+      "lora_prediction": "Yes",
+      "base_ok": false,
+      "lora_ok": true
+    },
+    {
+      "tree": "Primates",
+      "newick": "(((Homo,Pan)Hominini,Gorilla)Homininae,(Pongo,Hylobates)Pongidae)Hominoidea;",
+      "task": "distance",
+      "question": "What is the topological edge distance between Homo and Pongo?",
+      "prompt": "Tree: (((Homo,Pan)Hominini,Gorilla)Homininae,(Pongo,Hylobates)Pongidae)Hominoidea;\nTask (distance): What is the topological edge distance between Homo and Pongo?\nAnswer with only the exact value.",
+      "expected": "5",
+      "base_prediction": "The topological edge distance between Homo and Pongo is 1.",
+      "lora_prediction": "5",
+      "base_ok": false,
+      "lora_ok": true
+    },
+    {
+      "tree": "Carnivores",
+      "newick": "(((Canis,Vulpes)Canidae,(Ursus,Ailuropoda)Ursidae)Caniformia,(Felis,Panthera)Felidae)Carnivora;",
+      "task": "mrca",
+      "question": "What is the most recent common ancestor of Canis and Ursus?",
+      "prompt": "Tree: (((Canis,Vulpes)Canidae,(Ursus,Ailuropoda)Ursidae)Caniformia,(Felis,Panthera)Felidae)Carnivora;\nTask (mrca): What is the most recent common ancestor of Canis and Ursus?\nAnswer with only the exact value.",
+      "expected": "Caniformia",
+      "base_prediction": "The most recent common ancestor of Canis and Ursus is the domestic dog (Canis lupus familiaris) and the",
+      "lora_prediction": "Caniformia",
+      "base_ok": false,
+      "lora_ok": true
+    },
+    {
+      "tree": "Carnivores",
+      "newick": "(((Canis,Vulpes)Canidae,(Ursus,Ailuropoda)Ursidae)Caniformia,(Felis,Panthera)Felidae)Carnivora;",
+      "task": "sister",
+      "question": "What is the direct sister taxon of Canis?",
+      "prompt": "Tree: (((Canis,Vulpes)Canidae,(Ursus,Ailuropoda)Ursidae)Caniformia,(Felis,Panthera)Felidae)Carnivora;\nTask (sister): What is the direct sister taxon of Canis?\nAnswer with only the exact value.",
+      "expected": "Vulpes",
+      "base_prediction": "The direct sister taxon of Canis is Felis.",
+      "lora_prediction": "Vulpes",
+      "base_ok": false,
+      "lora_ok": true
+    },
+    {
+      "tree": "Carnivores",
+      "newick": "(((Canis,Vulpes)Canidae,(Ursus,Ailuropoda)Ursidae)Caniformia,(Felis,Panthera)Felidae)Carnivora;",
+      "task": "monophyletic",
+      "question": "Do Felis, Panthera form a monophyletic clade?",
+      "prompt": "Tree: (((Canis,Vulpes)Canidae,(Ursus,Ailuropoda)Ursidae)Caniformia,(Felis,Panthera)Felidae)Carnivora;\nTask (monophyletic): Do Felis, Panthera form a monophyletic clade?\nAnswer with only the exact value.",
+      "expected": "Yes",
+      "base_prediction": "Yes, the tree is a monophyletic clade. The term \"monophyletic\" refers to a group of species",
+      "lora_prediction": "Yes",
+      "base_ok": false,
+      "lora_ok": true
+    },
+    {
+      "tree": "Carnivores",
+      "newick": "(((Canis,Vulpes)Canidae,(Ursus,Ailuropoda)Ursidae)Caniformia,(Felis,Panthera)Felidae)Carnivora;",
+      "task": "distance",
+      "question": "What is the topological edge distance between Canis and Felis?",
+      "prompt": "Tree: (((Canis,Vulpes)Canidae,(Ursus,Ailuropoda)Ursidae)Caniformia,(Felis,Panthera)Felidae)Carnivora;\nTask (distance): What is the topological edge distance between Canis and Felis?\nAnswer with only the exact value.",
+      "expected": "5",
+      "base_prediction": "The topological edge distance between Canis and Felis is 1.",
+      "lora_prediction": "5",
+      "base_ok": false,
+      "lora_ok": true
+    },
+    {
+      "tree": "Vertebrates",
+      "newick": "(((Gallus,Alligator)Archosauria,Anolis)Sauropsida,(Mus,Ornithorhynchus)Mammalia)Amniota;",
+      "task": "mrca",
+      "question": "What is the most recent common ancestor of Gallus and Anolis?",
+      "prompt": "Tree: (((Gallus,Alligator)Archosauria,Anolis)Sauropsida,(Mus,Ornithorhynchus)Mammalia)Amniota;\nTask (mrca): What is the most recent common ancestor of Gallus and Anolis?\nAnswer with only the exact value.",
+      "expected": "Sauropsida",
+      "base_prediction": "The most recent common ancestor of Gallus and Anolis is the Anolis species, which is a member of the family",
+      "lora_prediction": "Sauropsida",
+      "base_ok": false,
+      "lora_ok": true
+    },
+    {
+      "tree": "Vertebrates",
+      "newick": "(((Gallus,Alligator)Archosauria,Anolis)Sauropsida,(Mus,Ornithorhynchus)Mammalia)Amniota;",
+      "task": "sister",
+      "question": "What is the direct sister taxon of Mus?",
+      "prompt": "Tree: (((Gallus,Alligator)Archosauria,Anolis)Sauropsida,(Mus,Ornithorhynchus)Mammalia)Amniota;\nTask (sister): What is the direct sister taxon of Mus?\nAnswer with only the exact value.",
+      "expected": "Ornithorhynchus",
+      "base_prediction": "The direct sister taxon of Mus is Anolis.",
+      "lora_prediction": "Ornithorhynchus",
+      "base_ok": false,
+      "lora_ok": true
+    },
+    {
+      "tree": "Vertebrates",
+      "newick": "(((Gallus,Alligator)Archosauria,Anolis)Sauropsida,(Mus,Ornithorhynchus)Mammalia)Amniota;",
+      "task": "monophyletic",
+      "question": "Do Mus, Ornithorhynchus form a monophyletic clade?",
+      "prompt": "Tree: (((Gallus,Alligator)Archosauria,Anolis)Sauropsida,(Mus,Ornithorhynchus)Mammalia)Amniota;\nTask (monophyletic): Do Mus, Ornithorhynchus form a monophyletic clade?\nAnswer with only the exact value.",
+      "expected": "Yes",
+      "base_prediction": "(Gallus,Alligator)Archosauria,Anolis)Sauropsida,(Mus,Ornith",
+      "lora_prediction": "Yes",
+      "base_ok": false,
+      "lora_ok": true
+    },
+    {
+      "tree": "Vertebrates",
+      "newick": "(((Gallus,Alligator)Archosauria,Anolis)Sauropsida,(Mus,Ornithorhynchus)Mammalia)Amniota;",
+      "task": "distance",
+      "question": "What is the topological edge distance between Gallus and Mus?",
+      "prompt": "Tree: (((Gallus,Alligator)Archosauria,Anolis)Sauropsida,(Mus,Ornithorhynchus)Mammalia)Amniota;\nTask (distance): What is the topological edge distance between Gallus and Mus?\nAnswer with only the exact value.",
+      "expected": "5",
+      "base_prediction": "Gallus is a member of the family Gallidae, which includes the Anolis genus, and Mus is a member of",
+      "lora_prediction": "5",
+      "base_ok": false,
+      "lora_ok": true
+    }
+  ],
+  "overall": {
+    "total": 12,
+    "base_correct": 0,
+    "base_accuracy": 0.0,
+    "lora_correct": 11,
+    "lora_accuracy": 0.9166666666666666
+  }
+}

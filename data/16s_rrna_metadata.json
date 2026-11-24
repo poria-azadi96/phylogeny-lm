@@ -1,0 +1,82 @@
+[
+  {
+    "taxon_id": "Escherichia_coli",
+    "organism": "Escherichia coli",
+    "domain": "Bacteria",
+    "phylum": "Pseudomonadota (Gammaproteobacteria)",
+    "ncbi_uid": "631252844",
+    "accession": "NR_114042.1",
+    "length_bp": 1467,
+    "ncbi_header": "NR_114042.1 Escherichia coli strain NBRC 102203 16S ribosomal RNA, partial sequence"
+  },
+  {
+    "taxon_id": "Pseudomonas_aeruginosa",
+    "organism": "Pseudomonas aeruginosa",
+    "domain": "Bacteria",
+    "phylum": "Pseudomonadota (Gammaproteobacteria)",
+    "ncbi_uid": "645320483",
+    "accession": "NR_117678.1",
+    "length_bp": 1527,
+    "ncbi_header": "NR_117678.1 Pseudomonas aeruginosa strain DSM 50071 16S ribosomal RNA, partial sequence"
+  },
+  {
+    "taxon_id": "Bacillus_subtilis",
+    "organism": "Bacillus subtilis",
+    "domain": "Bacteria",
+    "phylum": "Bacillota",
+    "ncbi_uid": "1269801457",
+    "accession": "NR_102783.2",
+    "length_bp": 1550,
+    "ncbi_header": "NR_102783.2 Bacillus subtilis subsp. subtilis strain 168 16S ribosomal RNA, complete sequence"
+  },
+  {
+    "taxon_id": "Staphylococcus_aureus",
+    "organism": "Staphylococcus aureus",
+    "domain": "Bacteria",
+    "phylum": "Bacillota",
+    "ncbi_uid": "1269859156",
+    "accession": "NR_037007.2",
+    "length_bp": 1552,
+    "ncbi_header": "NR_037007.2 Staphylococcus aureus strain S33 R 16S ribosomal RNA, complete sequence"
+  },
+  {
+    "taxon_id": "Halobacterium_salinarum",
+    "organism": "Halobacterium salinarum",
+    "domain": "Archaea",
+    "phylum": "Euryarchaeota (Halobacteria)",
+    "ncbi_uid": "219878416",
+    "accession": "NR_025555.1",
+    "length_bp": 1434,
+    "ncbi_header": "NR_025555.1 Halobacterium salinarum strain 91-R6 16S ribosomal RNA, partial sequence"
+  },
+  {
+    "taxon_id": "Methanocaldococcus_jannaschii",
+    "organism": "Methanocaldococcus jannaschii",
+    "domain": "Archaea",
+    "phylum": "Euryarchaeota (Methanococci)",
+    "ncbi_uid": "631252094",
+    "accession": "NR_113292.1",
+    "length_bp": 1458,
+    "ncbi_header": "NR_113292.1 Methanocaldococcus jannaschii strain JCM 10045 16S ribosomal RNA, partial sequence"
+  },
+  {
+    "taxon_id": "Pyrococcus_furiosus",
+    "organism": "Pyrococcus furiosus",
+    "domain": "Archaea",
+    "phylum": "Euryarchaeota (Thermococci)",
+    "ncbi_uid": "631252096",
+    "accession": "NR_113294.1",
+    "length_bp": 1321,
+    "ncbi_header": "NR_113294.1 Pyrococcus furiosus strain JCM 8422 16S ribosomal RNA, partial sequence"
+  },
+  {
+    "taxon_id": "Sulfolobus_acidocaldarius",
+    "organism": "Sulfolobus acidocaldarius",
+    "domain": "Archaea",
+    "phylum": "Thermoproteota (Crenarchaeota)",
+    "ncbi_uid": "636559440",
+    "accession": "NR_115499.1",
+    "length_bp": 1463,
+    "ncbi_header": "NR_115499.1 Sulfolobus acidocaldarius strain DSM 639 16S ribosomal RNA, complete sequence"
+  }
+]

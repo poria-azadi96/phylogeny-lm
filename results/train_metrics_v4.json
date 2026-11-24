@@ -1,0 +1,72 @@
+{
+  "model_name": "HuggingFaceTB/SmolLM2-135M-Instruct",
+  "train_file": "data/train_v4.jsonl",
+  "val_file": "data/val.jsonl",
+  "output_dir": "outputs/phylogeny-lora-v4",
+  "epochs": 6,
+  "batch_size": 8,
+  "learning_rate": 0.0003,
+  "seed": 42,
+  "device": "cuda",
+  "model_dtype": "torch.bfloat16",
+  "train_examples": 4400,
+  "val_examples": 80,
+  "train_batches": 550,
+  "total_steps": 3300,
+  "warmup_steps": 165,
+  "lora": {
+    "r": 32,
+    "lora_alpha": 64,
+    "lora_dropout": 0.05,
+    "target_modules": [
+      "q_proj",
+      "k_proj",
+      "v_proj",
+      "o_proj",
+      "gate_proj",
+      "up_proj",
+      "down_proj"
+    ]
+  },
+  "parameter_stats": {
+    "total_parameters": 144283968,
+    "trainable_parameters": 9768960,
+    "trainable_percentage": 6.7706482815887075
+  },
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 0.2598148824903422,
+      "val_loss": 0.1566833122433113
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.08751416986338628,
+      "val_loss": 0.07036588872815432
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.04704832796696657,
+      "val_loss": 0.05298632451161612
+    },
+    {
+      "epoch": 4,
+      "train_loss": 0.023955989925121636,
+      "val_loss": 0.028250294898684206
+    },
+    {
+      "epoch": 5,
+      "train_loss": 0.00934700138691443,
+      "val_loss": 0.02706556220699142
+    },
+    {
+      "epoch": 6,
+      "train_loss": 0.0031323298938926544,
+      "val_loss": 0.0251810447510555
+    }
+  ],
+  "best_epoch": 6,
+  "best_val_loss": 0.0251810447510555,
+  "final_train_loss": 0.0031323298938926544,
+  "final_val_loss": 0.0251810447510555
+}
