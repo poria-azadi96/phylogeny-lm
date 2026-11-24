@@ -1,0 +1,1500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Phylogeny LM · Structural QA Workbench</title>
+<style>
+  :root {
+    --bg: #060a11;
+    --bg-deep: #04070c;
+    --panel: #0c1422;
+    --panel-2: #0f1a2c;
+    --panel-3: #111f34;
+    --line: #1d2a3f;
+    --line-soft: #172235;
+    --text: #e6edf6;
+    --muted: #94a3b8;
+    --dim: #64748b;
+    --emerald: #34d399;
+    --emerald-deep: #10b981;
+    --cyan: #22d3ee;
+    --amber: #fbbf24;
+    --rose: #fb7185;
+    --radius: 16px;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    min-height: 100vh;
+    background:
+      radial-gradient(1100px 520px at 12% -8%, rgba(16, 185, 129, 0.13), transparent 62%),
+      radial-gradient(900px 480px at 92% 4%, rgba(34, 211, 238, 0.10), transparent 60%),
+      radial-gradient(700px 380px at 60% 100%, rgba(251, 191, 36, 0.05), transparent 65%),
+      var(--bg);
+  }
+
+  a { color: var(--cyan); text-decoration: none; }
+  code, pre { font-family: var(--mono); }
+  button { font-family: inherit; }
+
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 14px clamp(18px, 4vw, 46px);
+    border-bottom: 1px solid var(--line-soft);
+    background: rgba(6, 10, 17, 0.82);
+    backdrop-filter: blur(14px);
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    font-size: 13px;
+    text-transform: uppercase;
+  }
+
+  .brand-mark {
+    width: 34px;
+    height: 34px;
+    border-radius: 11px;
+    display: grid;
+    place-items: center;
+    background: linear-gradient(145deg, rgba(52, 211, 153, 0.22), rgba(34, 211, 238, 0.12));
+    border: 1px solid rgba(52, 211, 153, 0.35);
+    box-shadow: inset 0 0 18px rgba(52, 211, 153, 0.12);
+  }
+
+  .brand-mark svg { width: 20px; height: 20px; }
+  .brand span.version {
+    color: var(--emerald);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    border: 1px solid rgba(52, 211, 153, 0.3);
+    background: rgba(52, 211, 153, 0.08);
+    padding: 3px 7px;
+    border-radius: 999px;
+  }
+
+  .health {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--muted);
+    font-size: 12px;
+    padding: 8px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: rgba(12, 20, 34, 0.7);
+    white-space: nowrap;
+  }
+
+  .health .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--emerald);
+    box-shadow: 0 0 10px rgba(52, 211, 153, 0.8);
+  }
+
+  .health.offline .dot { background: var(--rose); box-shadow: 0 0 10px rgba(251, 113, 133, 0.8); }
+  .health .sep { color: var(--dim); }
+  .health .mono { font-family: var(--mono); color: var(--text); }
+
+  main {
+    max-width: 1460px;
+    margin: 0 auto;
+    padding: clamp(22px, 3vw, 40px) clamp(18px, 4vw, 46px) 70px;
+  }
+
+  .hero {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 26px;
+    flex-wrap: wrap;
+    margin-bottom: 26px;
+  }
+
+  .hero h1 {
+    margin: 0 0 10px;
+    font-size: clamp(26px, 3.5vw, 42px);
+    letter-spacing: -0.03em;
+    line-height: 1.06;
+    font-weight: 800;
+  }
+
+  .hero h1 .grad {
+    background: linear-gradient(96deg, var(--emerald), var(--cyan));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .hero p {
+    margin: 0;
+    max-width: 720px;
+    color: var(--muted);
+    font-size: 14.5px;
+    line-height: 1.65;
+  }
+
+  .stat-row { display: flex; gap: 10px; flex-wrap: wrap; }
+
+  .stat {
+    min-width: 132px;
+    padding: 11px 14px;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    background: linear-gradient(180deg, rgba(15, 26, 44, 0.95), rgba(10, 17, 29, 0.9));
+  }
+
+  .stat b { display: block; font-family: var(--mono); font-size: 18px; color: var(--emerald); letter-spacing: -0.02em; }
+  .stat span { display: block; margin-top: 3px; font-size: 10.5px; color: var(--dim); text-transform: uppercase; letter-spacing: 0.11em; }
+
+  .workspace {
+    display: grid;
+    grid-template-columns: minmax(360px, 0.86fr) minmax(440px, 1.14fr);
+    gap: 20px;
+    align-items: start;
+  }
+
+  .panel {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: linear-gradient(180deg, rgba(15, 26, 44, 0.92), rgba(9, 15, 27, 0.96));
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
+    overflow: hidden;
+  }
+
+  .panel-inner { padding: 20px; }
+
+  .panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .panel-head h2, .section-title {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .muted { color: var(--muted); }
+  .dim { color: var(--dim); }
+  .mono { font-family: var(--mono); }
+
+  .presets {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+    margin-bottom: 18px;
+  }
+
+  .preset {
+    text-align: left;
+    cursor: pointer;
+    border: 1px solid var(--line);
+    background: rgba(9, 16, 29, 0.8);
+    border-radius: 12px;
+    padding: 10px 11px;
+    color: var(--text);
+    transition: border-color 150ms ease, background 150ms ease, transform 150ms ease;
+  }
+
+  .preset:hover { border-color: rgba(52, 211, 153, 0.42); background: rgba(16, 185, 129, 0.07); transform: translateY(-1px); }
+  .preset.active { border-color: rgba(52, 211, 153, 0.7); background: rgba(16, 185, 129, 0.11); box-shadow: inset 0 0 0 1px rgba(52, 211, 153, 0.18); }
+  .preset-name { display: block; font-size: 12.5px; font-weight: 700; line-height: 1.25; }
+  .preset-desc { display: block; margin-top: 4px; font-size: 10.5px; line-height: 1.4; color: var(--dim); }
+
+  .field-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin: 0 0 7px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  textarea {
+    width: 100%;
+    min-height: 92px;
+    resize: vertical;
+    padding: 12px 13px;
+    border-radius: 11px;
+    border: 1px solid var(--line);
+    background: var(--bg-deep);
+    color: #d7e3f4;
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.55;
+    outline: none;
+    transition: border-color 150ms ease, box-shadow 150ms ease;
+  }
+
+  textarea:focus { border-color: rgba(34, 211, 238, 0.55); box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.09); }
+
+  .row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+
+  button.primary, button.secondary, button.ghost {
+    cursor: pointer;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 10px 15px;
+    transition: filter 150ms ease, border-color 150ms ease, background 150ms ease, transform 150ms ease;
+  }
+
+  button.primary {
+    border: 1px solid rgba(52, 211, 153, 0.55);
+    background: linear-gradient(180deg, #2dd4a0, #0ea97f);
+    color: #04120d;
+    letter-spacing: 0.01em;
+  }
+
+  button.primary:hover:not(:disabled) { filter: brightness(1.07); transform: translateY(-1px); }
+  button.primary:disabled { opacity: 0.42; cursor: not-allowed; filter: grayscale(0.4); }
+
+  button.secondary {
+    border: 1px solid var(--line);
+    background: rgba(15, 26, 44, 0.85);
+    color: var(--text);
+  }
+
+  button.secondary:hover { border-color: rgba(34, 211, 238, 0.5); background: rgba(34, 211, 238, 0.07); }
+
+  button.ghost {
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--dim);
+    padding: 5px 8px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  button.ghost:hover { color: var(--text); border-color: var(--line); }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid var(--line);
+    background: rgba(12, 20, 34, 0.8);
+    color: var(--muted);
+    border-radius: 999px;
+    padding: 6px 11px;
+    font-size: 11px;
+    line-height: 1.2;
+    max-width: 100%;
+  }
+
+  .pill.ok { color: #9ff2d4; border-color: rgba(52, 211, 153, 0.36); background: rgba(16, 185, 129, 0.09); }
+  .pill.warn { color: #fde68a; border-color: rgba(251, 191, 36, 0.32); background: rgba(251, 191, 36, 0.07); }
+  .pill.err { color: #fecdd3; border-color: rgba(251, 113, 133, 0.4); background: rgba(251, 113, 133, 0.09); }
+
+  .divider { height: 1px; background: var(--line-soft); margin: 18px 0; }
+
+  .task-pills { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+
+  .task-pill {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid var(--line);
+    background: rgba(9, 16, 29, 0.8);
+    color: var(--muted);
+    border-radius: 10px;
+    padding: 9px 11px;
+    font-size: 12px;
+    font-weight: 700;
+    transition: border-color 150ms ease, background 150ms ease, color 150ms ease;
+  }
+
+  .task-pill .mini-code { font-family: var(--mono); font-size: 9.5px; color: var(--dim); font-weight: 500; }
+  .task-pill:hover { border-color: var(--line); color: var(--text); }
+  .task-pill.active {
+    color: #d1fae5;
+    border-color: rgba(52, 211, 153, 0.55);
+    background: linear-gradient(180deg, rgba(16, 185, 129, 0.16), rgba(16, 185, 129, 0.06));
+  }
+  .task-pill.active .mini-code { color: var(--emerald); }
+
+  .hint { margin: 9px 0 0; font-size: 11.5px; line-height: 1.55; color: var(--dim); min-height: 18px; }
+  .hint.ok { color: #86efac; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
+
+  .chip {
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid var(--line);
+    background: rgba(8, 14, 25, 0.9);
+    color: #cbd5e1;
+    border-radius: 999px;
+    padding: 6px 11px;
+    font-size: 11.5px;
+    font-family: var(--mono);
+    transition: border-color 130ms ease, background 130ms ease, color 130ms ease, transform 130ms ease;
+  }
+
+  .chip:hover:not(:disabled) { border-color: rgba(34, 211, 238, 0.5); transform: translateY(-1px); }
+  .chip .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--dim); }
+  .chip.selected { border-color: rgba(52, 211, 153, 0.75); background: rgba(16, 185, 129, 0.18); color: #d1fae5; }
+  .chip.selected .dot { background: var(--emerald); box-shadow: 0 0 8px rgba(52, 211, 153, 0.9); }
+  .chip.disabled, .chip:disabled { cursor: not-allowed; opacity: 0.4; border-style: dashed; }
+  .chip .cherry-mark { color: var(--cyan); font-size: 8px; margin-left: 1px; }
+  .chip .lock-mark { color: var(--dim); font-size: 9px; }
+
+  .viz-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 18px 20px 12px; }
+  .viz-head h2 { margin: 0; font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+  .viz-meta { font-size: 11px; color: var(--dim); font-family: var(--mono); }
+
+  .tree-wrap {
+    min-height: 380px;
+    padding: 4px 12px 16px 8px;
+    overflow: auto;
+  }
+
+  .tree-wrap .empty {
+    min-height: 330px;
+    display: grid;
+    place-items: center;
+    color: var(--dim);
+    font-size: 12.5px;
+    border: 1px dashed var(--line);
+    border-radius: 12px;
+    margin: 8px;
+  }
+
+  .tree-svg { display: block; width: 100%; height: auto; min-width: 680px; }
+
+  .branch { stroke: #3b4a60; stroke-width: 1.65; stroke-linecap: round; }
+  .path-highlight { stroke: var(--amber); stroke-width: 4; stroke-linecap: round; opacity: 0.9; }
+  .node-dot { fill: #0b1322; stroke: #38bdf8; stroke-width: 1.3; }
+  .leaf-dot { fill: #0b1322; stroke: #64748b; stroke-width: 1.5; }
+  .leaf-dot.selected { fill: var(--emerald); stroke: #d1fae5; stroke-width: 1.6; }
+  .leaf-dot.predicted { fill: var(--amber); stroke: #fef3c7; stroke-width: 1.6; }
+  .leaf-label { fill: #cbd5e1; font-family: var(--mono); font-size: 12px; dominant-baseline: middle; }
+  .leaf-label.selected { fill: #03110c; font-weight: 700; }
+  .leaf-label.predicted { fill: #1d1403; font-weight: 700; }
+  .label-pill.selected { fill: rgba(52, 211, 153, 0.92); stroke: #a7f3d0; stroke-width: 1; }
+  .label-pill.predicted { fill: rgba(251, 191, 36, 0.92); stroke: #fde68a; stroke-width: 1; }
+  .clade-highlight { fill: rgba(251, 191, 36, 0.09); stroke: rgba(251, 191, 36, 0.42); stroke-width: 1; stroke-dasharray: 5 5; }
+  .internal-badge rect { fill: #0a1322; stroke: #22324b; stroke-width: 1; }
+  .internal-badge text { fill: #7dd3fc; font-family: var(--mono); font-size: 10.5px; font-weight: 600; }
+  .internal-badge.predicted rect { fill: rgba(251, 191, 36, 0.15); stroke: rgba(251, 191, 36, 0.75); }
+  .internal-badge.predicted text { fill: #fde68a; }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    padding: 0 20px 18px;
+    font-size: 10.5px;
+    color: var(--dim);
+  }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend i { width: 9px; height: 9px; border-radius: 3px; display: inline-block; }
+  .legend .l-selected { background: var(--emerald); }
+  .legend .l-predicted { background: var(--amber); }
+  .legend .l-internal { background: #38bdf8; border-radius: 50%; }
+
+  .results { margin-top: 22px; }
+  .results.hidden { display: none; }
+
+  .verifier {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 17px 20px;
+    background: linear-gradient(180deg, rgba(15, 26, 44, 0.94), rgba(9, 15, 27, 0.96));
+    margin-bottom: 14px;
+  }
+  .verifier.verified { border-color: rgba(52, 211, 153, 0.34); box-shadow: 0 0 40px rgba(16, 185, 129, 0.07) inset; }
+  .verifier.mismatch { border-color: rgba(251, 113, 133, 0.36); box-shadow: 0 0 40px rgba(251, 113, 133, 0.07) inset; }
+  .verifier-top { display: flex; align-items: center; gap: 13px; }
+  .verifier-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 13px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+  .verifier-badge.ok { color: #052e1f; background: linear-gradient(180deg, #6ee7b7, #34d399); }
+  .verifier-badge.err { color: #3b0710; background: linear-gradient(180deg, #fda4af, #fb7185); }
+  .verifier-title { font-size: 13px; font-weight: 800; }
+  .verifier-sub { font-size: 11px; color: var(--dim); margin-top: 2px; }
+
+  .verifier-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(118px, 1fr));
+    gap: 10px 22px;
+    flex: 1 1 560px;
+  }
+  .vstat { display: flex; flex-direction: column; gap: 4px; }
+  .vlabel { font-size: 9.5px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--dim); font-weight: 700; }
+  .vstat code { font-size: 12px; color: #dbeafe; word-break: break-word; }
+  .vstat code.good { color: var(--emerald); }
+
+  .result-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+
+  .card {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: linear-gradient(180deg, rgba(15, 26, 44, 0.94), rgba(9, 15, 27, 0.97));
+    padding: 18px 19px;
+    position: relative;
+    overflow: hidden;
+  }
+  .card::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 3px; }
+  .card.lora::before { background: linear-gradient(90deg, var(--emerald), var(--cyan)); }
+  .card.base::before { background: linear-gradient(90deg, #475569, #94a3b8); }
+
+  .card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+  .model-name { font-size: 14px; font-weight: 800; letter-spacing: -0.01em; }
+  .model-tag { margin-top: 3px; font-size: 10.5px; color: var(--dim); font-family: var(--mono); }
+  .card.lora .model-name { color: #a7f3d0; }
+  .card.base .model-name { color: #cbd5e1; }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 9px;
+    border-radius: 999px;
+    font-size: 10.5px;
+    font-weight: 800;
+    white-space: nowrap;
+    border: 1px solid var(--line);
+    color: var(--muted);
+    background: rgba(9, 16, 29, 0.8);
+  }
+  .badge.ok { color: #052e1f; background: #6ee7b7; border-color: #6ee7b7; }
+  .badge.err { color: #3b0710; background: #fda4af; border-color: #fda4af; }
+  .badge.muted { color: var(--dim); }
+
+  .prediction {
+    margin: 18px 0 16px;
+    font-family: var(--mono);
+    font-size: clamp(22px, 2.4vw, 32px);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: #f1f5f9;
+    word-break: break-word;
+    line-height: 1.15;
+    min-height: 38px;
+  }
+  .card.lora .prediction { color: #d1fae5; }
+  .prediction.empty { color: var(--dim); font-size: 16px; font-weight: 600; font-style: italic; }
+
+  .card-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 12px;
+    border-top: 1px solid var(--line-soft);
+    font-size: 11px;
+    color: var(--dim);
+  }
+  .card-foot strong { font-family: var(--mono); color: var(--muted); font-weight: 600; }
+
+  .prompt-box {
+    margin-top: 14px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: rgba(8, 14, 25, 0.75);
+    overflow: hidden;
+  }
+  .prompt-box summary {
+    cursor: pointer;
+    padding: 12px 16px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    color: var(--muted);
+    user-select: none;
+  }
+  .prompt-box summary:hover { color: var(--text); }
+  .prompt-box pre {
+    margin: 0;
+    padding: 0 16px 16px;
+    font-size: 11.5px;
+    line-height: 1.6;
+    color: #cbd5e1;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .empty-note {
+    border: 1px dashed var(--line);
+    border-radius: 12px;
+    padding: 16px;
+    color: var(--dim);
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  .toast {
+    position: fixed;
+    right: 22px;
+    bottom: 22px;
+    z-index: 80;
+    max-width: min(420px, calc(100vw - 44px));
+    border: 1px solid rgba(251, 113, 133, 0.45);
+    background: rgba(55, 10, 20, 0.96);
+    color: #ffe4e6;
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+    border-radius: 12px;
+    padding: 12px 15px;
+    font-size: 12px;
+    line-height: 1.5;
+    opacity: 0;
+    transform: translateY(10px);
+    pointer-events: none;
+    transition: opacity 180ms ease, transform 180ms ease;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+
+  footer {
+    max-width: 1460px;
+    margin: 0 auto;
+    padding: 0 clamp(18px, 4vw, 46px) 34px;
+    color: var(--dim);
+    font-size: 11px;
+    line-height: 1.6;
+  }
+
+  @media (max-width: 1080px) {
+    .workspace { grid-template-columns: 1fr; }
+    .tree-wrap { min-height: 320px; }
+  }
+
+  @media (max-width: 700px) {
+    .topbar { align-items: flex-start; flex-direction: column; }
+    .health { white-space: normal; }
+    .result-grid, .presets, .task-pills { grid-template-columns: 1fr; }
+    .verifier { align-items: flex-start; }
+    .brand span.version { display: none; }
+  }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6 4v16M18 4v16M6 8h12M6 16h12M6 12h12" opacity=".55"/>
+        <circle cx="6" cy="4" r="1.8" fill="#34d399" stroke="none"/>
+        <circle cx="6" cy="12" r="1.8" fill="#22d3ee" stroke="none"/>
+        <circle cx="6" cy="20" r="1.8" fill="#34d399" stroke="none"/>
+        <circle cx="18" cy="8" r="1.8" fill="#fbbf24" stroke="none"/>
+        <circle cx="18" cy="16" r="1.8" fill="#22d3ee" stroke="none"/>
+      </svg>
+    </span>
+    <span>Phylogeny LM</span>
+    <span class="version">LoRA v3</span>
+  </div>
+  <div id="health" class="health">
+    <span class="dot"></span><span>Connecting…</span>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div>
+      <h1>Structural phylogeny QA,<br /><span class="grad">verified end to end.</span></h1>
+      <p>
+        Ask rooted-binary Newick trees for MRCA labels, sister taxa, monophyly, and
+        topological edge distances. A 135M-parameter SmolLM2 student with a LoRA v3
+        adapter answers; an exact algorithmic verifier recomputes the ground truth
+        from the same normalized topology.
+      </p>
+    </div>
+    <div class="stat-row">
+      <div class="stat"><b>97.50%</b><span>Held-out test</span></div>
+      <div class="stat"><b>12/12</b><span>Unseen real trees</span></div>
+      <div class="stat"><b>97.92%</b><span>48-case stress test</span></div>
+    </div>
+  </section>
+
+  <div class="workspace">
+    <section class="panel">
+      <div class="panel-inner">
+        <div class="panel-head">
+          <h2>1 · Load a tree</h2>
+          <span class="pill" id="normPill">Waiting for tree</span>
+        </div>
+
+        <div class="presets" id="presets" aria-label="Curated phylogenetic presets"></div>
+
+        <label class="field-label" for="newick">
+          <span>Newick input</span>
+          <span class="dim" style="letter-spacing:0;text-transform:none;font-weight:500">branch lengths &amp; unlabeled internals supported</span>
+        </label>
+        <textarea id="newick" spellcheck="false" aria-label="Newick tree"></textarea>
+        <div class="row">
+          <button class="secondary" id="parseBtn" type="button">Parse Tree</button>
+          <span class="hint" style="margin:0">Ctrl / Cmd + Enter to parse</span>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="panel-head" style="margin-bottom:8px">
+          <h2>2 · Choose a task</h2>
+        </div>
+        <div class="task-pills" id="tasks">
+          <button class="task-pill active" type="button" data-task="mrca">
+            <span>MRCA</span><span class="mini-code">mrca</span>
+          </button>
+          <button class="task-pill" type="button" data-task="sister">
+            <span>Sister Taxon</span><span class="mini-code">sister</span>
+          </button>
+          <button class="task-pill" type="button" data-task="monophyletic">
+            <span>Monophyletic Clade</span><span class="mini-code">monophyletic</span>
+          </button>
+          <button class="task-pill" type="button" data-task="distance">
+            <span>Edge Distance</span><span class="mini-code">distance</span>
+          </button>
+        </div>
+        <p class="hint" id="taskHint"></p>
+
+        <div class="divider"></div>
+
+        <div class="panel-head" style="margin-bottom:4px">
+          <h2>3 · Select taxa</h2>
+          <button class="ghost" id="clearSel" type="button">Clear</button>
+        </div>
+        <div class="chips" id="chips"></div>
+        <p class="hint" id="selectionHint"></p>
+
+        <div class="row" style="margin-top:16px">
+          <button class="primary" id="predictBtn" type="button" disabled>Run Inference</button>
+          <span class="hint" style="margin:0">Greedy decoding · exact verifier</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="viz-head">
+        <h2>Cladogram</h2>
+        <span class="viz-meta" id="leafCount"></span>
+      </div>
+      <div class="tree-wrap" id="treeWrap">
+        <div class="empty">Parse a tree to render the cladogram.</div>
+      </div>
+      <div class="legend">
+        <span><i class="l-selected"></i> Queried taxon</span>
+        <span><i class="l-predicted"></i> Predicted clade / sister / path</span>
+        <span><i class="l-internal"></i> Internal clade label</span>
+      </div>
+    </section>
+  </div>
+
+  <section class="results hidden" id="results" aria-live="polite">
+    <div class="verifier" id="verifier"></div>
+    <div class="result-grid">
+      <article class="card lora" id="loraCard"></article>
+      <article class="card base" id="baseCard"></article>
+    </div>
+    <details class="prompt-box">
+      <summary>Exact prompt &amp; question inspector</summary>
+      <pre id="promptText"></pre>
+    </details>
+  </section>
+</main>
+
+<footer>
+  Rooted binary Newick only. Branch lengths are stripped and unlabeled internal
+  nodes are auto-labeled; this is a topology workbench, not a likelihood or
+  alignment pipeline. Ground truth is always recomputed by the exact verifier.
+</footer>
+
+<div class="toast" id="toast" role="alert"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  const $ = function (id) { return document.getElementById(id); };
+  const DEFAULT_NEWICK = "(((Homo,Pan)Hominini,Gorilla)Homininae,(Pongo,Hylobates)Pongidae)Hominoidea;";
+
+  const TASK_RULES = {
+    mrca: {
+      label: "MRCA",
+      min: 2,
+      max: 2,
+      hint: "Select exactly two distinct leaves. The answer is their deepest shared internal clade label."
+    },
+    sister: {
+      label: "Sister Taxon",
+      min: 1,
+      max: 1,
+      hint: "Select one leaf inside a cherry. Only cherry leaves are eligible and are marked with a cyan dot."
+    },
+    monophyletic: {
+      label: "Monophyletic Clade",
+      min: 2,
+      max: 3,
+      hint: "Select two or three distinct leaves. They are sorted alphabetically before the question is built."
+    },
+    distance: {
+      label: "Edge Distance",
+      min: 2,
+      max: 2,
+      hint: "Select exactly two distinct leaves. The answer is the number of topological edges between them."
+    }
+  };
+
+  const state = {
+    summary: null,
+    task: "mrca",
+    selected: [],
+    prediction: null,
+    presets: [],
+    busy: false
+  };
+
+  function esc(value) {
+    return String(value === null || value === undefined ? "" : value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  function shorten(value, max) {
+    const text = String(value || "");
+    return text.length <= max ? text : text.slice(0, Math.max(0, max - 1)) + "…";
+  }
+
+  function fmtMs(value) {
+    if (value === null || value === undefined || Number.isNaN(Number(value))) return "—";
+    const number = Number(value);
+    return (number >= 100 ? number.toFixed(1) : number.toFixed(2)) + " ms";
+  }
+
+  async function fetchJSON(path, options) {
+    const response = await fetch(path, options);
+    let data = null;
+    try { data = await response.json(); } catch (error) { data = null; }
+    if (!response.ok) {
+      const message = data && data.error ? data.error : "HTTP " + response.status;
+      throw new Error(message);
+    }
+    return data;
+  }
+
+  let toastTimer = null;
+  function showToast(message) {
+    const node = $("toast");
+    node.textContent = message;
+    node.classList.add("show");
+    window.clearTimeout(toastTimer);
+    toastTimer = window.setTimeout(function () { node.classList.remove("show"); }, 5200);
+  }
+
+  function setHealth(health) {
+    const node = $("health");
+    if (!health) {
+      node.className = "health offline";
+      node.innerHTML = '<span class="dot"></span><span>Server offline</span>';
+      return;
+    }
+    node.className = "health";
+    node.title = String(health.model_name || "") + " | adapter: " + String(health.adapter_dir || "");
+    node.innerHTML =
+      '<span class="dot"></span>' +
+      "<span>" + esc(health.device || "cpu") + "</span>" +
+      '<span class="sep">·</span>' +
+      "<span>" + (health.base_enabled ? "LoRA + Base" : "LoRA only") + "</span>" +
+      '<span class="sep">·</span>' +
+      '<span class="mono">' + esc(shorten(health.model_name || "SmolLM2-135M-Instruct", 30)) + "</span>";
+  }
+
+  async function loadHealth() {
+    try {
+      setHealth(await fetchJSON("/api/health"));
+    } catch (error) {
+      setHealth(null);
+    }
+  }
+
+  function normalizeSummary(raw) {
+    return {
+      normalized_newick: raw.normalized_newick || "",
+      metadata: raw.metadata || {},
+      leaves: Array.isArray(raw.leaves) ? raw.leaves.slice() : [],
+      internal_clades: Array.isArray(raw.internal_clades) ? raw.internal_clades.slice() : [],
+      cherry_leaves: Array.isArray(raw.cherry_leaves) ? raw.cherry_leaves.slice() : [],
+      tree_dict: raw.tree_dict || null
+    };
+  }
+
+  function summaryFromPreset(preset) {
+    return normalizeSummary({
+      normalized_newick: preset.normalized_newick,
+      metadata: preset.metadata,
+      leaves: preset.leaves,
+      internal_clades: preset.internal_clades,
+      cherry_leaves: preset.cherry_leaves,
+      tree_dict: preset.tree_dict
+    });
+  }
+
+  async function loadPresets() {
+    const data = await fetchJSON("/api/presets");
+    state.presets = Array.isArray(data) ? data : (data && Array.isArray(data.presets) ? data.presets : []);
+    renderPresets();
+  }
+
+  function renderPresets() {
+    const wrap = $("presets");
+    wrap.innerHTML = "";
+    state.presets.forEach(function (preset) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "preset";
+      button.dataset.presetId = preset.id || "";
+      button.innerHTML =
+        '<span class="preset-name">' + esc(preset.name || preset.id) + "</span>" +
+        '<span class="preset-desc">' + esc(preset.description || "") + "</span>";
+      button.addEventListener("click", function () { loadPreset(preset); });
+      wrap.appendChild(button);
+    });
+  }
+
+  function markActivePreset(presetId) {
+    document.querySelectorAll(".preset").forEach(function (button) {
+      button.classList.toggle("active", button.dataset.presetId === presetId);
+    });
+  }
+
+  function setNormPill(metadata, note) {
+    const pill = $("normPill");
+    const bits = [];
+    if (metadata && metadata.branch_lengths_stripped) bits.push("branch lengths stripped");
+    const labels = metadata && Array.isArray(metadata.auto_labeled_nodes) ? metadata.auto_labeled_nodes : [];
+    if (labels.length) bits.push(labels.length + " internal label" + (labels.length === 1 ? "" : "s") + " auto-assigned");
+    if (!bits.length) bits.push("valid rooted binary Newick");
+    pill.textContent = (note ? note + " · " : "") + bits.join(" · ");
+    pill.className = "pill " + (metadata && metadata.branch_lengths_stripped ? "warn" : "ok");
+  }
+
+  function setParseError(message) {
+    const pill = $("normPill");
+    pill.textContent = "Parse error · " + message;
+    pill.className = "pill err";
+  }
+
+  function loadPreset(preset) {
+    const summary = summaryFromPreset(preset);
+    $("newick").value = preset.raw_newick || preset.normalized_newick || "";
+    state.summary = summary;
+    state.task = preset.suggested_task || (preset.suggested && preset.suggested.task) || state.task;
+    state.prediction = null;
+    const suggested = preset.suggested_taxa || (preset.suggested && preset.suggested.taxa) || [];
+    state.selected = suggested.filter(function (name) {
+      return summary.leaves.indexOf(name) !== -1;
+    });
+    validateSelectionForTask();
+    markActivePreset(preset.id || "");
+    $("results").classList.add("hidden");
+    setNormPill(summary.metadata, "Preset loaded");
+    renderAll();
+  }
+
+  function validateSelectionForTask() {
+    const rule = TASK_RULES[state.task];
+    if (!state.summary) {
+      state.selected = [];
+      return;
+    }
+    const leaves = new Set(state.summary.leaves);
+    state.selected = state.selected.filter(function (name) { return leaves.has(name); });
+    if (state.task === "sister") {
+      const cherries = new Set(state.summary.cherry_leaves);
+      state.selected = state.selected.filter(function (name) { return cherries.has(name); });
+    }
+    if (state.selected.length > rule.max) {
+      state.selected = state.selected.slice(0, rule.max);
+    }
+  }
+
+  function setParseBusy(busy) {
+    const button = $("parseBtn");
+    button.disabled = busy;
+    button.textContent = busy ? "Parsing…" : "Parse Tree";
+  }
+
+  async function parseTree() {
+    const newick = $("newick").value.trim();
+    if (!newick) {
+      setParseError("enter a Newick string");
+      return;
+    }
+    setParseBusy(true);
+    try {
+      const summary = await fetchJSON("/api/parse", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ newick: newick })
+      });
+      state.summary = normalizeSummary(summary);
+      state.prediction = null;
+      validateSelectionForTask();
+      markActivePreset("");
+      $("results").classList.add("hidden");
+      setNormPill(summary.metadata, "Parsed");
+      renderAll();
+    } catch (error) {
+      setParseError(error.message);
+      showToast("Could not parse Newick: " + error.message);
+    } finally {
+      setParseBusy(false);
+    }
+  }
+
+  function renderAll() {
+    renderTasks();
+    renderChips();
+    renderViz();
+    updateSelectionHint();
+    updatePredictButton();
+  }
+
+  function renderTasks() {
+    document.querySelectorAll(".task-pill").forEach(function (button) {
+      const active = button.dataset.task === state.task;
+      button.classList.toggle("active", active);
+      button.setAttribute("aria-pressed", active ? "true" : "false");
+    });
+    $("taskHint").textContent = TASK_RULES[state.task].hint;
+  }
+
+  function renderChips() {
+    const wrap = $("chips");
+    wrap.innerHTML = "";
+    if (!state.summary) {
+      wrap.innerHTML = '<span class="dim" style="font-size:11.5px">Parse a tree to reveal its leaves.</span>';
+      return;
+    }
+    const cherrySet = new Set(state.summary.cherry_leaves);
+    const selectedSet = new Set(state.selected);
+    state.summary.leaves.forEach(function (name) {
+      const isCherry = cherrySet.has(name);
+      const isSelected = selectedSet.has(name);
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "chip";
+      button.dataset.taxon = name;
+      button.setAttribute("aria-pressed", isSelected ? "true" : "false");
+      if (isSelected) button.classList.add("selected");
+
+      let inner = '<span class="dot"></span><span>' + esc(name) + "</span>";
+      if (state.task === "sister") {
+        if (isCherry) {
+          inner += '<span class="cherry-mark" title="Cherry leaf — eligible">●</span>';
+          button.title = "Cherry leaf — eligible for the sister task";
+        } else {
+          button.classList.add("disabled");
+          button.disabled = true;
+          inner += '<span class="lock-mark" title="Not a cherry leaf">×</span>';
+          button.title = "Not a cherry leaf — the sister task requires a direct leaf sibling";
+        }
+      } else if (isCherry) {
+        button.title = "This leaf is inside a cherry";
+      }
+      button.innerHTML = inner;
+      button.addEventListener("click", function () { toggleTaxon(name); });
+      wrap.appendChild(button);
+    });
+  }
+
+  function toggleTaxon(name) {
+    if (!state.summary) return;
+    if (state.task === "sister" && state.summary.cherry_leaves.indexOf(name) === -1) return;
+    const rule = TASK_RULES[state.task];
+    const index = state.selected.indexOf(name);
+    if (index !== -1) {
+      state.selected.splice(index, 1);
+    } else {
+      if (state.selected.length >= rule.max) {
+        if (rule.max === 1) state.selected = [];
+        else state.selected.shift();
+      }
+      state.selected.push(name);
+    }
+    state.prediction = null;
+    $("results").classList.add("hidden");
+    renderAll();
+  }
+
+  function selectTask(task) {
+    if (!TASK_RULES[task] || task === state.task) return;
+    state.task = task;
+    state.prediction = null;
+    validateSelectionForTask();
+    $("results").classList.add("hidden");
+    renderAll();
+  }
+
+  function isSelectionValid() {
+    if (!state.summary) return false;
+    const rule = TASK_RULES[state.task];
+    const count = state.selected.length;
+    if (count < rule.min || count > rule.max) return false;
+    if (state.task === "sister") {
+      return count === 1 && state.summary.cherry_leaves.indexOf(state.selected[0]) !== -1;
+    }
+    return true;
+  }
+
+  function updateSelectionHint() {
+    const node = $("selectionHint");
+    const rule = TASK_RULES[state.task];
+    const count = state.selected.length;
+    const need = rule.min === rule.max ? String(rule.min) : rule.min + "–" + rule.max;
+    let text = count + " selected · need " + need;
+    if (state.task === "sister") text += " · cherry leaves only";
+    if (isSelectionValid()) text += " · ready";
+    node.textContent = text;
+    node.className = "hint" + (isSelectionValid() ? " ok" : "");
+  }
+
+  function updatePredictButton() {
+    const button = $("predictBtn");
+    button.disabled = state.busy || !isSelectionValid();
+    button.textContent = state.busy ? "Running inference…" : "Run Inference";
+  }
+
+  function setBusy(busy) {
+    state.busy = busy;
+    updatePredictButton();
+  }
+
+  async function predict() {
+    if (!isSelectionValid() || state.busy) return;
+    const taxa = state.task === "monophyletic"
+      ? state.selected.slice().sort(function (a, b) { return a.localeCompare(b); })
+      : state.selected.slice();
+
+    setBusy(true);
+    try {
+      const result = await fetchJSON("/api/predict", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          newick: state.summary.normalized_newick,
+          task: state.task,
+          taxa: taxa
+        })
+      });
+      state.prediction = result;
+      renderViz();
+      renderResults(result);
+      $("results").scrollIntoView({ behavior: "smooth", block: "start" });
+    } catch (error) {
+      showToast("Inference failed: " + error.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  function ancestors(node) {
+    const chain = [];
+    let current = node;
+    while (current) {
+      chain.push(current);
+      current = current.__parent;
+    }
+    return chain;
+  }
+
+  function renderViz() {
+    const wrap = $("treeWrap");
+    const meta = $("leafCount");
+    if (!state.summary || !state.summary.tree_dict) {
+      wrap.innerHTML = '<div class="empty">Parse a tree to render the cladogram.</div>';
+      meta.textContent = "";
+      return;
+    }
+
+    const root = state.summary.tree_dict;
+    const leaves = [];
+    const nodes = [];
+    let maxDepth = 0;
+
+    function walk(node, depth, parent) {
+      node.__depth = depth;
+      node.__parent = parent;
+      nodes.push(node);
+      if (depth > maxDepth) maxDepth = depth;
+      if (!node.children || node.children.length === 0) {
+        leaves.push(node);
+      } else {
+        node.children.forEach(function (child) { walk(child, depth + 1, node); });
+      }
+    }
+    walk(root, 0, null);
+
+    const maxLabelChars = leaves.reduce(function (max, leaf) {
+      return Math.max(max, String(leaf.name || "").length);
+    }, 8);
+
+    const leftPad = 26;
+    const topPad = 36;
+    const bottomPad = 36;
+    const leafGap = 36;
+    const rightPad = Math.max(190, Math.min(336, maxLabelChars * 7.4 + 40));
+    const W = Math.max(980, leftPad + 700 + rightPad);
+    const plotW = W - leftPad - rightPad;
+    const step = maxDepth > 0 ? plotW / maxDepth : plotW;
+    const contentH = Math.max(1, leaves.length) * leafGap;
+    const H = Math.max(360, contentH + topPad + bottomPad);
+    const offsetY = (H - contentH) / 2;
+
+    leaves.forEach(function (leaf, index) {
+      leaf.__y = offsetY + index * leafGap + leafGap / 2;
+    });
+
+    function assignY(node) {
+      if (!node.children || node.children.length === 0) return node.__y;
+      const ys = node.children.map(assignY);
+      node.__y = (Math.min.apply(null, ys) + Math.max.apply(null, ys)) / 2;
+      return node.__y;
+    }
+    assignY(root);
+
+    nodes.forEach(function (node) {
+      node.__x = leftPad + node.__depth * step;
+    });
+
+    const selectedSet = new Set(state.selected);
+    const session = state.prediction && state.prediction.task === state.task ? state.prediction : null;
+    const predictedRaw = session ? String(session.lora_prediction || "").trim() : "";
+    const predictedLower = predictedRaw.toLowerCase();
+
+    let predictedNode = null;
+    let predictedLeaf = null;
+
+    if (predictedRaw) {
+      predictedNode = nodes.find(function (node) {
+        return node.children && node.children.length && String(node.label || "") === predictedRaw;
+      }) || null;
+      if (!predictedNode) {
+        predictedNode = nodes.find(function (node) {
+          return node.children && node.children.length && String(node.label || "").toLowerCase() === predictedLower;
+        }) || null;
+      }
+      if (!predictedNode) {
+        predictedLeaf = leaves.find(function (leaf) {
+          return String(leaf.name || "").toLowerCase() === predictedLower;
+        }) || null;
+      }
+    }
+
+    function findLcaByName(names) {
+      const chosen = [];
+      names.forEach(function (name) {
+        const leaf = leaves.find(function (item) { return item.name === name; });
+        if (leaf) chosen.push(leaf);
+      });
+      if (!chosen.length) return null;
+      let common = ancestors(chosen[0]);
+      for (let i = 1; i < chosen.length; i += 1) {
+        const chain = new Set(ancestors(chosen[i]));
+        common = common.filter(function (node) { return chain.has(node); });
+      }
+      common.sort(function (a, b) { return b.__depth - a.__depth; });
+      return common[0] || null;
+    }
+
+    if (!predictedNode && !predictedLeaf && state.task === "monophyletic" && predictedLower === "yes") {
+      predictedNode = findLcaByName(state.selected);
+    }
+
+    function cladeYRange(node) {
+      const ys = [];
+      (function collect(item) {
+        if (!item.children || item.children.length === 0) ys.push(item.__y);
+        else item.children.forEach(collect);
+      })(node);
+      return [Math.min.apply(null, ys), Math.max.apply(null, ys)];
+    }
+
+    const highlightParts = [];
+    if (predictedNode) {
+      const range = cladeYRange(predictedNode);
+      const x = Math.max(2, predictedNode.__x - 6);
+      const width = Math.max(10, W - rightPad + 18 - x);
+      highlightParts.push(
+        '<rect class="clade-highlight" x="' + x + '" y="' + (range[0] - 15) + '" width="' + width +
+        '" height="' + (range[1] - range[0] + 30) + '" rx="10"></rect>'
+      );
+    }
+
+    const branchParts = [];
+    nodes.forEach(function (node) {
+      if (node.children && node.children.length) {
+        const childYs = node.children.map(function (child) { return child.__y; });
+        const y1 = Math.min.apply(null, childYs);
+        const y2 = Math.max.apply(null, childYs);
+        branchParts.push(
+          '<line class="branch" x1="' + node.__x + '" y1="' + y1 + '" x2="' + node.__x + '" y2="' + y2 + '"></line>'
+        );
+        node.children.forEach(function (child) {
+          branchParts.push(
+            '<line class="branch" x1="' + node.__x + '" y1="' + child.__y + '" x2="' + child.__x + '" y2="' + child.__y + '"></line>'
+          );
+        });
+        branchParts.push(
+          '<circle class="node-dot" cx="' + node.__x + '" cy="' + node.__y + '" r="2.6"></circle>'
+        );
+      }
+    });
+
+    leaves.forEach(function (leaf) {
+      const isSelected = selectedSet.has(leaf.name);
+      const isPredicted = predictedLeaf && predictedLeaf.name === leaf.name;
+      const classes = "leaf-dot" + (isSelected ? " selected" : "") + (isPredicted && !isSelected ? " predicted" : "");
+      branchParts.push(
+        '<circle class="' + classes + '" cx="' + leaf.__x + '" cy="' + leaf.__y + '" r="3.4"></circle>'
+      );
+    });
+
+    if (session && state.task === "distance" && state.selected.length === 2) {
+      const first = leaves.find(function (leaf) { return leaf.name === state.selected[0]; });
+      const second = leaves.find(function (leaf) { return leaf.name === state.selected[1]; });
+      if (first && second) {
+        const firstChain = ancestors(first);
+        const firstSet = new Set(firstChain);
+        let lca = second;
+        while (lca && !firstSet.has(lca)) lca = lca.__parent;
+        if (lca) {
+          const edgeNodes = [];
+          let cursor = first;
+          while (cursor && cursor !== lca) { edgeNodes.push(cursor); cursor = cursor.__parent; }
+          cursor = second;
+          while (cursor && cursor !== lca) { edgeNodes.push(cursor); cursor = cursor.__parent; }
+          edgeNodes.forEach(function (node) {
+            if (!node.__parent) return;
+            branchParts.push(
+              '<line class="path-highlight" x1="' + node.__parent.__x + '" y1="' + node.__y +
+              '" x2="' + node.__x + '" y2="' + node.__y + '"></line>'
+            );
+          });
+        }
+      }
+    }
+
+    const badgeParts = [];
+    nodes.forEach(function (node) {
+      if (!node.children || !node.children.length) return;
+      const label = node.label || "";
+      if (!label) return;
+      const isPredicted = predictedNode === node;
+      const width = label.length * 6.1 + 14;
+      const x = node.__x + 4;
+      const y = node.__y - 24;
+      badgeParts.push(
+        '<g class="internal-badge' + (isPredicted ? " predicted" : "") + '">' +
+        '<rect x="' + x + '" y="' + y + '" width="' + width + '" height="15" rx="4"></rect>' +
+        '<text x="' + (x + 7) + '" y="' + (y + 11) + '">' + esc(label) + "</text></g>"
+      );
+    });
+
+    const labelParts = [];
+    leaves.forEach(function (leaf) {
+      const name = String(leaf.name || "");
+      const isSelected = selectedSet.has(name);
+      const isPredicted = predictedLeaf && predictedLeaf.name === name;
+      const x = leaf.__x + 13;
+      const y = leaf.__y + 4;
+      const width = name.length * 6.9 + 18;
+
+      if (isSelected || isPredicted) {
+        const pillClass = isSelected ? "selected" : "predicted";
+        labelParts.push(
+          '<rect class="label-pill ' + pillClass + '" x="' + (x - 7) + '" y="' + (leaf.__y - 11) +
+          '" width="' + width + '" height="22" rx="11"></rect>'
+        );
+      }
+      let textClass = "leaf-label";
+      if (isSelected) textClass += " selected";
+      else if (isPredicted) textClass += " predicted";
+      labelParts.push(
+        '<text class="' + textClass + '" x="' + x + '" y="' + y + '">' + esc(name) + "</text>"
+      );
+    });
+
+    const internalCount = nodes.filter(function (node) {
+      return node.children && node.children.length;
+    }).length;
+
+    wrap.innerHTML =
+      '<svg class="tree-svg" viewBox="0 0 ' + W + " " + H + '" width="100%" role="img" ' +
+      'aria-label="Phylogenetic cladogram">' +
+      '<g class="clade-highlights">' + highlightParts.join("") + "</g>" +
+      '<g class="branches">' + branchParts.join("") + "</g>" +
+      '<g class="badges">' + badgeParts.join("") + "</g>" +
+      '<g class="labels">' + labelParts.join("") + "</g>" +
+      "</svg>";
+
+    meta.textContent = leaves.length + " leaves · " + internalCount + " internal nodes";
+  }
+
+  function resultCard(options) {
+    if (options.disabled) {
+      return '<div class="card-head"><div><div class="model-name">' + esc(options.name) + "</div>" +
+        '<div class="model-tag">' + esc(options.tag) + "</div></div>" +
+        '<span class="badge muted">disabled</span></div>' +
+        '<div class="prediction empty">Base model disabled with --no_base.</div>' +
+        '<div class="card-foot"><span>Latency</span><strong>—</strong></div>';
+    }
+    const hasPrediction = options.prediction !== null && options.prediction !== undefined &&
+      String(options.prediction).trim() !== "";
+    let badge = '<span class="badge muted">n/a</span>';
+    if (options.correct === true) badge = '<span class="badge ok">Correct</span>';
+    if (options.correct === false) badge = '<span class="badge err">Incorrect</span>';
+    return '<div class="card-head"><div><div class="model-name">' + esc(options.name) + "</div>" +
+      '<div class="model-tag">' + esc(options.tag) + "</div></div>" + badge + "</div>" +
+      '<div class="prediction' + (hasPrediction ? "" : " empty") + '">' +
+      (hasPrediction ? esc(options.prediction) : "(empty prediction)") + "</div>" +
+      '<div class="card-foot"><span>Latency</span><strong>' + fmtMs(options.ms) + "</strong></div>";
+  }
+
+  function renderResults(result) {
+    const loraOk = result.lora_correct === true;
+    const baseDisabled = result.base_prediction === null && result.base_ms === null;
+    const verifier = $("verifier");
+    verifier.className = "verifier " + (loraOk ? "verified" : "mismatch");
+
+    const baseLatency = baseDisabled ? "disabled" : fmtMs(result.base_ms);
+    const verifierClass = loraOk ? "good" : "";
+
+    verifier.innerHTML =
+      '<div class="verifier-top">' +
+        '<span class="verifier-badge ' + (loraOk ? "ok" : "err") + '">' +
+          (loraOk ? "Verified ✓" : "Mismatch ✗") +
+        "</span>" +
+        "<div>" +
+          '<div class="verifier-title">Exact Algorithmic Verifier</div>' +
+          '<div class="verifier-sub">Ground truth recomputed from the normalized topology</div>' +
+        "</div>" +
+      "</div>" +
+      '<div class="verifier-grid">' +
+        '<div class="vstat"><span class="vlabel">Ground truth</span><code class="' + verifierClass + '">' +
+          esc(result.ground_truth) + "</code></div>" +
+        '<div class="vstat"><span class="vlabel">Task</span><code>' + esc(result.task) + "</code></div>" +
+        '<div class="vstat"><span class="vlabel">Taxa</span><code>' + esc((result.taxa || []).join(", ")) + "</code></div>" +
+        '<div class="vstat"><span class="vlabel">LoRA latency</span><code>' + fmtMs(result.lora_ms) + "</code></div>" +
+        '<div class="vstat"><span class="vlabel">Base latency</span><code>' + baseLatency + "</code></div>" +
+        '<div class="vstat"><span class="vlabel">Verifier vs LoRA</span><code class="' + verifierClass + '">' +
+          (loraOk ? "match" : "mismatch") + "</code></div>" +
+      "</div>";
+
+    $("loraCard").innerHTML = resultCard({
+      name: "Fine-Tuned LoRA v3",
+      tag: "SmolLM2-135M-Instruct · r=32 · α=64",
+      prediction: result.lora_prediction,
+      correct: result.lora_correct,
+      ms: result.lora_ms
+    });
+
+    $("baseCard").innerHTML = resultCard({
+      name: "Base SmolLM2-135M",
+      tag: "frozen base · adapter disabled",
+      prediction: result.base_prediction,
+      correct: result.base_correct,
+      ms: result.base_ms,
+      disabled: baseDisabled
+    });
+
+    $("promptText").textContent =
+      "Question:\n" + String(result.question || "") +
+      "\n\nCanonical prompt:\n" + String(result.prompt || "") +
+      "\n\nNormalized Newick:\n" + String(result.normalized_newick || "");
+
+    $("results").classList.remove("hidden");
+  }
+
+  document.querySelectorAll(".task-pill").forEach(function (button) {
+    button.addEventListener("click", function () { selectTask(button.dataset.task); });
+  });
+
+  $("parseBtn").addEventListener("click", parseTree);
+  $("predictBtn").addEventListener("click", predict);
+  $("clearSel").addEventListener("click", function () {
+    state.selected = [];
+    state.prediction = null;
+    $("results").classList.add("hidden");
+    renderAll();
+  });
+  $("newick").addEventListener("keydown", function (event) {
+    if ((event.metaKey || event.ctrlKey) && event.key === "Enter") {
+      event.preventDefault();
+      parseTree();
+    }
+  });
+
+  (async function init() {
+    renderTasks();
+    await loadHealth();
+    try {
+      await loadPresets();
+    } catch (error) {
+      showToast("Could not load presets: " + error.message);
+    }
+    if (state.presets.length) {
+      loadPreset(state.presets[0]);
+    } else {
+      $("newick").value = DEFAULT_NEWICK;
+      await parseTree();
+    }
+  })();
+})();
+</script>
+</body>
+</html>
