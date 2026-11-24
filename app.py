@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Stdlib HTTP inference server for the fine-tuned phylogeny QA adapter."""
+"""Stdlib HTTP inference server for PhyloScope (PhyloClade-135M)."""
 
 import argparse
 import json
@@ -515,7 +515,7 @@ class PhylogenyHandler(BaseHTTPRequestHandler):
 
 def parse_args(argv=None):
     parser = argparse.ArgumentParser(
-        description="Serve the fine-tuned phylogeny QA adapter over HTTP."
+        description="Serve PhyloScope (PhyloClade-135M phylogenetic QA engine) over HTTP."
     )
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=7860)
@@ -523,7 +523,7 @@ def parse_args(argv=None):
         "--model_name",
         default="HuggingFaceTB/SmolLM2-135M-Instruct",
     )
-    parser.add_argument("--adapter_dir", default="model/phylogeny-lora")
+    parser.add_argument("--adapter_dir", default="model/phyloclade-135m")
     parser.add_argument("--no_base", action="store_true")
     parser.add_argument("--max_new_tokens", type=int, default=24)
     args = parser.parse_args(argv)

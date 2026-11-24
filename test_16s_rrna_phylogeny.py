@@ -47,7 +47,7 @@ def parse_args(argv=None):
     )
     parser.add_argument(
         "--adapter_dir",
-        default="model/phylogeny-lora",
+        default="model/phyloclade-135m",
     )
     parser.add_argument(
         "--output_json",

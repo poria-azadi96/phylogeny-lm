@@ -1,6 +1,8 @@
-# Phylogeny LM - Structural Phylogeny QA with a 135M Fine-Tuned Model
+# PhyloScope — PhyloClade-135M Phylogenetic Reasoning & 16S rRNA Workbench
 
-A small, fully reproducible research workbench for **rooted binary phylogenetic tree question answering** and **real 16S rRNA gene-tree reconstruction**. A 135M-parameter `SmolLM2-135M-Instruct` model is fine-tuned with LoRA to answer four structural queries directly from Newick topology:
+> **New here?** Read the step-by-step **[User Guide](USER_GUIDE.md)** for setup, Newick & FASTA workflows, CLI usage, and API examples.
+
+**PhyloScope** is a small, fully reproducible research workbench for **rooted binary phylogenetic tree question answering** and **real 16S rRNA gene-tree reconstruction**. Its specialized 135M-parameter engine (**PhyloClade-135M**) answers four structural queries directly from Newick topology:
 
 | Task | Question shape | Answer |
 | :--- | :--- | :--- |
@@ -15,6 +17,7 @@ The project includes a dataset generator, LoRA training, four evaluation suites 
 
 ## Table of Contents
 
+- [User Guide](USER_GUIDE.md)
 - [Why this project exists](#why-this-project-exists)
 - [Architecture](#architecture)
 - [Antigravity - OpenCode multi-agent workflow](#antigravity---opencode-multi-agent-workflow)
@@ -62,14 +65,14 @@ Round 6 extended this rule from synthetic trees to real biology: instead of aski
               |                                                   |
    +----------+----------+                          +-------------+-------------+
    |    train_lora.py    |                          | test_16s_rrna_phylogeny.py |
-   | SmolLM2 + LoRA v4   |                          | 8 NCBI RefSeq sequences    |
+   | PhyloClade-135M v4  |                          | 8 NCBI RefSeq sequences    |
    +----------+----------+                          +-------------+-------------+
               |                                                   |
               +---------------------------+-----------------------+
                                           |
                           +---------------+---------------+
-                          |  model/phylogeny-lora/        |
-                          |  packaged LoRA v4 adapter     |
+                          |  model/phyloclade-135m/       |
+                          |  packaged PhyloClade-135M v4  |
                           +---------------+---------------+
                                           |
                   +-----------------------+------------------------+
@@ -126,7 +129,7 @@ The workflow demonstrates a practical division of labor: the orchestrator owns m
 | Property | Value |
 | :--- | :--- |
 | Base model | `HuggingFaceTB/SmolLM2-135M-Instruct` |
-| Adapter directory | `model/phylogeny-lora/` |
+| Model directory | `model/phyloclade-135m/` |
 | Method | PEFT LoRA, causal language modeling |
 | Rank `r` | `32` |
 | `lora_alpha` | `64` |
@@ -337,20 +340,19 @@ Useful flags:
 
 ```bash
 python app.py --host 127.0.0.1 --port 7860 \
-  --model_name HuggingFaceTB/SmolLM2-135M-Instruct \
-  --adapter_dir model/phylogeny-lora \
+  --adapter_dir model/phyloclade-135m \
   --max_new_tokens 24
 ```
 
-In the UI, switch to **FASTA / 16S rRNA Sequences**, load the real RefSeq preset, click **Reconstruct Gene Tree (K2P + NJ)**, then select taxa and click **Run Inference** to compare LoRA v4 against the base model with exact verification.
+In the UI, switch to **FASTA / 16S rRNA Sequences**, load the real RefSeq preset, click **Reconstruct Gene Tree (K2P + NJ)**, then select taxa and click **Run Inference** to compare **PhyloClade-135M** against the untuned baseline with exact verification.
 
-Add `--no_base` to skip base-model predictions and halve inference work.
+Add `--no_base` to skip baseline predictions and halve inference work.
 
-### Evaluate the packaged adapter
+### Evaluate PhyloClade-135M
 
 ```bash
 python evaluate.py \
-  --adapter_dir model/phylogeny-lora \
+  --adapter_dir model/phyloclade-135m \
   --test_file data/test.jsonl \
   --output_json results/packaged_model_eval.json
 ```
@@ -359,7 +361,7 @@ python evaluate.py \
 
 ```bash
 python demo_unseen_primates.py \
-  --adapter_dir model/phylogeny-lora \
+  --adapter_dir model/phyloclade-135m \
   --output_json results/unseen_bio_demo_v4.json
 ```
 
@@ -367,7 +369,7 @@ python demo_unseen_primates.py \
 
 ```bash
 python stress_test_phylogeny.py \
-  --adapter_dir model/phylogeny-lora \
+  --adapter_dir model/phyloclade-135m \
   --output_json results/stress_test_v4.json
 ```
 
@@ -381,7 +383,7 @@ python stress_test_phylogeny.py --verify_only
 
 ```bash
 python test_16s_rrna_phylogeny.py \
-  --adapter_dir model/phylogeny-lora \
+  --adapter_dir model/phyloclade-135m \
   --output_json results/16s_rrna_eval_v4.json
 ```
 
@@ -428,7 +430,7 @@ Serves `static/index.html`.
 {
   "status": "ok",
   "model_name": "HuggingFaceTB/SmolLM2-135M-Instruct",
-  "adapter_dir": "model/phylogeny-lora",
+  "adapter_dir": "model/phyloclade-135m",
   "device": "cuda",
   "base_enabled": true
 }
@@ -561,6 +563,7 @@ phylogeny-lm-test/
 ├── test_16s_rrna_phylogeny.py    # real NCBI RefSeq 16S rRNA case study
 ├── requirements.txt
 ├── README.md
+├── USER_GUIDE.md                 # step-by-step usage manual for PhyloScope
 ├── orchestration_log.md          # Antigravity - OpenCode handoff record
 ├── data/
 │   ├── 16s_rrna_archaea_bacteria.fasta
@@ -572,7 +575,7 @@ phylogeny-lm-test/
 │   ├── val.jsonl
 │   └── test.jsonl
 ├── model/
-│   └── phylogeny-lora/           # packaged LoRA v4 adapter + tokenizer
+│   └── phyloclade-135m/          # packaged PhyloClade-135M (v4) model + tokenizer
 ├── outputs/                      # training run artifacts (git-ignored)
 └── results/                      # evaluation JSON artifacts
 ```
