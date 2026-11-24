@@ -163,6 +163,15 @@ def evaluate_loss(model, dataloader, device):
     return total_loss / total_tokens if total_tokens else 0.0
 
 
+def load_causal_lm(model_name, dtype):
+    try:
+        return AutoModelForCausalLM.from_pretrained(model_name, dtype=dtype)
+    except TypeError as exc:
+        if "dtype" not in str(exc).lower():
+            raise
+        return AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=dtype)
+
+
 def parse_args(argv=None):
     parser = argparse.ArgumentParser(description="Train a phylogeny LoRA adapter.")
     parser.add_argument(
@@ -214,10 +223,7 @@ def main(argv=None):
         raise ValueError("Tokenizer must define an eos token")
     tokenizer.padding_side = "right"
 
-    model = AutoModelForCausalLM.from_pretrained(
-        args.model_name,
-        torch_dtype=model_dtype,
-    )
+    model = load_causal_lm(args.model_name, model_dtype)
     model.to(device)
     model.config.pad_token_id = tokenizer.pad_token_id
     model.config.use_cache = False
@@ -284,6 +290,9 @@ def main(argv=None):
     )
 
     history = []
+    best_val_loss = float("inf")
+    best_epoch = None
+    os.makedirs(args.output_dir, exist_ok=True)
     model.train()
     for epoch in range(1, args.epochs + 1):
         epoch_loss = 0.0
@@ -316,13 +325,15 @@ def main(argv=None):
                 "val_loss": val_loss,
             }
         )
+        if val_loss < best_val_loss:
+            best_val_loss = val_loss
+            best_epoch = epoch
+            model.save_pretrained(args.output_dir)
         print(
             "Epoch %d/%d - train_loss: %.6f - val_loss: %.6f"
             % (epoch, args.epochs, train_loss, val_loss)
         )
 
-    os.makedirs(args.output_dir, exist_ok=True)
-    model.save_pretrained(args.output_dir)
     tokenizer.save_pretrained(args.output_dir)
 
     metrics = {
@@ -353,6 +364,8 @@ def main(argv=None):
             "trainable_percentage": trainable_percentage,
         },
         "history": history,
+        "best_epoch": best_epoch,
+        "best_val_loss": best_val_loss if best_epoch is not None else None,
         "final_train_loss": history[-1]["train_loss"] if history else None,
         "final_val_loss": history[-1]["val_loss"] if history else None,
     }
@@ -364,7 +377,8 @@ def main(argv=None):
         handle.write("\n")
 
     print(
-        "Saved LoRA adapter and tokenizer to %s" % args.output_dir
+        "Saved best adapter (epoch %s, val_loss %.6f) and tokenizer to %s"
+        % (best_epoch, best_val_loss, args.output_dir)
     )
     print("Saved training metrics to %s" % args.metrics_json)
 

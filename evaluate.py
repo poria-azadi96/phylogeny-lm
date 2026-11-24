@@ -36,6 +36,15 @@ def first_nonempty_line(text):
     return ""
 
 
+def load_causal_lm(model_name, dtype):
+    try:
+        return AutoModelForCausalLM.from_pretrained(model_name, dtype=dtype)
+    except TypeError as exc:
+        if "dtype" not in str(exc).lower():
+            raise
+        return AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=dtype)
+
+
 def parse_args(argv=None):
     parser = argparse.ArgumentParser(description="Evaluate a phylogeny QA model.")
     parser.add_argument(
@@ -79,7 +88,7 @@ def main(argv=None):
         raise ValueError("Tokenizer must define a pad or eos token")
     tokenizer.padding_side = "left"
 
-    model = AutoModelForCausalLM.from_pretrained(args.model_name, torch_dtype=dtype)
+    model = load_causal_lm(args.model_name, dtype)
     if args.adapter_dir:
         from peft import PeftModel
 

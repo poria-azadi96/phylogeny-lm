@@ -47,6 +47,13 @@ NAME_POOLS = {
     "test": TEST_NAMES,
 }
 
+SYNTHETIC_CLADE_LABELS = (
+    "CladeA", "GroupB", "LineageC", "BranchD", "NodeE", "TaxonCladeF",
+    "SubcladeG", "StemH", "CladeI", "GroupJ", "LineageK", "BranchL",
+    "NodeM", "TaxonCladeN", "SubcladeO", "StemP", "CladeQ", "GroupR",
+    "LineageS", "BranchT", "NodeU", "TaxonCladeV", "SubcladeW", "StemX",
+)
+
 NAME_PATTERN = r"[A-Za-z][A-Za-z0-9_]*"
 MRCA_RE = re.compile(
     r"What is the most recent common ancestor of (" + NAME_PATTERN + r") and ("
@@ -254,18 +261,28 @@ def build_random_tree(names, rng):
     return Node(children=(left, right))
 
 
-def assign_clade_labels(root):
-    counter = [0]
+def assign_clade_labels(root, mixed=False, rng=None):
+    internal_nodes = []
 
     def visit(node):
         if node.is_leaf:
             return
         for child in node.children:
             visit(child)
-        counter[0] += 1
-        node.label = "C%d" % counter[0]
+        internal_nodes.append(node)
 
     visit(root)
+
+    if mixed:
+        if rng is None:
+            raise ValueError("rng is required for mixed clade labels")
+        labels = rng.sample(SYNTHETIC_CLADE_LABELS, len(internal_nodes))
+        for node, label in zip(internal_nodes, labels):
+            node.label = label
+    else:
+        for index, node in enumerate(internal_nodes, start=1):
+            node.label = "C%d" % index
+
     return root
 
 
@@ -345,11 +362,19 @@ def make_prompt(tree, task, question):
     )
 
 
-def generate_record(rng, split, pool, task, record_id, force_positive=None):
+def generate_record(
+    rng,
+    split,
+    pool,
+    task,
+    record_id,
+    force_positive=None,
+    mixed_clade_labels=False,
+):
     leaf_count = rng.randint(5, 7)
     taxon_names = rng.sample(list(pool), leaf_count)
     root = build_random_tree(taxon_names, rng)
-    assign_clade_labels(root)
+    assign_clade_labels(root, mixed=mixed_clade_labels, rng=rng)
     tree = render_newick(root) + ";"
 
     question, answer = make_question_and_answer(
@@ -370,12 +395,18 @@ def balanced_task_counts(total):
     return [base + (1 if i < remainder else 0) for i in range(len(TASKS))]
 
 
-def generate_split(split, total, rng):
+def generate_split(split, total, rng, mixed_clade_labels=False):
     counts = balanced_task_counts(total)
     tasks = []
     for task, count in zip(TASKS, counts):
         tasks.extend([task] * count)
     rng.shuffle(tasks)
+
+    mixed_flags = [False] * total
+    if mixed_clade_labels and total:
+        mixed_count = int(round(total * 0.3))
+        mixed_flags = [True] * mixed_count + [False] * (total - mixed_count)
+        rng.shuffle(mixed_flags)
 
     records = []
     positive_index = 0
@@ -393,6 +424,7 @@ def generate_split(split, total, rng):
                 task,
                 record_id,
                 force_positive=force_positive,
+                mixed_clade_labels=mixed_flags[index - 1],
             )
         )
     return records
@@ -502,10 +534,125 @@ def load_jsonl(path):
     return records
 
 
-def verify_dataset(out_dir, expected_sizes):
-    split_taxa = {}
-    split_trees = {}
-    split_prompts = {}
+def verify_records(
+    records,
+    split,
+    expected_size,
+    mixed_clade_labels=False,
+    allowed_taxa=None,
+    seen_ids=None,
+):
+    if len(records) != expected_size:
+        raise AssertionError(
+            "%s: expected %d records, found %d"
+            % (split, expected_size, len(records))
+        )
+    if seen_ids is None:
+        seen_ids = set()
+
+    task_counts = {task: 0 for task in TASKS}
+    taxa = set()
+    trees = set()
+    prompts = set()
+    standard_label_trees = 0
+    mixed_label_trees = 0
+    synthetic_labels = set(SYNTHETIC_CLADE_LABELS)
+
+    for record in records:
+        if not isinstance(record, dict):
+            raise AssertionError("%s: record is not an object" % split)
+        if set(record) != set(REQUIRED_FIELDS):
+            raise AssertionError(
+                "%s: record fields are %r, expected %r"
+                % (split, sorted(record), sorted(REQUIRED_FIELDS))
+            )
+        if record["split"] != split:
+            raise AssertionError("%s: record split is %r" % (split, record["split"]))
+        if record["task"] not in TASKS:
+            raise AssertionError("%s: unknown task %r" % (split, record["task"]))
+        if record["id"] in seen_ids:
+            raise AssertionError("Duplicate record id: %r" % record["id"])
+        seen_ids.add(record["id"])
+
+        root = parse_newick(record["tree"])
+        internal = all_internal_nodes(root)
+        labels = {node.label for node in internal}
+        expected_labels = {"C%d" % i for i in range(1, len(internal) + 1)}
+        if mixed_clade_labels:
+            if labels == expected_labels:
+                standard_label_trees += 1
+            elif labels.issubset(synthetic_labels):
+                mixed_label_trees += 1
+            else:
+                raise AssertionError(
+                    "%s: clade labels %r are neither C1..C%d nor synthetic labels"
+                    % (record["id"], labels, len(internal))
+                )
+        elif labels != expected_labels:
+            raise AssertionError(
+                "%s: clade labels %r are not C1..C%d"
+                % (record["id"], labels, len(internal))
+            )
+
+        leaf_names = {leaf.name for leaf in all_leaves(root)}
+        if not 5 <= len(leaf_names) <= 7:
+            raise AssertionError("%s: tree does not have 5 to 7 leaves" % record["id"])
+        if allowed_taxa is not None and not leaf_names.issubset(allowed_taxa):
+            raise AssertionError(
+                "%s: tree uses taxa outside the allowed pool: %r"
+                % (record["id"], sorted(leaf_names - allowed_taxa))
+            )
+
+        question = extract_question(record)
+        expected_answer = recompute_answer(record["task"], question, root)
+        if record["answer"] != expected_answer:
+            raise AssertionError(
+                "%s: answer %r != recomputed %r"
+                % (record["id"], record["answer"], expected_answer)
+            )
+        if record["task"] == "monophyletic" and record["answer"] not in ("Yes", "No"):
+            raise AssertionError("%s: monophyletic answer is not Yes/No" % record["id"])
+
+        task_counts[record["task"]] += 1
+        taxa.update(leaf_names)
+        trees.add(record["tree"])
+        prompts.add(record["prompt"])
+
+    counts = list(task_counts.values())
+    if max(counts) - min(counts) > 1:
+        raise AssertionError("%s: task counts are not balanced: %r" % (split, task_counts))
+
+    if mixed_clade_labels and expected_size >= 20:
+        mixed_fraction = mixed_label_trees / float(expected_size)
+        if not 0.2 <= mixed_fraction <= 0.4:
+            raise AssertionError(
+                "%s: mixed-label fraction %.3f is not near 30%%"
+                % (split, mixed_fraction)
+            )
+
+    message = (
+        "%s: %d records, task counts %s, %d taxa, %d unique trees"
+        % (split, len(records), task_counts, len(taxa), len(trees))
+    )
+    if mixed_clade_labels:
+        message += ", %d standard-label trees, %d mixed-label trees" % (
+            standard_label_trees,
+            mixed_label_trees,
+        )
+    print(message)
+
+    return {
+        "taxa": taxa,
+        "trees": trees,
+        "prompts": prompts,
+        "task_counts": task_counts,
+        "standard_label_trees": standard_label_trees,
+        "mixed_label_trees": mixed_label_trees,
+    }
+
+
+def verify_dataset(out_dir, expected_sizes, mixed_clade_labels=False):
+    split_data = {}
     seen_ids = set()
 
     for split in SPLITS:
@@ -513,79 +660,22 @@ def verify_dataset(out_dir, expected_sizes):
         if not os.path.exists(path):
             raise AssertionError("Missing dataset file: %s" % path)
         records = load_jsonl(path)
-        if len(records) != expected_sizes[split]:
-            raise AssertionError(
-                "%s: expected %d records, found %d"
-                % (split, expected_sizes[split], len(records))
-            )
-
-        task_counts = {task: 0 for task in TASKS}
-        taxa = set()
-        trees = set()
-        prompts = set()
-
-        for record in records:
-            if not isinstance(record, dict):
-                raise AssertionError("%s: record is not an object" % split)
-            if set(record) != set(REQUIRED_FIELDS):
-                raise AssertionError(
-                    "%s: record fields are %r, expected %r"
-                    % (split, sorted(record), sorted(REQUIRED_FIELDS))
-                )
-            if record["split"] != split:
-                raise AssertionError("%s: record split is %r" % (split, record["split"]))
-            if record["task"] not in TASKS:
-                raise AssertionError("%s: unknown task %r" % (split, record["task"]))
-            if record["id"] in seen_ids:
-                raise AssertionError("Duplicate record id: %r" % record["id"])
-            seen_ids.add(record["id"])
-
-            root = parse_newick(record["tree"])
-            internal = all_internal_nodes(root)
-            labels = {node.label for node in internal}
-            expected_labels = {"C%d" % i for i in range(1, len(internal) + 1)}
-            if labels != expected_labels:
-                raise AssertionError(
-                    "%s: clade labels %r are not C1..C%d"
-                    % (record["id"], labels, len(internal))
-                )
-            if not 5 <= len(all_leaves(root)) <= 7:
-                raise AssertionError("%s: tree does not have 5 to 7 leaves" % record["id"])
-
-            question = extract_question(record)
-            expected_answer = recompute_answer(record["task"], question, root)
-            if record["answer"] != expected_answer:
-                raise AssertionError(
-                    "%s: answer %r != recomputed %r"
-                    % (record["id"], record["answer"], expected_answer)
-                )
-            if record["task"] == "monophyletic" and record["answer"] not in ("Yes", "No"):
-                raise AssertionError("%s: monophyletic answer is not Yes/No" % record["id"])
-
-            task_counts[record["task"]] += 1
-            taxa.update(leaf.name for leaf in all_leaves(root))
-            trees.add(record["tree"])
-            prompts.add(record["prompt"])
-
-        counts = list(task_counts.values())
-        if max(counts) - min(counts) > 1:
-            raise AssertionError("%s: task counts are not balanced: %r" % (split, task_counts))
-
-        split_taxa[split] = taxa
-        split_trees[split] = trees
-        split_prompts[split] = prompts
-        print(
-            "%s: %d records, task counts %s, %d taxa, %d unique trees"
-            % (split, len(records), task_counts, len(taxa), len(trees))
+        split_data[split] = verify_records(
+            records,
+            split,
+            expected_sizes[split],
+            mixed_clade_labels=mixed_clade_labels,
+            allowed_taxa=set(NAME_POOLS[split]),
+            seen_ids=seen_ids,
         )
 
     for first, second in itertools.combinations(SPLITS, 2):
-        for label, values in (
-            ("taxon names", split_taxa),
-            ("Newick trees", split_trees),
-            ("prompts", split_prompts),
+        for label, key in (
+            ("taxon names", "taxa"),
+            ("Newick trees", "trees"),
+            ("prompts", "prompts"),
         ):
-            overlap = values[first] & values[second]
+            overlap = split_data[first][key] & split_data[second][key]
             if overlap:
                 raise AssertionError(
                     "%s/%s %s overlap: %r"
@@ -593,6 +683,52 @@ def verify_dataset(out_dir, expected_sizes):
                 )
 
     print("Verification passed: all answers correct, task counts balanced, splits disjoint.")
+
+
+def collect_record_sets(records):
+    taxa = set()
+    trees = set()
+    prompts = set()
+    for record in records:
+        root = parse_newick(record["tree"])
+        taxa.update(leaf.name for leaf in all_leaves(root))
+        trees.add(record["tree"])
+        prompts.add(record["prompt"])
+    return {"taxa": taxa, "trees": trees, "prompts": prompts}
+
+
+def verify_train_only_file(path, expected_size, mixed_clade_labels, reference_paths):
+    records = load_jsonl(path)
+    data = verify_records(
+        records,
+        "train",
+        expected_size,
+        mixed_clade_labels=mixed_clade_labels,
+        allowed_taxa=set(TRAIN_NAMES),
+    )
+
+    for reference_path in reference_paths:
+        if not os.path.exists(reference_path):
+            print("Reference file %s not found; skipping overlap check." % reference_path)
+            continue
+        reference_data = collect_record_sets(load_jsonl(reference_path))
+        for label, key in (
+            ("taxon names", "taxa"),
+            ("Newick trees", "trees"),
+            ("prompts", "prompts"),
+        ):
+            overlap = data[key] & reference_data[key]
+            if overlap:
+                raise AssertionError(
+                    "%s %s overlap with %s: %r"
+                    % (path, label, reference_path, sorted(overlap)[:5])
+                )
+        print("No taxon/tree/prompt overlap between %s and %s." % (path, reference_path))
+
+    print(
+        "Verification passed for %s: all answers correct, tasks balanced, references disjoint."
+        % path
+    )
 
 
 def parse_args(argv=None):
@@ -604,6 +740,16 @@ def parse_args(argv=None):
     parser.add_argument("--test_size", type=int, default=80)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--out_dir", default="data")
+    parser.add_argument(
+        "--train_only_out",
+        default=None,
+        help="Write only a new training split to this path; do not touch data/*.jsonl.",
+    )
+    parser.add_argument(
+        "--mixed_clade_labels",
+        action="store_true",
+        help="Use synthetic non-C clade labels for about 30%% of generated trees.",
+    )
     parser.add_argument("--verify", dest="verify", action="store_true", default=True)
     parser.add_argument("--no-verify", dest="verify", action="store_false")
     args = parser.parse_args(argv)
@@ -628,17 +774,61 @@ def main(argv=None):
         if NAME_POOLS[first] and set(NAME_POOLS[first]) & set(NAME_POOLS[second]):
             raise AssertionError("Taxon name pools for %s and %s overlap" % (first, second))
 
+    if args.train_only_out:
+        output_path = os.path.abspath(args.train_only_out)
+        protected_paths = {
+            os.path.abspath(os.path.join(args.out_dir, split + ".jsonl"))
+            for split in SPLITS
+        }
+        if output_path in protected_paths:
+            raise AssertionError(
+                "--train_only_out must not overwrite an existing split file"
+            )
+
+        os.makedirs(os.path.dirname(output_path), exist_ok=True)
+        rng = random.Random(args.seed)
+        records = generate_split(
+            "train",
+            args.train_size,
+            rng,
+            mixed_clade_labels=args.mixed_clade_labels,
+        )
+        write_jsonl(output_path, records)
+        print("Wrote %d records to %s" % (len(records), output_path))
+
+        if args.verify:
+            reference_paths = [
+                os.path.join(args.out_dir, "val.jsonl"),
+                os.path.join(args.out_dir, "test.jsonl"),
+            ]
+            verify_train_only_file(
+                output_path,
+                args.train_size,
+                args.mixed_clade_labels,
+                reference_paths,
+            )
+        return
+
     os.makedirs(args.out_dir, exist_ok=True)
     rng = random.Random(args.seed)
 
     for split in SPLITS:
-        records = generate_split(split, sizes[split], rng)
+        records = generate_split(
+            split,
+            sizes[split],
+            rng,
+            mixed_clade_labels=args.mixed_clade_labels,
+        )
         path = os.path.join(args.out_dir, split + ".jsonl")
         write_jsonl(path, records)
         print("Wrote %d records to %s" % (len(records), path))
 
     if args.verify:
-        verify_dataset(args.out_dir, sizes)
+        verify_dataset(
+            args.out_dir,
+            sizes,
+            mixed_clade_labels=args.mixed_clade_labels,
+        )
 
 
 if __name__ == "__main__":
