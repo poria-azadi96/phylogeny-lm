@@ -324,6 +324,115 @@
 
   .divider { height: 1px; background: var(--line-soft); margin: 18px 0; }
 
+  .mode-toggle {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 5px;
+    padding: 4px;
+    margin-bottom: 18px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: rgba(6, 11, 19, 0.8);
+  }
+
+  .mode-btn {
+    cursor: pointer;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    padding: 9px 8px;
+    font-size: 11.5px;
+    font-weight: 700;
+    line-height: 1.25;
+    color: var(--dim);
+    background: transparent;
+    transition: color 150ms ease, border-color 150ms ease, background 150ms ease;
+  }
+
+  .mode-btn:hover:not(.active) { color: var(--text); }
+  .mode-btn.active {
+    color: #d1fae5;
+    border-color: rgba(52, 211, 153, 0.5);
+    background: linear-gradient(180deg, rgba(16, 185, 129, 0.18), rgba(16, 185, 129, 0.07));
+  }
+
+  .mode-panel.hidden { display: none; }
+
+  textarea.fasta-input { min-height: 146px; }
+
+  .meta-chip { cursor: default; font-size: 10.5px; line-height: 1.3; }
+  .meta-chip:hover { transform: none; border-color: var(--line); }
+  .meta-chip[data-domain="Bacteria"] .dot { background: var(--emerald); }
+  .meta-chip[data-domain="Archaea"] .dot { background: var(--amber); }
+  .meta-chip .chip-domain { color: var(--dim); font-family: var(--sans); font-size: 9.5px; }
+
+  .matrix-wrap {
+    max-height: 224px;
+    overflow: auto;
+    margin: 8px 0 14px;
+    border: 1px solid var(--line);
+    border-radius: 11px;
+    background: rgba(6, 11, 19, 0.75);
+  }
+
+  .matrix-wrap .empty { min-height: 96px; margin: 0; border: 0; font-size: 11.5px; }
+
+  table.matrix {
+    border-collapse: separate;
+    border-spacing: 0;
+    width: max-content;
+    min-width: 100%;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    color: #cbd5e1;
+  }
+
+  table.matrix th, table.matrix td {
+    padding: 6px 9px;
+    text-align: right;
+    white-space: nowrap;
+    border-bottom: 1px solid var(--line-soft);
+  }
+
+  table.matrix thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: #101c2e;
+    color: var(--muted);
+    font-weight: 600;
+  }
+
+  table.matrix th.row-head {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    text-align: left;
+    background: #101c2e;
+    color: #a5b4c8;
+    font-weight: 600;
+  }
+
+  table.matrix thead th.row-head { z-index: 3; }
+  table.matrix tbody tr:last-child th, table.matrix tbody tr:last-child td { border-bottom: 0; }
+  table.matrix td.diagonal { color: var(--dim); }
+  table.matrix td.intra { color: #a7f3d0; }
+  table.matrix td.cross { color: #fcd34d; }
+
+  .newick-readout {
+    max-height: 116px;
+    overflow: auto;
+    padding: 11px 12px;
+    border: 1px solid var(--line);
+    border-radius: 11px;
+    background: var(--bg-deep);
+    color: #d7e3f4;
+    font-family: var(--mono);
+    font-size: 11px;
+    line-height: 1.55;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+
   .task-pills { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
 
   .task-pill {
@@ -633,7 +742,7 @@
       </svg>
     </span>
     <span>Phylogeny LM</span>
-    <span class="version">LoRA v3</span>
+    <span class="version">LoRA v4</span>
   </div>
   <div id="health" class="health">
     <span class="dot"></span><span>Connecting…</span>
@@ -645,37 +754,81 @@
     <div>
       <h1>Structural phylogeny QA,<br /><span class="grad">verified end to end.</span></h1>
       <p>
-        Ask rooted-binary Newick trees for MRCA labels, sister taxa, monophyly, and
-        topological edge distances. A 135M-parameter SmolLM2 student with a LoRA v3
-        adapter answers; an exact algorithmic verifier recomputes the ground truth
-        from the same normalized topology.
+        Ask rooted-binary Newick trees or reconstruct a real 16S rRNA gene tree from
+        FASTA with Kimura 2-parameter distances and Neighbor-Joining. A 135M-parameter
+        SmolLM2 student with a Fine-Tuned LoRA v4 adapter answers MRCA, sister,
+        monophyly, and edge-distance questions; an exact algorithmic verifier
+        recomputes the ground truth from the same normalized topology.
       </p>
     </div>
     <div class="stat-row">
-      <div class="stat"><b>97.50%</b><span>Held-out test</span></div>
-      <div class="stat"><b>12/12</b><span>Unseen real trees</span></div>
-      <div class="stat"><b>97.92%</b><span>48-case stress test</span></div>
+      <div class="stat"><b>87.5%</b><span>LoRA v4 · real 16S rRNA</span></div>
+      <div class="stat"><b>95.8%</b><span>LoRA v4 · 48-case stress test</span></div>
+      <div class="stat"><b>95.0%</b><span>LoRA v4 · held-out test</span></div>
+      <div class="stat"><b>100%</b><span>16S mrca / sister / monophyletic</span></div>
     </div>
   </section>
 
   <div class="workspace">
     <section class="panel">
       <div class="panel-inner">
-        <div class="panel-head">
-          <h2>1 · Load a tree</h2>
-          <span class="pill" id="normPill">Waiting for tree</span>
+        <div class="mode-toggle" id="modeToggle" role="tablist" aria-label="Input mode">
+          <button class="mode-btn active" type="button" data-mode="newick" role="tab" aria-selected="true">Newick Tree</button>
+          <button class="mode-btn" type="button" data-mode="fasta" role="tab" aria-selected="false">FASTA / 16S rRNA Sequences</button>
         </div>
 
-        <div class="presets" id="presets" aria-label="Curated phylogenetic presets"></div>
+        <div id="newickMode" class="mode-panel">
+          <div class="panel-head">
+            <h2>1 · Load a tree</h2>
+            <span class="pill" id="normPill">Waiting for tree</span>
+          </div>
 
-        <label class="field-label" for="newick">
-          <span>Newick input</span>
-          <span class="dim" style="letter-spacing:0;text-transform:none;font-weight:500">branch lengths &amp; unlabeled internals supported</span>
-        </label>
-        <textarea id="newick" spellcheck="false" aria-label="Newick tree"></textarea>
-        <div class="row">
-          <button class="secondary" id="parseBtn" type="button">Parse Tree</button>
-          <span class="hint" style="margin:0">Ctrl / Cmd + Enter to parse</span>
+          <div class="presets" id="presets" aria-label="Curated phylogenetic presets"></div>
+
+          <label class="field-label" for="newick">
+            <span>Newick input</span>
+            <span class="dim" style="letter-spacing:0;text-transform:none;font-weight:500">branch lengths &amp; unlabeled internals supported</span>
+          </label>
+          <textarea id="newick" spellcheck="false" aria-label="Newick tree"></textarea>
+          <div class="row">
+            <button class="secondary" id="parseBtn" type="button">Parse Tree</button>
+            <span class="hint" style="margin:0">Ctrl / Cmd + Enter to parse</span>
+          </div>
+        </div>
+
+        <div id="fastaMode" class="mode-panel hidden">
+          <div class="panel-head">
+            <h2>1 · Load sequences</h2>
+            <span class="pill" id="fastaPill">No sequences loaded</span>
+          </div>
+
+          <div class="row" style="margin-top:0">
+            <button class="secondary" id="loadFastaPresetBtn" type="button">Load Real NCBI 16S rRNA (Archaea &amp; Bacteria)</button>
+          </div>
+
+          <label class="field-label" for="fasta" style="margin-top:14px">
+            <span>FASTA input</span>
+            <span class="dim" style="letter-spacing:0;text-transform:none;font-weight:500">multi-FASTA · at least 3 taxa</span>
+          </label>
+          <textarea id="fasta" class="fasta-input" spellcheck="false" aria-label="FASTA sequences"></textarea>
+          <div class="row">
+            <button class="primary" id="reconstructBtn" type="button" disabled>Reconstruct Gene Tree (K2P + NJ)</button>
+            <span class="hint" style="margin:0">Ctrl / Cmd + Enter to reconstruct</span>
+          </div>
+          <div class="chips" id="fastaMetaChips"></div>
+
+          <div class="divider"></div>
+
+          <div class="panel-head" style="margin-bottom:8px">
+            <h2>Gene-tree reconstruction</h2>
+            <span class="pill" id="reconPill">Waiting for sequences</span>
+          </div>
+          <div class="section-title">K2P Distance Matrix</div>
+          <div class="matrix-wrap" id="matrixWrap">
+            <div class="empty">Reconstruct a gene tree to see the K2P distances.</div>
+          </div>
+          <div class="field-label" for="weightedNewick"><span>Reconstructed weighted Newick</span></div>
+          <div class="newick-readout" id="weightedNewick">(not reconstructed yet)</div>
         </div>
 
         <div class="divider"></div>
@@ -745,9 +898,10 @@
 </main>
 
 <footer>
-  Rooted binary Newick only. Branch lengths are stripped and unlabeled internal
-  nodes are auto-labeled; this is a topology workbench, not a likelihood or
-  alignment pipeline. Ground truth is always recomputed by the exact verifier.
+  Newick mode accepts rooted binary trees with branch lengths and unlabeled internal
+  nodes. FASTA mode aligns sequences, computes Kimura 2-parameter distances, infers a
+  Neighbor-Joining tree, and midpoint-roots it before LoRA v4 inference. In both modes
+  ground truth is always recomputed by the exact verifier.
 </footer>
 
 <div class="toast" id="toast" role="alert"></div>
@@ -787,12 +941,18 @@
   };
 
   const state = {
+    mode: "newick",
     summary: null,
+    trees: { newick: null, fasta: null },
+    selections: { newick: [], fasta: [] },
+    fastaPreset: null,
+    reconstruction: null,
     task: "mrca",
     selected: [],
     prediction: null,
     presets: [],
-    busy: false
+    busy: false,
+    reconstructing: false
   };
 
   function esc(value) {
@@ -905,6 +1065,36 @@
     });
   }
 
+  function setMode(mode) {
+    if (mode !== "newick" && mode !== "fasta") return;
+    if (mode === state.mode) return;
+    state.trees[state.mode] = state.summary;
+    state.selections[state.mode] = state.selected.slice();
+    state.mode = mode;
+    state.summary = state.trees[mode];
+    state.selected = state.selections[mode].slice();
+    state.prediction = null;
+
+    document.querySelectorAll(".mode-btn").forEach(function (button) {
+      const active = button.dataset.mode === mode;
+      button.classList.toggle("active", active);
+      button.setAttribute("aria-selected", active ? "true" : "false");
+    });
+    $("newickMode").classList.toggle("hidden", mode !== "newick");
+    $("fastaMode").classList.toggle("hidden", mode !== "fasta");
+    $("results").classList.add("hidden");
+
+    if (!state.summary) {
+      $("normPill").textContent = "Waiting for tree";
+      $("normPill").className = "pill";
+      $("leafCount").textContent = "";
+    } else {
+      setNormPill(state.summary.metadata, mode === "fasta" ? "Gene tree" : "Preset loaded");
+    }
+    validateSelectionForTask();
+    renderAll();
+  }
+
   function markActivePreset(presetId) {
     document.querySelectorAll(".preset").forEach(function (button) {
       button.classList.toggle("active", button.dataset.presetId === presetId);
@@ -928,10 +1118,131 @@
     pill.className = "pill err";
   }
 
+  function renderFastaMeta(metadata) {
+    const wrap = $("fastaMetaChips");
+    wrap.innerHTML = "";
+    if (!Array.isArray(metadata)) return;
+    metadata.forEach(function (item) {
+      const chip = document.createElement("span");
+      chip.className = "chip meta-chip";
+      chip.dataset.domain = String(item.domain || "");
+      chip.title = [item.phylum, item.ncbi_header].filter(Boolean).join(" · ");
+      chip.innerHTML =
+        '<span class="dot"></span><span>' + esc(item.organism || item.taxon_id || "") + "</span>" +
+        '<span class="chip-domain">' + esc(item.domain || "") + "</span>" +
+        '<span class="mono">' + esc(item.accession || "") + "</span>";
+      wrap.appendChild(chip);
+    });
+  }
+
+  function setReconBusy(busy) {
+    state.reconstructing = busy;
+    const button = $("reconstructBtn");
+    button.disabled = busy || !$("fasta").value.trim();
+    button.textContent = busy ? "Reconstructing…" : "Reconstruct Gene Tree (K2P + NJ)";
+  }
+
+  function renderDistanceMatrix(taxa, matrix) {
+    const wrap = $("matrixWrap");
+    if (!Array.isArray(taxa) || !Array.isArray(matrix) || !taxa.length) {
+      wrap.innerHTML = '<div class="empty">Reconstruct a gene tree to see the K2P distances.</div>';
+      return;
+    }
+    const head = ['<thead><tr><th class="row-head">taxon</th>'];
+    taxa.forEach(function (name, index) {
+      head.push('<th title="' + esc(name) + '">' + index + "</th>");
+    });
+    head.push("</tr></thead>");
+
+    const rows = ["<tbody>"];
+    taxa.forEach(function (name, i) {
+      rows.push(
+        '<tr><th class="row-head" title="' + esc(name) + '">' + esc(shorten(name, 18)) + "</th>"
+      );
+      matrix[i].forEach(function (value, j) {
+        const cls = i === j
+          ? "diagonal"
+          : (String(taxa[i]).split("_")[0] === String(taxa[j]).split("_")[0] ? "intra" : "cross");
+        rows.push(
+          '<td class="' + cls + '" title="' + esc(name) + " / " + esc(taxa[j]) + '">' +
+          Number(value).toFixed(4) + "</td>"
+        );
+      });
+      rows.push("</tr>");
+    });
+    rows.push("</tbody>");
+    wrap.innerHTML = '<table class="matrix">' + head.join("") + rows.join("") + "</table>";
+  }
+
+  async function loadFastaPreset() {
+    const button = $("loadFastaPresetBtn");
+    button.disabled = true;
+    button.textContent = "Loading NCBI RefSeq sequences…";
+    try {
+      const data = await fetchJSON("/api/fasta_preset");
+      state.fastaPreset = data;
+      $("fasta").value = data.fasta || "";
+      renderFastaMeta(data.metadata);
+      const count = Array.isArray(data.metadata) ? data.metadata.length : 0;
+      $("fastaPill").textContent = data.name + " · " + count + " sequences";
+      $("fastaPill").className = "pill ok";
+      $("reconstructBtn").disabled = false;
+    } catch (error) {
+      $("fastaPill").textContent = "Could not load FASTA preset";
+      $("fastaPill").className = "pill err";
+      showToast("Could not load FASTA preset: " + error.message);
+    } finally {
+      button.disabled = false;
+      button.textContent = "Load Real NCBI 16S rRNA (Archaea & Bacteria)";
+    }
+  }
+
+  async function reconstructTree() {
+    const fasta = $("fasta").value.trim();
+    if (!fasta) {
+      showToast("Paste a multi-FASTA input or load the NCBI RefSeq preset first.");
+      return;
+    }
+    setReconBusy(true);
+    try {
+      const result = await fetchJSON("/api/reconstruct", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fasta: fasta })
+      });
+      if (!result.tree_summary) throw new Error("reconstruction response has no tree summary");
+      state.reconstruction = result;
+      renderDistanceMatrix(result.taxa, result.distance_matrix);
+      $("weightedNewick").textContent = result.weighted_newick || "";
+
+      const summary = normalizeSummary(result.tree_summary);
+      state.summary = summary;
+      state.trees.fasta = summary;
+      state.selected = [];
+      state.selections.fasta = [];
+      state.prediction = null;
+      validateSelectionForTask();
+      $("results").classList.add("hidden");
+      setNormPill(summary.metadata, "K2P + NJ gene tree");
+      $("reconPill").textContent = "K2P + NJ · " + result.taxa.length + " taxa";
+      $("reconPill").className = "pill ok";
+      renderAll();
+      showToast("Gene tree loaded into the cladogram and taxon picker.");
+    } catch (error) {
+      $("reconPill").textContent = "Reconstruction error · " + error.message;
+      $("reconPill").className = "pill err";
+      showToast("Could not reconstruct gene tree: " + error.message);
+    } finally {
+      setReconBusy(false);
+    }
+  }
+
   function loadPreset(preset) {
     const summary = summaryFromPreset(preset);
     $("newick").value = preset.raw_newick || preset.normalized_newick || "";
     state.summary = summary;
+    state.trees.newick = summary;
+    state.selections.newick = [];
     state.task = preset.suggested_task || (preset.suggested && preset.suggested.task) || state.task;
     state.prediction = null;
     const suggested = preset.suggested_taxa || (preset.suggested && preset.suggested.taxa) || [];
@@ -939,6 +1250,7 @@
       return summary.leaves.indexOf(name) !== -1;
     });
     validateSelectionForTask();
+    state.selections.newick = state.selected.slice();
     markActivePreset(preset.id || "");
     $("results").classList.add("hidden");
     setNormPill(summary.metadata, "Preset loaded");
@@ -982,8 +1294,11 @@
         body: JSON.stringify({ newick: newick })
       });
       state.summary = normalizeSummary(summary);
+      state.trees.newick = state.summary;
+      state.selections.newick = [];
       state.prediction = null;
       validateSelectionForTask();
+      state.selections.newick = state.selected.slice();
       markActivePreset("");
       $("results").classList.add("hidden");
       setNormPill(summary.metadata, "Parsed");
@@ -1017,7 +1332,7 @@
     const wrap = $("chips");
     wrap.innerHTML = "";
     if (!state.summary) {
-      wrap.innerHTML = '<span class="dim" style="font-size:11.5px">Parse a tree to reveal its leaves.</span>';
+      wrap.innerHTML = '<span class="dim" style="font-size:11.5px">Parse a tree or reconstruct a gene tree to reveal its leaves.</span>';
       return;
     }
     const cherrySet = new Set(state.summary.cherry_leaves);
@@ -1067,6 +1382,7 @@
       state.selected.push(name);
     }
     state.prediction = null;
+    state.selections[state.mode] = state.selected.slice();
     $("results").classList.add("hidden");
     renderAll();
   }
@@ -1436,7 +1752,7 @@
       "</div>";
 
     $("loraCard").innerHTML = resultCard({
-      name: "Fine-Tuned LoRA v3",
+      name: "Fine-Tuned LoRA v4",
       tag: "SmolLM2-135M-Instruct · r=32 · α=64",
       prediction: result.lora_prediction,
       correct: result.lora_correct,
@@ -1464,10 +1780,20 @@
     button.addEventListener("click", function () { selectTask(button.dataset.task); });
   });
 
+  document.querySelectorAll(".mode-btn").forEach(function (button) {
+    button.addEventListener("click", function () { setMode(button.dataset.mode); });
+  });
+
   $("parseBtn").addEventListener("click", parseTree);
   $("predictBtn").addEventListener("click", predict);
+  $("loadFastaPresetBtn").addEventListener("click", loadFastaPreset);
+  $("reconstructBtn").addEventListener("click", reconstructTree);
+  $("fasta").addEventListener("input", function () {
+    $("reconstructBtn").disabled = state.reconstructing || !$("fasta").value.trim();
+  });
   $("clearSel").addEventListener("click", function () {
     state.selected = [];
+    state.selections[state.mode] = [];
     state.prediction = null;
     $("results").classList.add("hidden");
     renderAll();
@@ -1476,6 +1802,12 @@
     if ((event.metaKey || event.ctrlKey) && event.key === "Enter") {
       event.preventDefault();
       parseTree();
+    }
+  });
+  $("fasta").addEventListener("keydown", function (event) {
+    if ((event.metaKey || event.ctrlKey) && event.key === "Enter") {
+      event.preventDefault();
+      reconstructTree();
     }
   });
 

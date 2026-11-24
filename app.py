@@ -15,6 +15,7 @@ import torch
 from peft import PeftModel
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
+from bio_phylo import reconstruct_tree_from_fasta
 from phylogeny_utils import (
     NewickError,
     make_prompt,
@@ -28,6 +29,10 @@ TASKS = ("mrca", "sister", "monophyletic", "distance")
 MAX_BODY_BYTES = 1_000_000
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 STATIC_INDEX = os.path.join(BASE_DIR, "static", "index.html")
+FASTA_PRESET_PATH = os.path.join(BASE_DIR, "data", "16s_rrna_archaea_bacteria.fasta")
+FASTA_METADATA_PATH = os.path.join(BASE_DIR, "data", "16s_rrna_metadata.json")
+GET_ONLY_PATHS = ("/", "/index.html", "/api/health", "/api/presets", "/api/fasta_preset", "/favicon.ico")
+POST_ONLY_PATHS = ("/api/parse", "/api/predict", "/api/reconstruct")
 MODEL_LOCK = threading.Lock()
 
 PRESET_SPECS = (
@@ -343,18 +348,21 @@ class PhylogenyHandler(BaseHTTPRequestHandler):
         if path == "/api/presets":
             self._send_json(self.server.state["presets"])
             return
+        if path == "/api/fasta_preset":
+            self._handle_fasta_preset()
+            return
         if path == "/favicon.ico":
             self._send_bytes(b"", status=204)
             return
-        if path in ("/api/parse", "/api/predict"):
+        if path in POST_ONLY_PATHS:
             self._send_json({"error": "Use POST for this endpoint"}, status=405)
             return
         self._send_json({"error": "Not found"}, status=404)
 
     def do_POST(self):
         path = urlparse(self.path).path
-        if path not in ("/api/parse", "/api/predict"):
-            if path in ("/api/health", "/api/presets"):
+        if path not in POST_ONLY_PATHS:
+            if path in GET_ONLY_PATHS:
                 self._send_json({"error": "Use GET for this endpoint"}, status=405)
             else:
                 self._send_json({"error": "Not found"}, status=404)
@@ -368,6 +376,8 @@ class PhylogenyHandler(BaseHTTPRequestHandler):
 
         if path == "/api/parse":
             self._handle_parse(payload)
+        elif path == "/api/reconstruct":
+            self._handle_reconstruct(payload)
         else:
             self._handle_predict(payload)
 
@@ -379,6 +389,46 @@ class PhylogenyHandler(BaseHTTPRequestHandler):
             self._send_bytes(b"static/index.html not found", status=500)
             return
         self._send_bytes(body, status=200, content_type="text/html; charset=utf-8")
+
+    def _handle_fasta_preset(self):
+        try:
+            with open(FASTA_PRESET_PATH, "r", encoding="utf-8") as handle:
+                fasta_text = handle.read()
+            with open(FASTA_METADATA_PATH, "r", encoding="utf-8") as handle:
+                metadata = json.load(handle)
+        except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+            self._send_json({"error": "Could not load FASTA preset: %s" % exc}, status=400)
+            return
+        self._send_json(
+            {
+                "name": "NCBI RefSeq 16S rRNA (Archaea & Bacteria)",
+                "fasta": fasta_text,
+                "metadata": metadata,
+            }
+        )
+
+    def _handle_reconstruct(self, payload):
+        fasta_text = payload.get("fasta")
+        if not isinstance(fasta_text, str) or not fasta_text.strip():
+            self._send_json({"error": "'fasta' must be a non-empty string"}, status=400)
+            return
+        try:
+            result = reconstruct_tree_from_fasta(fasta_text)
+        except (NewickError, ValueError, TypeError) as exc:
+            self._send_json({"error": str(exc)}, status=400)
+            return
+        self._send_json(
+            {
+                "weighted_newick": result["weighted_newick"],
+                "normalized_newick": result["normalized_newick"],
+                "taxa": result["taxa"],
+                "lengths": result["lengths"],
+                "distance_matrix": result["distance_matrix"],
+                "identity_matrix": result["identity_matrix"],
+                "aligned_sites_matrix": result["aligned_sites_matrix"],
+                "tree_summary": result["tree_summary"],
+            }
+        )
 
     def _handle_parse(self, payload):
         try:
@@ -475,7 +525,7 @@ def parse_args(argv=None):
     )
     parser.add_argument("--adapter_dir", default="model/phylogeny-lora")
     parser.add_argument("--no_base", action="store_true")
-    parser.add_argument("--max_new_tokens", type=int, default=16)
+    parser.add_argument("--max_new_tokens", type=int, default=24)
     args = parser.parse_args(argv)
 
     if not (0 <= args.port <= 65535):
