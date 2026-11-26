@@ -1,6 +1,8 @@
 # PhyloScope — PhyloClade-135M Phylogenetic Reasoning & 16S rRNA Workbench
 
-> **New here?** Read the step-by-step **[User Guide](USER_GUIDE.md)** for setup, Newick & FASTA workflows, CLI usage, and API examples.
+> **New here?** Read the step-by-step **[User Guide](USER_GUIDE.md)** for setup, offline EXE/APK apps, Newick & FASTA workflows, CLI usage, and API examples.
+>
+> **Standalone Offline Downloads (No Python or external server needed):** Grab **`PhyloScope-Windows-x64.zip`** (Windows `.exe`) or **`PhyloScope-v1.0-arm64.apk`** (Android `.apk`) directly from **[GitHub Releases v1.0](https://github.com/poria-azadi96/phylogeny-lm/releases/tag/v1.0)**.
 
 **PhyloScope** is a small, fully reproducible research workbench for **rooted binary phylogenetic tree question answering** and **real 16S rRNA gene-tree reconstruction**. Its specialized 135M-parameter engine (**PhyloClade-135M**) answers four structural queries directly from Newick topology:
 

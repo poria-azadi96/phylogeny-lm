@@ -153,3 +153,26 @@ curl -s -X POST http://127.0.0.1:7860/api/predict \
 - **Why FASTA Reconstruction Runs Before LM Inference**: A 135M language model cannot accurately align 1,500-bp raw DNA sequences in context (`50%` accuracy on raw-FASTA control). PhyloScope therefore delegates alignment and evolutionary distance modeling to `bio_phylo.py` and uses PhyloClade-135M strictly for structural tree reasoning, always verified by `phylogeny_utils.py`.
 - **Port Already in Use**: Start the server on another port with `python app.py --port 7861`.
 - **Slow CPU Inference**: Use `--no_base` to skip the Untuned Baseline pass when running without a CUDA GPU.
+
+---
+
+## 8. Standalone Offline Apps (Windows `.exe` & Android `.apk`)
+
+If you prefer a **100% offline, zero-setup** experience without installing Python or running a local server manually, download the prebuilt packages from **[GitHub Releases v1.0](https://github.com/poria-azadi96/phylogeny-lm/releases/tag/v1.0)**:
+
+### Windows (`PhyloScope-Windows-x64.zip`)
+1. Download and extract `PhyloScope-Windows-x64.zip`.
+2. Double-click `PhyloScope.exe`.
+3. It automatically starts the local `PhyloClade-135M (Q8_0)` GGUF engine in the background and opens the PhyloScope workbench in your browser.
+4. Close the `PhyloScope Offline` control window when finished to cleanly shut down the local engine.
+
+### Android (`PhyloScope-v1.0-arm64.apk`)
+1. Download `PhyloScope-v1.0-arm64.apk` on an `arm64-v8a` Android device and install it (allow installation from your browser/file manager if prompted).
+2. On first launch, wait a few seconds while the embedded `PhyloClade-135M (Q4_K_M)` native C++ engine initializes.
+
+### Offline App Capabilities (Windows & Android)
+- **Database Link / Accession Downloader**: Paste a direct FASTA URL, an NCBI page link (e.g., `https://www.ncbi.nlm.nih.gov/nuccore/NR_114042.1`), or comma-separated NCBI Accession IDs (e.g., `NR_114042.1, NR_117678.1, NR_102783.2, NR_037007.2`) and click **Download from Database**.
+- **Local File & Offline Preset**: Open `.fasta`/`.fna` files from disk/phone or click **Load Built-in 16S rRNA (Offline)**.
+- **Tree Reconstruction & Export**: Reconstruct K2P + Neighbor-Joining + Midpoint-rooted trees offline, inspect the K2P matrix and SVG cladogram, and export `.nwk` or `.svg` files.
+- **Offline AI + Exact Verifier**: Query `MRCA`, `Sister Taxon`, `Monophyletic Clade`, and `Edge Distance` completely offline with side-by-side deterministic verification.
+
