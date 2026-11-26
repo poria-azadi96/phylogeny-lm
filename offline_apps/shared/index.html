@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PhyloScope Offline · Genomics &amp; 16S rRNA Workbench</title>
+<style>
+  :root {
+    --bg: #070b12; --panel: #0e1623; --panel-2: #121c2d; --border: #1e2d44;
+    --text: #e6edf7; --muted: #93a4be; --emerald: #34d399; --cyan: #22d3ee;
+    --amber: #fbbf24; --rose: #fb7185; --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    --sans: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: var(--sans); color: var(--text);
+    background: radial-gradient(900px 420px at 10% 0%, rgba(52,211,153,0.08), transparent 60%), var(--bg);
+    line-height: 1.5;
+  }
+  header {
+    display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;
+    padding: 14px 20px; border-bottom: 1px solid var(--border); background: rgba(14,22,35,0.9);
+  }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px; }
+  .badge {
+    font-size: 11px; padding: 3px 9px; border-radius: 999px;
+    background: rgba(52,211,153,0.14); color: var(--emerald); border: 1px solid rgba(52,211,153,0.3);
+  }
+  .status { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 7px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--emerald); display: inline-block; }
+  .dot.warn { background: var(--amber); }
+  main { max-width: 1220px; margin: 0 auto; padding: 18px; display: grid; gap: 16px; }
+  .grid { display: grid; grid-template-columns: 1.05fr 1fr; gap: 16px; }
+  @media (max-width: 920px) { .grid { grid-template-columns: 1fr; } }
+  .card {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 16px;
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  h2 { margin: 0; font-size: 15px; display: flex; justify-content: space-between; align-items: center; }
+  .tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+  .tab {
+    background: var(--panel-2); color: var(--muted); border: 1px solid var(--border);
+    padding: 7px 12px; border-radius: 9px; cursor: pointer; font-size: 13px; font-weight: 600;
+  }
+  .tab.active { color: #052219; background: var(--emerald); border-color: var(--emerald); }
+  textarea, input[type="text"] {
+    width: 100%; background: #09101a; color: var(--text); border: 1px solid var(--border);
+    border-radius: 10px; padding: 10px 12px; font-family: var(--mono); font-size: 12px;
+  }
+  textarea { min-height: 150px; resize: vertical; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  button {
+    background: var(--panel-2); color: var(--text); border: 1px solid var(--border);
+    border-radius: 9px; padding: 8px 13px; cursor: pointer; font-size: 13px; font-weight: 600;
+  }
+  button:hover { border-color: var(--cyan); }
+  button.primary {
+    background: linear-gradient(135deg, var(--emerald), var(--cyan)); color: #05161a; border: none;
+  }
+  button:disabled { opacity: 0.55; cursor: not-allowed; }
+  .hint { font-size: 12px; color: var(--muted); }
+  .svg-wrap {
+    background: #080e18; border: 1px solid var(--border); border-radius: 12px;
+    min-height: 290px; overflow: auto; padding: 8px;
+  }
+  .matrix-wrap {
+    max-height: 180px; overflow: auto; border: 1px solid var(--border); border-radius: 10px;
+    font-family: var(--mono); font-size: 11px;
+  }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { padding: 5px 7px; border-bottom: 1px solid var(--border); text-align: right; }
+  th:first-child, td:first-child { text-align: left; position: sticky; left: 0; background: var(--panel); }
+  .pills { display: flex; flex-wrap: wrap; gap: 6px; }
+  .pill {
+    padding: 5px 10px; border-radius: 999px; font-size: 12px; font-family: var(--mono);
+    background: var(--panel-2); border: 1px solid var(--border); cursor: pointer; color: var(--text);
+  }
+  .pill.sel { background: rgba(34,211,238,0.18); border-color: var(--cyan); color: var(--cyan); }
+  .pill.cherry::after { content: " •"; color: var(--cyan); }
+  .results { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 720px) { .results { grid-template-columns: 1fr; } }
+  .res-box { background: var(--panel-2); border: 1px solid var(--border); border-radius: 12px; padding: 12px; }
+  .ok { color: var(--emerald); font-weight: 700; }
+  .err { color: var(--rose); font-weight: 700; }
+  .mono { font-family: var(--mono); font-size: 12px; word-break: break-word; }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <span>PhyloScope Offline</span>
+    <span class="badge">PhyloClade-135M · No External Server</span>
+  </div>
+  <div class="status" id="engineStatus"><span class="dot warn"></span><span>Checking local AI engine…</span></div>
+</header>
+
+<main>
+  <div class="grid">
+    <section class="card">
+      <h2>
+        <span>1 · Genomic Input / Database Link</span>
+        <span class="hint" id="seqCount">Ready</span>
+      </h2>
+
+      <div class="tabs">
+        <button class="tab active" data-mode="fasta" type="button">FASTA / Database Link</button>
+        <button class="tab" data-mode="newick" type="button">Newick Tree</button>
+      </div>
+
+      <div id="fastaPane">
+        <div class="hint" style="margin-bottom:6px;">
+          Paste a <b>Database URL</b> (direct FASTA link or NCBI URL) or comma-separated <b>NCBI Accession IDs</b> (e.g. <code>NR_114042.1, NR_117678.1, NR_102783.2, NR_037007.2</code>):
+        </div>
+        <div class="row" style="margin-bottom:10px;">
+          <input id="dbInput" type="text" style="flex:1;" placeholder="https://... or NR_114042.1, NR_117678.1, NR_102783.2, NR_037007.2" />
+          <button id="btnFetchDb" type="button">Download from Database</button>
+        </div>
+        <div class="row" style="margin-bottom:8px;">
+          <button id="btnPreset16s" type="button">Load Built-in 16S rRNA (Offline)</button>
+          <label class="tab" style="display:inline-flex;align-items:center;">
+            Open .fasta/.fna File
+            <input id="fileInput" type="file" accept=".fasta,.fa,.fna,.txt" class="hidden" />
+          </label>
+        </div>
+        <textarea id="fastaText" placeholder=">Escherichia_coli&#10;AGAGTTTGATCATGGCTCAG..."></textarea>
+        <div class="row" style="margin-top:8px;">
+          <button id="btnReconstruct" class="primary" type="button">Build Phylogenetic Tree (K2P + NJ)</button>
+        </div>
+      </div>
+
+      <div id="newickPane" class="hidden">
+        <textarea id="newickText">(((Homo,Pan)Hominini,Gorilla)Homininae,(Pongo,Hylobates)Pongidae)Hominoidea;</textarea>
+        <div class="row" style="margin-top:8px;">
+          <button id="btnParseNewick" class="primary" type="button">Parse &amp; Visualize Newick</button>
+        </div>
+      </div>
+
+      <div id="matrixSection" class="hidden">
+        <div class="hint" style="margin-bottom:4px;">Kimura 2-Parameter (K2P) Distance Matrix:</div>
+        <div class="matrix-wrap" id="matrixWrap"></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>
+        <span>2 · Reconstructed Phylogenetic Tree</span>
+        <span class="row">
+          <button id="btnDlNwk" type="button" disabled>Export .nwk</button>
+          <button id="btnDlSvg" type="button" disabled>Export .svg</button>
+        </span>
+      </h2>
+      <div class="svg-wrap" id="svgWrap">
+        <div class="hint" style="padding:24px;">Load FASTA sequences, download from a database link, or parse a Newick tree to view the phylogenetic cladogram.</div>
+      </div>
+      <div class="mono hint" id="nwkOut">Normalized Newick: —</div>
+    </section>
+  </div>
+
+  <section class="card">
+    <h2>
+      <span>3 · Query Tree (Offline PhyloClade-135M + Exact Verifier)</span>
+      <span class="hint" id="taskHint">Select 2 leaves</span>
+    </h2>
+
+    <div class="row">
+      <button class="tab active" data-task="mrca" type="button">MRCA</button>
+      <button class="tab" data-task="sister" type="button">Sister Taxon</button>
+      <button class="tab" data-task="monophyletic" type="button">Monophyletic Clade</button>
+      <button class="tab" data-task="distance" type="button">Edge Distance</button>
+    </div>
+
+    <div class="pills" id="taxonPills"></div>
+
+    <div class="row">
+      <button id="btnInfer" class="primary" type="button" disabled>Run Offline Inference</button>
+      <span class="hint" id="selectedLabel">Selected: none</span>
+    </div>
+
+    <div id="resultsWrap" class="results hidden">
+      <div class="res-box">
+        <div class="hint">PhyloClade-135M (Offline Local Engine)</div>
+        <div id="aiPred" class="mono" style="font-size:16px;margin:6px 0;">—</div>
+        <div id="aiMeta" class="hint">—</div>
+      </div>
+      <div class="res-box">
+        <div class="hint">Exact Algorithmic Verifier (Deterministic)</div>
+        <div id="exactPred" class="mono" style="font-size:16px;margin:6px 0;">—</div>
+        <div id="exactMeta" class="hint">—</div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script src="phylo_engine.js"></script>
+<script>
+(function () {
+  "use strict";
+  const $ = (id) => document.getElementById(id);
+
+  const BUILTIN_16S_FASTA = `>Escherichia_coli
+AAATTGAAGAGTTTGATCATGGCTCAGATTGAACGCTGGCGGCAGGCCTAACACATGCAAGTCGAACGGTAACAGGAAGAAGCTTGCTTCTTTGCTGACGAGTGGCGGACGGGTGAGTAATGTCTGGGAAACTGCCTGATGGAGGGGGATAACTACTGGAAACGGTAGCTAATACCGCATAACGTCGCAAGACCAAAGAGGGGGACCTTCGGGCCTCTTGCCATCGGATGTGCCCAGATGGGATTAGCTAGTAGGTGGGGTAACGGCTCACCTAGGCGACGATCCCTAGCTGGTCTGAGAGGATGACCAGCCACACTGGAACTGAGACACGGTCCAGACTCCTACGGGAGGCAGCAGTGGGGAATATTGCACAATGGGCGCAAGCCTGATGCAGCCATGCCGCGTGTATGAAGAAGGCCTTCGGGTTGTAAAGTACTTTCAGCGGGGAGGAAGGGAGTAAAGTTAATACCTTTGCTCATTGACGTTACCCGCAGAAGAAGCACCGGCTAACTCCGTGCCAGCAGCCGCGGTAATACGGAGGGTGCAAGCGTTAATCGGAATTACTGGGCGTAAAGCGCACGCAGGCGGTTTGTTAAGTCAGATGTGAAATCCCCGGGCTCAACCTGGGAACTGCATCTGATACTGGCAAGCTTGAGTCTCGTAGAGGGGGGTAGAATTCCAGGTGTAGCGGTGAAATGCGTAGAGATCTGGAGGAATACCGGTGGCGAAGGCGGCCCCCTGGACGAAGACTGACGCTCAGGTGCGAAAGCGTGGGGAGCAAACAGGATTAGATACCCTGGTAGTCCACGCCGTAAACGATGTCGACTTGGAGGTTGTGCCCTTGAGGCGTGGCTTCCGGAGCTAACGCGTTAAGTCGACCGCCTGGGGAGTACGGCCGCAAGGTTAAAACTCAAATGAATTGACGGGGGCCCGCACAAGCGGTGGAGCATGTGGTTTAATTCGATGCAACGCGAAGAACCTTACCTGGTCTTGACATCCACGGAAGTTTTCAGAGATGAGAATGTGCCTTCGGGAACCGTGAGACAGGTGCTGCATGGCTGTCGTCAGCTCGTGTTGTGAAATGTTGGGTTAAGTCCCGCAACGAGCGCAACCCTTATCCTTTGTTGCCAGCGGTCCGGCCGGGAACTCAAAGGAGACTGCCAGTGATAAACTGGAGGAAGGTGGGGATGACGTCAAGTCATCATGGCCCTTACGACCAGGGCTACACACGTGCTACAATGGCGCATACAAAGAGAAGCGACCTCGCGAGAGCAAGCGGACCTCATAAAGTGCGTCGTAGTCCGGATTGGAGTCTGCAACTCGACTCCATGAAGTCGGAATCGCTAGTAATCGTGGATCAGAATGCCACGGTGAATACGTTCCCGGGCCTTGTACACACCGCCCGTCACACCATGGGAGTGGGTTGCAAAAGAAGTAGGTAGCTTAACCTTCGGGAGGGCGCTTACCACTTTGTGATTCATGACTGGGGTGAAGTCGTAACAAGGTAACCGTAGGGGAACCTGCGGTTGGATCACCTCCTTA
+>Pseudomonas_aeruginosa
+TTTGAACTGAAGAGTTTGATCATGGCTCAGATTGAACGCTGGCGGCAGGCCTAACACATGCAAGTCGAGCGGATGAAGGGAGCTTGCTCCTGGATTCAGCGGCGGACGGGTGAGTAATGCCTAGGAATCTGCCTGGTAGTGGGGGATAACGTCCGGAAACGGGCGCTAATACCGCATACGTCCTGAGGGAGAAAGTGGGGGATCTTCGGACCTCACGCTATCAGATGAGCCTAGGTCGGATTAGCTAGTTGGTGGGGTAAAGGCCTACCAAGGCGACGATCCGTAACTGGTCTGAGAGGATGATCAGTCACACTGGAACTGAGACACGGTCCAGACTCCTACGGGAGGCAGCAGTGGGGAATATTGGACAATGGGCGAAAGCCTGATCCAGCCATGCCGCGTGTGTGAAGAAGGTCTTCGGATTGTAAAGCACTTTAAGTTGGGAGGAAGGGCAGTAAGTTAATACCTTGCTGTTTTGACGTTACCAACAGAATAAGCACCGGCTAACTTCGTGCCAGCAGCCGCGGTAATACGAAGGGTGCAAGCGTTAATCGGAATTACTGGGCGTAAAGCGCGCGTAGGTGGTTCAGCAAGTTGGATGTGAAATCCCCGGGCTCAACCTGGGAACTGCATCCAAAACTACTGAGCTAGAGTACGGTAGAGGGTGGTGGAATTTCCTGTGTAGCGGTGAAATGCGTAGATATAGGAAGGAACACCAGTGGCGAAGGCGACCACCTGGACTGATACTGACACTGAGGTGCGAAAGCGTGGGGAGCAAACAGGATTAGATACCCTGGTAGTCCACGCCGTAAACGATGTCGACTAGCCGTTGGGATCCTTGAGATCTTAGTGGCGCAGCTAACGCGATAAGTCGACCGCCTGGGGAGTACGGCCGCAAGGTTAAAACTCAAATGAATTGACGGGGGCCCGCACAAGCGGTGGAGCATGTGGTTTAATTCGAAGCAACGCGAAGAACCTTACCTGGCCTTGACATGCTGAGAACTTTCCAGAGATGGATTGGTGCCTTCGGGAACTCAGACACAGGTGCTGCATGGCTGTCGTCAGCTCGTGTCGTGAGATGTTGGGTTAAGTCCCGTAACGAGCGCAACCCTTGTCCTTAGTTACCAGCACCTCGGGTGGGCACTCTAAGGAGACTGCCGGTGACAAACCGGAGGAAGGTGGGGATGACGTCAAGTCATCATGGCCCTTACGGCCAGGGCTACACACGTGCTACAATGGTCGGTACAAAGGGTTGCCAAGCCGCGAGGTGGAGCTAATCCCATAAAACCGATCGTAGTCCGGATCGCAGTCTGCAACTCGACTGCGTGAAGTCGGAATCGCTAGTAATCGTGAATCAGAATGTCACGGTGAATACGTTCCCGGGCCTTGTACACACCGCCCGTCACACCATGGGAGTGGGTTGCTCCAGAAGTAGCTAGTCTAACCGCAAGGGGGACGGTTACCACGGAGTGATTCATGACTGGGGTGAAGTCGTAACAAGGTAGCCGTAGGGGAACCTGCGGCTGGATCACCTCCTTA
+>Bacillus_subtilis
+TTTATCGGAGAGTTTGATCCTGGCTCAGGACGAACGCTGGCGGCGTGCCTAATACATGCAAGTCGAGCGGACAGATGGGAGCTTGCTCCCTGATGTTAGCGGCGGACGGGTGAGTAACACGTGGGTAACCTGCCTGTAAGACTGGGATAACTCCGGGAAACCGGGGCTAATACCGGATGGTTGTTTGAACCGCATGGTTCAAACATAAAAGGTGGCTTCGGCTACCACTTACAGATGGACCCGCGGCGCATTAGCTAGTTGGTGAGGTAACGGCTCACCAAGGCAACGATGCGTAGCCGACCTGAGAGGGTGATCGGCCACACTGGGACTGAGACACGGCCCAGACTCCTACGGGAGGCAGCAGTAGGGAATCTTCCGCAATGGACGAAAGTCTGACGGAGCAACGCCGCGTGAGTGATGAAGGTTTTCGGATCGTAAAGCTCTGTTGTTAGGGAAGAACAAGTACCGTTCGAATAGGGCGGTACCTTGACGGTACCTAACCAGAAAGCCACGGCTAACTACGTGCCAGCAGCCGCGGTAATACGTAGGTGGCAAGCGTTGTCCGGAATTATTGGGCGTAAAGGGCTCGCAGGCGGTTTCTTAAGTCTGATGTGAAAGCCCCCGGCTCAACCGGGGAGGGTCATTGGAAACTGGGGAACTTGAGTGCAGAAGAGGAGAGTGGAATTCCACGTGTAGCGGTGAAATGCGTAGAGATGTGGAGGAACACCAGTGGCGAAGGCGACTCTCTGGTCTGTAACTGACGCTGAGGAGCGAAAGCGTGGGGAGCGAACAGGATTAGATACCCTGGTAGTCCACGCCGTAAACGATGAGTGCTAAGTGTTAGGGGGTTTCCGCCCCTTAGTGCTGCAGCTAACGCATTAAGCACTCCGCCTGGGGAGTACGGTCGCAAGACTGAAACTCAAAGGAATTGACGGGGGCCCGCACAAGCGGTGGAGCATGTGGTTTAATTCGAAGCAACGCGAAGAACCTTACCAGGTCTTGACATCCTCTGACAATCCTAGAGATAGGACGTCCCCTTCGGGGGCAGAGTGACAGGTGGTGCATGGTTGTCGTCAGCTCGTGTCGTGAGATGTTGGGTTAAGTCCCGCAACGAGCGCAACCCTTGATCTTAGTTGCCAGCATTCAGTTGGGCACTCTAAGGTGACTGCCGGTGACAAACCGGAGGAAGGTGGGGATGACGTCAAATCATCATGCCCCTTATGACCTGGGCTACACACGTGCTACAATGGACAGAACAAAGGGCAGCGAAACCGCGAGGTTAAGCCAATCCCACAAATCTGTTCTCAGTTCGGATCGCAGTCTGCAACTCGACTGCGTGAAGCTGGAATCGCTAGTAATCGCGGATCAGCATGCCGCGGTGAATACGTTCCCGGGCCTTGTACACACCGCCCGTCACACCACGAGAGTTTGTAACACCCGAAGTCGGTGAGGTAACCTTTTAGGAGCCAGCCGCCGAAGGTGGGACAGATGATTGGGGTGAAGTCGTAACAAGGTAGCCGTATCGGAAGGTGCGGCTGGATCACCTCCTTT
+>Staphylococcus_aureus
+TTTTATGGAGAGTTTGATCCTGGCTCAGGATGAACGCTGGCGGCGTGCCTAATACATGCAAGTCGAGCGAACGGACGAGAAGCTTGCTTCTCTGATGTTAGCGGCGGACGGGTGAGTAACACGTGGATAACCTACCTATAAGACTGGGATAACTTCGGGAAACCGGAGCTAATACCGGATAATATTTTGAACCGCATGGTTCAAAAGTGAAAGACGGTCTTGCTGTCACTTATAGATGGATCCGCGCTGCATTAGCTAGTTGGTAAGGTAACGGCTTACCAAGGCAACGATGCATAGCCGACCTGAGAGGGTGATCGGCCACACTGGAACTGAGACACGGTCCAGACTCCTACGGGAGGCAGCAGTAGGGAATCTTCCGCAATGGGCGAAAGCCTGACGGAGCAACGCCGCGTGAGTGATGAAGGTCTTCGGATCGTAAAACTCTGTTATTAGGGAAGAACATATGTGTAAGTAACTGTGCACATCTTGACGGTACCTAATCAGAAAGCCACGGCTAACTACGTGCCAGCAGCCGCGGTAATACGTAGGTGGCAAGCGTTATCCGGAATTATTGGGCGTAAAGCGCGCGTAGGCGGTTTTTTAAGTCTGATGTGAAAGCCCACGGCTCAACCGTGGAGGGTCATTGGAAACTGGAAAACTTGAGTGCAGAAGAGGAAAGTGGAATTCCATGTGTAGCGGTGAAATGCGCAGAGATATGGAGGAACACCAGTGGCGAAGGCGACTTTCTGGTCTGTAACTGACGCTGATGTGCGAAAGCGTGGGGATCAAACAGGATTAGATACCCTGGTAGTCCACGCCGTAAACGATGAGTGCTAAGTGTTAGGGGGTTTCCGCCCCTTAGTGCTGCAGCTAACGCATTAAGCACTCCGCCTGGGGAGTACGACCGCAAGGTTGAAACTCAAAGGAATTGACGGGGACCCGCACAAGCGGTGGAGCATGTGGTTTAATTCGAAGCAACGCGAAGAACCTTACCAAATCTTGACATCCTTTGACAACTCTAGAGATAGAGCCTTCCCCTTCGGGGGACAAAGTGACAGGTGGTGCATGGTTGTCGTCAGCTCGTGTCGTGAGATGTTGGGTTAAGTCCCGCAACGAGCGCAACCCTTAAGCTTAGTTGCCATCATTAAGTTGGGCACTCTAAGTTGACTGCCGGTGACAAACCGGAGGAAGGTGGGGATGACGTCAAATCATCATGCCCCTTATGATTTGGGCTACACACGTGCTACAATGGACAATACAAAGGGCAGCGAAACCGCGAGGTCAAGCAAATCCCATAAAGTTGTTCTCAGTTCGGATTGTAGTCTGCAACTCGACTACATGAAGCTGGAATCGCTAGTAATCGTAGATCAGCATGCTACGGTGAATACGTTCCCGGGTCTTGTACACACCGCCCGTCACACCACGAGAGTTTGTAACACCCGAAGCCGGTGGAGTAACCTTTTAGGAGCTAGCCGTCGAAGGTGGGACAAATGATTGGGGTGAAGTCGTAACAAGGTAGCCGTATCGGAAGGTGCGGCTGGATCACCTCCTTT
+>Halobacterium_salinarum
+ATTCCGGTTGATCCTGCCGGAGGTCATTGCTATTGGGGTCCGATTTAGCCATGCTAGTTGCACGAGTTCATACTCGTGGCGAAAAGCTCAGTAACACGTGGCCAAACTACCCTACGGACCGAGATACCCTCGGGAAACTGAGGCTAATCTCGGATACGCTCTCGATGCTGGAATGCTCGAGAGCGAAACGCTCCGGCGCCGTAGGATGGGTCTGCGGCGGATTAGGTAGACGGTGGGGTAACGGCCCACCGTGCCGATAATCCGGTACGGGTTGTGAGAGCAAGAGCCCGGAGACGGAATCTGGGACAAGACCCGGGCCCTACGGGGCGCAGCAGGCGCGAAACCTTTACACTGCACGAAAGTGCGATAAGGGGACCCCAAGTGTGAGGGCATATAGTCCTCGCTTTTCTGTGCCGTAAGGCGGTGGAGGAATAAGAGCTGGGCAAGACCGGTGCCAGCCGCCGCGGTAATACCGGCAGCTCAAGTGATGACCGATATTATTGGGCCTAAAGCGTCCGTAGCCGGCCACGAAGGTTCATCGGGAAATCCGCCAGCTCAACTGGCGGGCGTCCGGTGAAAACCACGTGGCTTGGGACCGGAAGGCTCGAGGGGTACGTCCGGGGTAGGAGTGAAATCCCGTAATCCTGGACGGACCACCGATGGCGAAAGCACCTCGAGAAGACGGATCCGACGGTGAGGGACGAAAGCTAGGGTCTCGAACCGGATTAGATACCCGGGTAGTCCTAGCTGTAAACGATGCTCGCTAGGTGTGACACAGGCTACGAGCCTGTGTTGTGCCGTAGGGAAGCCGAGAAGCGAGCCGCCTGGGAAGTACGTCCGCAAGGATGAAACTTAAAGGAATTGGCGGGGGAGCACCACAACGGGTGGAGCCTGCGGTTTAATTGGACTCAACGCCGGACATCTCACCAGCTCCGACTACAGTGATGACGATCAGGTTGATGACCTTATCACGACGCTGTAGAGAGGAGGTGCATGGCCGCCGTCAGCTCGTACCGTGAGGCGTCCTGTTAAGTCAGGCAACGAGCGAGACCCGCACTTCTAATTGCCAGCAGCAGTTTCGCTGGCTGGGTACATTAGAAGGACTGCCGCTGCTAAAGCGGAGGAAGGAACGGGCAACGGTAGGTCAGTATGCCCCGAATGAGCTGGGCTACACGCGGGCTACAATGGTCGAGACAATGGGTTGCTATCTCGAAAGAGAACGCTAATCTCCTAAACTCGATCGTAGTTCGGATTGAGGGCTGAAACTCGCCCTCATGAAGCTGGATTCGGTAGTAATCGCATTTCAGAATAGAGTGCGGTGAATACGTCCCTGCTCCTTGCACACACCGCCCGTCAAAGCACCCGAGTGAGGTCCGGATGAGGCCACCACACGGTGGTCGAATCTGGGCTTCGCAAGGGGGCTTAAGTCGTAACAAGGTAGCCGTAGGGGAATCTGCGGCTGGATCACCTCCT
+>Methanocaldococcus_jannaschii
+TAGTCGGTTGATCCTGCCGGAGGCCACTGCTATCGGGATCCGACTAAGCCATGCAAGCCAAGTAGTGTTCCCTTAGAGGGGAAACGGCTCAGTAACACGTGGATAACCTGCCCTCAGGAGGGGGATAACCCCGGGAAACTGGGGATAATCCCCGATAGGGGGGGGTCCTGGAATGTTCCCCCCCGAAACGCCTTAGGGGCGCTGAGGGAGGGGTCTGCGGCCTATTAGGTAGTAGGTGGGGTAACGGCCCACCTAGCCCCGACGGGTAGGGGCCGTGAGAACGGGAGCCCCGGAGATGGGTACTGAGACAGGGACCCAGGCCCTACGGGGCGCAGCAGGCGCGAAACCTCCGCAATGCGCGAAAGCGCGACGGGGGACCCCGAGTCCCCTCGCTTCGGGAGGCTTTCGCCCTGTAAAGGGGCGGGGAAATAAGGGCCGGGCAAGACCGGTGCCAGCCGCCGCGGTAACACCGGCGGCTCGAGTGGTGGCCGTTATTATTGGGCCTAAAGCGTTCGTAGCCGGTTGGGTAAGTCTCTTGGGAAATCTGCCCGGCTTAACCGGGCGGCTCGAGAGAGAAACTGCCCAGCTTGGGACCGGGAGAGGTGAGAGGTACCCCCGGGGTAGGGGTGAAATCCGTAATCCTGGGGGGACCACCAGTGGCGGAAGCGCTCACCTGGAACGGGTCCGACGGTGAGGGACGAAAGCCAGGGGCGCGAACCGGATTAGATACCCGGGTAGTCCTGGCCGTAAACGATGCGGGCTAGGTGTTGGGCGGCTTCCGAGCCGCCGAGTGCCGCAGGGAAGCCGTTAAGCCCGCGCCTGGGAAGTACGGTCGCAAGACTGAAACTTAAAGGAATTGGCGGGGGAGCACCACAAGGGGTGAAGCCTGCGGTTCAATTGGATTCAACGCCGGGAAGCTTACCGGGGGCGACGGCAGGATGAAGGCCAGGCTGAAGACCTTACCCGGCAGACTGAGAGGTGGTGCATGGCCGTCGCCAGTTCGTACCGTGAGGCGTCCTGTTAAGTCAGGCAACGAGCGAGACCCCCGCCCCCAGTTGCCAGCACCCCTCCGGGTGGGGGCACACTGGGGGGACCGCCGGCGCCAAGCCGGAGGAAGGAGCGGGCCACGGTAGGTCAGTATGCCCCGAACCCCCCTGGCTACACGCGGGCTACAATGGGCTGGACAATGGGTTCCGACCCCGAAAGGGGGAGGGAATCCCCTAAACCCAGTCGTAGTTCGGATTGAGGGCTGCAACTCGCCCTCATGAAGCTGGATTCGGTAGTAATCGCGTTTCACTATAGCGCGGTGAATACGTCCCTGCTCCTTGCACACACCGCCCGTCACGCCACCCGAGTTGGGGCAGGGATGAGGCCTCGACCGTAAGGGGGCTAGTCGAACCCAGGCCCCGTAAGGGGGGTTAAGTCGTAACAAGGTAGCCGTAGGGGAACCTGCGGCTGGATCACCTCCT
+>Pyrococcus_furiosus
+GGTGATCCTGCCGGAGGTCACTGCTATCGGGATCCGACTAAGCCATGCAAGTCGGGGGCCGTAGTCCGGCCCTCGAAACGGCTCAGTAACACGTGGCTAACCTACCCTCGGGAGGGGGATAACCCCGGGAAACTGGGGATAATCCCCGATAGGTCGGGGTCCTGGAATGTTCCCGGCCGAAACGCCTTAGGGGCGCCCGGGGAGGGGTCTGCGGCGTATTAGGTAGTTGGTGGGGTAACGGCCCACCAAGCCGAAGATACGTAGGGGCCGTGAGAGCGGGAGCCCCGGAGATGGGCACTGAGACAAGGGCCCAGGCCCTACGGGGCGCAGCAGGCGCGAAACCTCCGCAATGCGGGCAACCGCGACGGGGGACCCCGAGTCCCGGTGTCGCCAGGCTTTCCCCTGTAAAGGGCGGGGAAATAAGGCCCGGGCAAGACCGGTGCCAGCCGCCGCGGTAATACCGGCGGGCCGAGTGGTGGCCATTATTATTGGGCCTAAAGCGCCCGTAGCCGGCCCGACAAGTCGGTTGGGAAATCCGCCCGCTCAACGGGCGGGTTCCCGATCGGAAACTGTCGGGCTTGGGACCGGGAGAGGCCAGGGGTACTCCCGGGGTAGGGGTGAAATCCGTAATCCTGGGAGGACCACCAGTGGCGGAAGCGCTGGCCCGGAACGGGTCCGACGGTGAGGGGCGAACGCCAGGGGCGCGAACCGGATTAGATACCCGGGTAGTCCTGGCCGTAAACGATGCGGGCTGGGTGTCGGCCCGGCTTCCGGCCCGGGGTGCCGCAGAGAAGCCGTTAAGCCCGCGCCTGGGAAGTACGGTCGCAAGACTGAAACTTAAAGGAATTGGCGGGGGAGCACTACAAGGGGTGAAGCCTGCGGTTCAATTGGATTCAACGCCGGGAAACTTACCGGGGGAGACAGCAGGGTGAAGGCCAGGCTGAAGACCTTACCCGGCAGGCCGAGAGGTGGTGCATGGCCGTCGCCAGTTCGTACTGTGAGGCGTCCTGTTAAGTCAGGCAACGAGCGAGACCCGCGCCCCCTGTTGCCAGCAGCCCCCCTCGGGGGGTGGCACACAGGGGGACCGCCGGCGCTAAGCCGGAGGAAGGAGCGGGCAATGGTAGGTCAGTATGCCCCGAACCCCGCCGGCTACACGCGGGCTACAATGGGCCGGACAATGGGATCCGACCCCGAAAGGGGAGGGAATCCCCTAAACCCGGTCGTAGTTCGGATTGAGGGCTGCAACTCGCCCTCATGAAGCTGGATTCGGTAGTAATCGCGTTTCACTACAGCGCGGTGAATACGTCCCTGCTCCTTGCACACACCGCCCGTCGCGCCACCCGAGTAGGGGGTGGGGATGAGGCCTCCGGCCCGAAGTCGGGCCAGTCGAACCCACCCCCCGTAAGGGGGGGGAAGTCGTAACAAGGTAGCCGTAGGGGAACCTGCGGCTGGATCACCTCCT
+>Sulfolobus_acidocaldarius
+TTCCGGTTGATCCCGCCGGAAGCCTACTGCTATCCGGGGTTGACTAAGCCATGGGAGTCTCAGCCATACTGAGTAATACGTAGTTAACCTGCCCTATGGACGGGGATAAACCGGGGAAACTCCGGCTAATCCCCGATGGGCGGTATCCTGGAAAGGATCTTCCTCCGAAATGCTCCTGCCCATAGAAGGGGTCTGCGGCCTATCAGGTAGTAGTGGGGAATGCCCCGTAGCCTACGACGGCCAGTGGTCTTGAGAGAGGACCGGCCAGAGGGGGGTACTGAGACACGGACCCCCCCTACGGGGCGCAGCAGGCGAGAAATCTTCAATCCGGGCAACCCTGACGGAGAAGGCCCCAGTGTCGCTCTCTCCATAGAGGTTGGGGGGTAAGGGCTTGGGCAAGCTCGGTGCCAGCCGCCGCGGTAATACCGAGCGCGCAAGCGATGATCGGGATTACTGGGCTTAAAGCGCCCGTAGCCGGGTTGGTAAGTCTTCTTTAAATCTATCGGCTTAACCGATAGGTGGAAGGAGAAACTGCCAACCTAGGGACGGGGAGAGGCAGAGGGTACCTCCGGGGTAGGGGTGAAATCTTGTAATCCTGGGAGGACCACCAGTGGCGGAAGCGTCTGCTCGGAACGGGTCCGACGGTGAGGGGCGAAAGCCAGGGGAGCAAACCGGATTAGATACCCGGGTAGTCCTGGCTGTAAACGATGCGGGCTAGGTGTCATGCCGGCTTATGATCGGGTGTGCCGTAGCGAAGCCGTTAAGCCCGCGCCTGGGAAGTACGGCCGCAAGGCTGAAACTTAAAGGAATTGGCGGGGGAGCACCACAAGGGGTGAAGCCTGCGGTTCAATTGGATTCAACGCCGGGAAGCTTACCGGAGAGGACGGCAGGGTGAAGGCCAGGCTGAAGACTTTGCCCGGCAAACTGAGAGGTGGTGCATGGCCGTCGCCAGTTCGTACCGTGAGGCGTCCTGTTAAGTCAGGCAACGAGCGAGACCCCCACTCCTAGTTGCTAGCCCCTCAAGGGATGGGGGCACTCTAGGGGGACCGCCGGCGGTAAGCCGGAGGAAGGAGCGGGCAAGGGTAGGTCGGTACGTCCCCGAAATCCTCTGGCTACACGCGGGCTACAATGGTCAGGACAATGGGCTCCGACACCGAAAGGTGAAGGGAATATCCTAAACCTGGTCGTAGTTCGGATTGAGGGCTGTAACTCGCCCTCATGAAGCTGGATTCGGTAGTAATCGCGTTTCACAATAGCGCGGTGAATACGTCCCTGCTCCTTGCACACACCGCCCGTCACGCCACCCAAGTTGGGGGAGGGACGAGGCCTAAGCCTTATGGCGAGACAAATCTTGACCCAAGCCCTATAGGGGGGGGGAAGTCGTAACAAGGTAGCCGTACCGGAAGGTGCGGCTGGATCACC`;
+
+  let state = {
+    mode: "fasta",
+    analyzed: null,
+    task: "mrca",
+    selected: [],
+    lastSvg: "",
+    lastNewick: ""
+  };
+
+  function esc(s) {
+    return String(s || "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  }
+
+  async function checkEngine() {
+    const el = $("engineStatus");
+    if (window.AndroidBridge && typeof window.AndroidBridge.isModelReady === "function") {
+      const ready = window.AndroidBridge.isModelReady();
+      el.innerHTML = ready
+        ? '<span class="dot"></span><span>Android Offline AI Ready (PhyloClade-135M)</span>'
+        : '<span class="dot warn"></span><span>Loading local GGUF model…</span>';
+      return;
+    }
+    try {
+      const r = await fetch("/api/health");
+      const d = await r.json();
+      el.innerHTML = d.ai_ready
+        ? '<span class="dot"></span><span>Offline AI Ready (' + esc(d.model || "PhyloClade-135M") + ')</span>'
+        : '<span class="dot warn"></span><span>AI starting… (Bioinformatics &amp; Verifier ready)</span>';
+    } catch (e) {
+      el.innerHTML = '<span class="dot warn"></span><span>Bioinformatics &amp; Verifier ready</span>';
+    }
+  }
+
+  async function fetchDatabase() {
+    const raw = $("dbInput").value.trim();
+    if (!raw) return alert("Enter a FASTA URL or comma-separated NCBI Accession IDs.");
+    $("btnFetchDb").disabled = true;
+    $("btnFetchDb").textContent = "Downloading…";
+    try {
+      let text = "";
+      if (window.AndroidBridge && typeof window.AndroidBridge.fetchDatabase === "function") {
+        text = window.AndroidBridge.fetchDatabase(raw);
+        if (text.startsWith("ERROR:")) throw new Error(text.slice(6));
+      } else {
+        const resp = await fetch("/api/fetch_db", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ query: raw })
+        });
+        const data = await resp.json();
+        if (!resp.ok) throw new Error(data.error || "Download failed");
+        text = data.fasta;
+      }
+      $("fastaText").value = text;
+      $("seqCount").textContent = "Downloaded from database";
+    } catch (e) {
+      alert("Database download error: " + e.message);
+    } finally {
+      $("btnFetchDb").disabled = false;
+      $("btnFetchDb").textContent = "Download from Database";
+    }
+  }
+
+  function renderMatrix(taxa, mat) {
+    let html = "<table><thead><tr><th>Taxon</th>" + taxa.map((_, i) => `<th>${i}</th>`).join("") + "</tr></thead><tbody>";
+    for (let i = 0; i < taxa.length; i++) {
+      html += `<tr><td><b>${i}:</b> ${esc(taxa[i])}</td>` +
+        mat[i].map((v) => `<td>${v.toFixed(4)}</td>`).join("") + "</tr>";
+    }
+    html += "</tbody></table>";
+    $("matrixWrap").innerHTML = html;
+    $("matrixSection").classList.remove("hidden");
+  }
+
+  function renderCladogram(rootNode) {
+    const leaves = [];
+    function collect(n, depth) {
+      if (n.isLeaf) {
+        n._yIdx = leaves.length;
+        leaves.push(n);
+      } else {
+        n.children.forEach((c) => collect(c, depth + 1));
+      }
+      n._depth = depth;
+    }
+    collect(rootNode, 0);
+
+    let maxDepth = 1;
+    function setCoords(n) {
+      if (n.isLeaf) {
+        n._y = 30 + n._yIdx * 34;
+        n._x = maxDepth;
+      } else {
+        n.children.forEach(setCoords);
+        n._y = (n.children[0]._y + n.children[1]._y) / 2;
+      }
+    }
+    function findMax(n, d) {
+      if (n.isLeaf) maxDepth = Math.max(maxDepth, d);
+      else n.children.forEach((c) => findMax(c, d + 1));
+    }
+    findMax(rootNode, 0);
+    function assignX(n, d) {
+      if (n.isLeaf) n._px = 36 + maxDepth * 62;
+      else {
+        n.children.forEach((c) => assignX(c, d + 1));
+        n._px = 36 + d * 62;
+      }
+    }
+    setCoords(rootNode);
+    assignX(rootNode, 0);
+
+    const h = Math.max(240, leaves.length * 34 + 44);
+    const w = 36 + maxDepth * 62 + 230;
+    const parts = [`<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" style="background:#080e18;font-family:monospace;">`];
+
+    function draw(n) {
+      if (!n.isLeaf) {
+        const c0 = n.children[0], c1 = n.children[1];
+        parts.push(`<path d="M${n._px},${c0._y} V${c1._y} M${n._px},${c0._y} H${c0._px} M${n._px},${c1._y} H${c1._px}" stroke="#334155" stroke-width="2" fill="none"/>`);
+        parts.push(`<circle cx="${n._px}" cy="${n._y}" r="3.5" fill="#fbbf24"/>`);
+        parts.push(`<text x="${n._px - 6}" y="${n._y - 7}" text-anchor="end" fill="#94a3b8" font-size="11">${esc(n.label)}</text>`);
+        draw(c0);
+        draw(c1);
+      } else {
+        const sel = state.selected.includes(n.label);
+        parts.push(`<circle cx="${n._px}" cy="${n._y}" r="4.5" fill="${sel ? "#22d3ee" : "#34d399"}"/>`);
+        parts.push(`<text x="${n._px + 9}" y="${n._y + 4}" fill="${sel ? "#22d3ee" : "#e6edf7"}" font-size="12" font-weight="${sel ? "bold" : "normal"}">${esc(n.label)}</text>`);
+      }
+    }
+    draw(rootNode);
+    parts.push("</svg>");
+    const svg = parts.join("");
+    state.lastSvg = svg;
+    $("svgWrap").innerHTML = svg;
+  }
+
+  function loadAnalyzedTree(newick) {
+    state.analyzed = window.PhyloEngine.analyzeTree(newick);
+    state.selected = [];
+    state.lastNewick = state.analyzed.normalizedNewick;
+    $("nwkOut").textContent = "Normalized Newick: " + state.lastNewick;
+    $("btnDlNwk").disabled = false;
+    $("btnDlSvg").disabled = false;
+    $("resultsWrap").classList.add("hidden");
+    renderPills();
+    renderCladogram(state.analyzed.root);
+  }
+
+  function renderPills() {
+    if (!state.analyzed) return;
+    const container = $("taxonPills");
+    const cherrySet = new Set(state.analyzed.sisterEligible);
+    container.innerHTML = state.analyzed.leaves.map((leaf) => {
+      const cls = ["pill"];
+      if (state.selected.includes(leaf)) cls.push("sel");
+      if (cherrySet.has(leaf)) cls.push("cherry");
+      return `<button type="button" class="${cls.join(" ")}" data-leaf="${esc(leaf)}">${esc(leaf)}</button>`;
+    }).join("");
+
+    container.querySelectorAll(".pill").forEach((btn) => {
+      btn.addEventListener("click", () => toggleTaxon(btn.dataset.leaf));
+    });
+    updateSelectionUi();
+  }
+
+  function toggleTaxon(leaf) {
+    const limits = { mrca: [2, 2], sister: [1, 1], monophyletic: [2, 3], distance: [2, 2] }[state.task];
+    const idx = state.selected.indexOf(leaf);
+    if (idx >= 0) state.selected.splice(idx, 1);
+    else {
+      if (state.task === "sister" && !state.analyzed.sisterEligible.includes(leaf)) {
+        return alert(leaf + " is not in a cherry (cyan-dot leaves only).");
+      }
+      if (state.selected.length >= limits[1]) state.selected.shift();
+      state.selected.push(leaf);
+    }
+    renderPills();
+    renderCladogram(state.analyzed.root);
+  }
+
+  function updateSelectionUi() {
+    const limits = { mrca: [2, 2], sister: [1, 1], monophyletic: [2, 3], distance: [2, 2] }[state.task];
+    $("selectedLabel").textContent = "Selected: " + (state.selected.length ? state.selected.join(", ") : "none");
+    $("btnInfer").disabled = !(state.analyzed && state.selected.length >= limits[0] && state.selected.length <= limits[1]);
+  }
+
+  async function runInference() {
+    const built = state.analyzed.buildPrompt(state.task, state.selected);
+    const groundTruth = state.analyzed.solve(state.task, state.selected);
+    $("btnInfer").disabled = true;
+    $("btnInfer").textContent = "Running Offline AI…";
+    const t0 = performance.now();
+    let aiAns = "";
+    try {
+      if (window.AndroidBridge && typeof window.AndroidBridge.infer === "function") {
+        aiAns = window.AndroidBridge.infer(built.prompt);
+      } else {
+        const resp = await fetch("/api/infer", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ prompt: built.prompt })
+        });
+        const data = await resp.json();
+        if (!resp.ok) throw new Error(data.error || "Local AI error");
+        aiAns = data.prediction;
+      }
+      const ms = (performance.now() - t0).toFixed(0);
+      const firstLine = String(aiAns || "").trim().split(/\r?\n/)[0].trim();
+      const match = firstLine.toLowerCase() === groundTruth.toLowerCase();
+      $("aiPred").innerHTML = `<span class="${match ? "ok" : "err"}">${esc(firstLine || "(empty)")}</span>`;
+      $("aiMeta").textContent = `Latency: ${ms} ms · ${match ? "Matches Verifier ✓" : "Verifier corrected ✗"}`;
+      $("exactPred").innerHTML = `<span class="ok">${esc(groundTruth)}</span>`;
+      $("exactMeta").textContent = built.question;
+      $("resultsWrap").classList.remove("hidden");
+    } catch (e) {
+      alert("Offline AI error: " + e.message);
+    } finally {
+      $("btnInfer").disabled = false;
+      $("btnInfer").textContent = "Run Offline Inference";
+    }
+  }
+
+  function downloadFile(filename, content, mime) {
+    const blob = new Blob([content], { type: mime });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  document.querySelectorAll("[data-mode]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll("[data-mode]").forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      state.mode = btn.dataset.mode;
+      $("fastaPane").classList.toggle("hidden", state.mode !== "fasta");
+      $("newickPane").classList.toggle("hidden", state.mode !== "newick");
+    });
+  });
+
+  document.querySelectorAll("[data-task]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll("[data-task]").forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      state.task = btn.dataset.task;
+      state.selected = [];
+      const hints = {
+        mrca: "Select 2 leaves",
+        sister: "Select 1 cherry leaf (cyan dot)",
+        monophyletic: "Select 2 or 3 leaves",
+        distance: "Select 2 leaves"
+      };
+      $("taskHint").textContent = hints[state.task];
+      renderPills();
+      if (state.analyzed) renderCladogram(state.analyzed.root);
+    });
+  });
+
+  $("btnPreset16s").addEventListener("click", () => {
+    $("fastaText").value = BUILTIN_16S_FASTA;
+    $("seqCount").textContent = "8 built-in 16S rRNA genes loaded";
+  });
+  $("fileInput").addEventListener("change", (ev) => {
+    const f = ev.target.files[0];
+    if (!f) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      $("fastaText").value = String(reader.result || "");
+      $("seqCount").textContent = f.name + " loaded";
+    };
+    reader.readAsText(f);
+  });
+  $("btnFetchDb").addEventListener("click", fetchDatabase);
+  $("btnReconstruct").addEventListener("click", () => {
+    try {
+      const rec = window.PhyloEngine.reconstructFromFasta($("fastaText").value);
+      $("seqCount").textContent = rec.taxa.length + " sequences aligned (K2P + NJ)";
+      renderMatrix(rec.taxa, rec.distance_matrix);
+      loadAnalyzedTree(rec.normalized_newick);
+    } catch (e) {
+      alert(e.message);
+    }
+  });
+  $("btnParseNewick").addEventListener("click", () => {
+    try {
+      $("matrixSection").classList.add("hidden");
+      loadAnalyzedTree($("newickText").value);
+    } catch (e) {
+      alert(e.message);
+    }
+  });
+  $("btnInfer").addEventListener("click", runInference);
+  $("btnDlNwk").addEventListener("click", () => downloadFile("phyloscope_tree.nwk", state.lastNewick, "text/plain"));
+  $("btnDlSvg").addEventListener("click", () => downloadFile("phyloscope_cladogram.svg", state.lastSvg, "image/svg+xml"));
+
+  checkEngine();
+  window.setInterval(checkEngine, 4000);
+})();
+</script>
+</body>
+</html>

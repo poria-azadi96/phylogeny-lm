@@ -2,3 +2,9 @@ __pycache__/
 *.py[cod]
 outputs/
 .DS_Store
+dist/
+offline_apps/android/.gradle/
+offline_apps/android/build/
+offline_apps/android/app/build/
+offline_apps/android/app/.cxx/
+offline_apps/android/app/src/main/assets/*.gguf
